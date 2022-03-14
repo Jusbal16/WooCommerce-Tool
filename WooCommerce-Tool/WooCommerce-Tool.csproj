@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <RootNamespace>WooCommerce_Tool</RootNamespace>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Assets\delete.png" />
+    <None Remove="Assets\edit.png" />
+    <None Remove="Assets\logo.png" />
+    <None Remove="Assets\play.png" />
+    <None Remove="Assets\stop.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WooCommerceNET" Version="0.8.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\delete.png" />
+    <Resource Include="Assets\edit.png" />
+    <Resource Include="Assets\logo.png" />
+    <Resource Include="Assets\play.png" />
+    <Resource Include="Assets\stop.png" />
+  </ItemGroup>
+
+</Project>
