@@ -24,6 +24,7 @@ namespace WooCommerce_Tool
     /// </summary>
     public partial class GenerateOrders : UserControl
     {
+        
         public class ComboboxItem
         {
             public string Text { get; set; }
@@ -34,6 +35,7 @@ namespace WooCommerce_Tool
                 return Text;
             }
         }
+        public static TextBlock StatusText;
         [DllImport("kernel32.dll")]
         static extern IntPtr GetConsoleWindow();
 
@@ -46,6 +48,7 @@ namespace WooCommerce_Tool
             Main = main;
             OrderGenerationSettingsConstants Constants = new();
             InitializeComponent();
+            StatusText = GenerationStatus;
             // fill date
             comboBoxDate.Items.Add("Select Date");
             foreach (var n in Constants.DateConstants)
@@ -95,13 +98,14 @@ namespace WooCommerce_Tool
         }
         public void StartGeneration(bool deletion)
         {
+            var chan = ChangeUIText;
             if (deletion)
             {
                 ChangeUIText("Deleting orders started");
                 Main.DeleteAllOrders();
             }
             ChangeUIText("Started generating orders");
-            Main.GenerateOrders();
+            Main.GenerateOrders(ChangeUIText);
             ChangeUIText("Order generation ended successfully");
         }
         public void ChangeUIText(string text)
@@ -109,7 +113,7 @@ namespace WooCommerce_Tool
             Dispatcher.Invoke(() =>
             {
                 // Code causing the exception or requires UI thread access
-                GenerationStatus.Text = text;
+                StatusText.Text = text;
             });
         }
         public void ShowMessage(string text, string type)
