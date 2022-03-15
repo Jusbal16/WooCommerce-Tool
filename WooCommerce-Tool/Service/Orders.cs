@@ -5,7 +5,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using WooCommerceNET;
-using WooCommerceNET.WooCommerce.Legacy;
+using WooCommerceNET.WooCommerce.v3;
+using WooCommerceNET.WooCommerce.v3.Extension;
 
 namespace WooCommerce_Tool
 {
@@ -20,21 +21,40 @@ namespace WooCommerce_Tool
         {
             var task = GetAllOrders(); ;
             task.Wait();
-            OrderList orders = task.Result;
+            List<Order> orders = task.Result;
             foreach (Order order in orders)
             {
-                Thread.Sleep(500);
-                await wc.DeleteOrder((int)order.id);
+                await wc.Order.Delete((int)order.id);
             }
         }
-        public async Task<OrderList> GetAllOrders()
+        public async Task<List<Order>> GetAllOrders()
         {
-            return await wc.GetOrders();
+            List<Order> orders = new List<Order>();
+
+            Dictionary<string, string> parameters = new Dictionary<string, string>();
+            parameters.Add("per_page", "100");
+            int pageNumber = 1;
+            parameters.Add("page", pageNumber.ToString());
+            bool endWhile = false;
+            while (!endWhile)
+            {
+                var listaTemp = await wc.Order.GetAll(parameters);
+                if (listaTemp.Count > 0)
+                {
+                    orders.AddRange(listaTemp);
+                    pageNumber++;
+                    parameters["page"] = pageNumber.ToString();
+                }
+                else
+                {
+                    endWhile = true;
+                }
+            }
+            return orders;
         }
         public async Task AddOrder(Order order)
         {
-            Thread.Sleep(500);
-            await wc.PostOrder(order);
+            await wc.Order.Add(order);
         }
     }
 }
