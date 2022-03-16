@@ -23,7 +23,8 @@ namespace WooCommerce_Tool.Settings
         public  int MinPriceRange => 10;
         public  int MaxPriceRange => 1000;
         public  int MinOrderCountRange => 1;
-        public int MaxOrderCountRange => 1000;
+        public int MaxOrderCountRange => 10000;
+        public int OrderGenerationPerRequest => 100; //max 100
 
     }
 }

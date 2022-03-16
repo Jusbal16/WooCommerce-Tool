@@ -32,6 +32,9 @@ namespace WooCommerce_Tool
             taskProducts.Wait();
             List<Product> products = taskProducts.Result;
             int orderCount = 0;
+            int ordersPerRequest = DataLists.Constants.OrderGenerationPerRequest; ;
+            List<Order> orders = new List<Order>();
+            OrderBatch batchOrders = new OrderBatch();
             ChangeUITextPointer(orderCount.ToString() + " of " + DataLists.Settings.OrderCount.ToString() + " orders added");
             for (int i = 0; i < DataLists.Settings.OrderCount; i++)
             {
@@ -48,11 +51,30 @@ namespace WooCommerce_Tool
                 order.line_items = new List<WooCommerceNET.WooCommerce.v2.OrderLineItem>();
                 order.line_items.Add(item);
                 order.customer_note = DataLists.DateList.ElementAt(i).Date + DataLists.TimeList.ElementAt(i).TimeOfDay + "-Generator";
-                var taskOrders = Orders.AddOrder(order);
-                taskOrders.Wait();
+                orders.Add(order);
+                //var taskOrders = Orders.AddOrder(order);
+                //taskOrders.Wait();
                 orderCount++;
+
+                if ((i % ordersPerRequest) == ordersPerRequest-1)
+                {
+                    batchOrders.create = orders;
+                    var taskOrders = Orders.AddOrders(batchOrders);
+                    taskOrders.Wait();
+                    batchOrders.create.Clear();
+                    orders.Clear();
+                    ChangeUITextPointer(orderCount.ToString() + " of " + DataLists.Settings.OrderCount.ToString() + " orders added");
+                }
+                
+            }
+            if (orders.Count() != 0)
+            {
+                batchOrders.create = orders;
+                var taskOrders = Orders.AddOrders(batchOrders);
+                taskOrders.Wait();
                 ChangeUITextPointer(orderCount.ToString() + " of " + DataLists.Settings.OrderCount.ToString() + " orders added");
             }
+
 
 
         }
