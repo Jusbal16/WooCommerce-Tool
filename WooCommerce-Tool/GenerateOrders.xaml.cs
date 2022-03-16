@@ -74,7 +74,7 @@ namespace WooCommerce_Tool
             int maxOrders = Main.Constants.MaxOrderCountRange;
             if (CheckFill())
             {
-                if (Int32.Parse(OrderCount.Text) >= minOrders && Int32.Parse(OrderCount.Text) < maxOrders)
+                if (Int32.Parse(OrderCount.Text) >= minOrders && Int32.Parse(OrderCount.Text) <= maxOrders)
                 {
                     Main.Settings.Date = comboBoxDate.SelectedItem.ToString();
                     Main.Settings.Time = comboBoxTime.SelectedItem.ToString();
@@ -83,8 +83,6 @@ namespace WooCommerce_Tool
                     Main.DataLists.GenerateDataLists();
                     bool deletion = (bool)DeleteOrders.IsChecked;
                     Task.Run(() => StartGeneration(deletion));
-
-
                 }
                 else
                 {

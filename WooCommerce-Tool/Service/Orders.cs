@@ -22,10 +22,15 @@ namespace WooCommerce_Tool
             var task = GetAllOrders(); ;
             task.Wait();
             List<Order> orders = task.Result;
-            foreach (Order order in orders)
+            OrderBatch orderBatch = new OrderBatch();
+            List<int> ids = orders.Select(x => (int)x.id).ToList();
+
+            for (int i = 0; i < ids.Count; i = i + 100)
             {
-                await wc.Order.Delete((int)order.id);
+                orderBatch.delete = ids.Skip(i).Take(100).ToList();
+                await wc.Order.DeleteRange(orderBatch);
             }
+
         }
         public async Task<List<Order>> GetAllOrders()
         {
@@ -55,6 +60,10 @@ namespace WooCommerce_Tool
         public async Task AddOrder(Order order)
         {
             await wc.Order.Add(order);
+        }
+        public async Task AddOrders(OrderBatch orders)
+        {
+            await wc.Order.AddRange(orders);
         }
     }
 }
