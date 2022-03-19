@@ -17,6 +17,8 @@ namespace WooCommerce_Tool
         {
             wc = new WCObject(rest);
         }
+
+        //[Obsolete]
         public async Task DeleteAllOrders()
         {
             var task = GetAllOrders(); ;
@@ -61,6 +63,8 @@ namespace WooCommerce_Tool
         {
             await wc.Order.Add(order);
         }
+
+        //[Obsolete]
         public async Task AddOrders(OrderBatch orders)
         {
             await wc.Order.AddRange(orders);

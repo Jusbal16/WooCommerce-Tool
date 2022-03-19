@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Exceptionless" Version="4.6.2" />
     <PackageReference Include="WooCommerceNET" Version="0.8.4" />
   </ItemGroup>
 
