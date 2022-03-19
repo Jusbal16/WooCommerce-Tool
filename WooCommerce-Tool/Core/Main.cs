@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using WooCommerceNET;
 using WooCommerceNET.WooCommerce.v3;
 using WooCommerce.NET.WordPress.v2;
+using WooCommerce_Tool.ViewsModels;
 
 namespace WooCommerce_Tool
 {
@@ -18,6 +19,7 @@ namespace WooCommerce_Tool
         public OrderGenerationSettings Settings { get; set; }
         public OrderGenerationSettingsConstants Constants { get; set; }
         public OrderGenerationDataLists DataLists { get; set; }
+        public OrderGenerator OrderGenerator { get; set; }
 
         public Main()
         {
@@ -33,16 +35,16 @@ namespace WooCommerce_Tool
             Settings = new OrderGenerationSettings();
             Constants = new OrderGenerationSettingsConstants();
             DataLists = new OrderGenerationDataLists(Settings, Constants);
+            OrderGenerator = new(ProductsService, CustomersService, OrderService, DataLists);
         }
         public void DeleteAllOrders()
         {
             var task = OrderService.DeleteAllOrders();
             task.Wait();
         }
-        public void GenerateOrders(Action<string> uiPointer)
+        public void GenerateOrders()
         {
-            OrderGenerator orderGenerator = new(ProductsService, CustomersService, OrderService, DataLists);
-            orderGenerator.GenerateOrders(uiPointer);
+            OrderGenerator.GenerateOrders();
         }
     }
 }

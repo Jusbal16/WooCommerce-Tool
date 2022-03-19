@@ -16,6 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using WooCommerce_Tool.Settings;
+using WooCommerce_Tool.ViewsModels;
 
 namespace WooCommerce_Tool
 {
@@ -25,46 +26,26 @@ namespace WooCommerce_Tool
     public partial class GenerateOrders : UserControl
     {
         
-        public class ComboboxItem
-        {
-            public string Text { get; set; }
-            public object Value { get; set; }
-
-            public override string ToString()
-            {
-                return Text;
-            }
-        }
         public static TextBlock StatusText;
         [DllImport("kernel32.dll")]
         static extern IntPtr GetConsoleWindow();
 
         [DllImport("user32.dll")]
         static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-
+        private OrderGenerationViewModel _viewModel;
         private Main Main { get; set; }
         public GenerateOrders(Main main)
         {
             Main = main;
+            _viewModel = new OrderGenerationViewModel(Main.OrderGenerator);
+            DataContext = _viewModel;
             OrderGenerationSettingsConstants Constants = new();
             InitializeComponent();
+
             StatusText = GenerationStatus;
             // fill date
-            comboBoxDate.Items.Add("Select Date");
-            foreach (var n in Constants.DateConstants)
-                comboBoxDate.Items.Add(n);
             comboBoxDate.SelectedIndex = 0;
-
-            comboBoxTime.Items.Add("Select Time");
-            foreach (var n in Constants.TimeConstants)
-                comboBoxTime.Items.Add(n);
             comboBoxTime.SelectedIndex = 0;
-            comboBoxMonthSpan.Items.Add(new ComboboxItem { Text = "Select Month Span", Value = 0 });
-            comboBoxMonthSpan.Items.Add(new ComboboxItem { Text = "1 Month", Value = 1 });
-            comboBoxMonthSpan.Items.Add(new ComboboxItem { Text = "3 Month", Value = 3 });
-            comboBoxMonthSpan.Items.Add(new ComboboxItem { Text = "6 Month", Value = 6 });
-            comboBoxMonthSpan.Items.Add(new ComboboxItem { Text = "9 Month", Value = 9 });
-            comboBoxMonthSpan.Items.Add(new ComboboxItem { Text = "12 Month", Value = 12 });
             comboBoxMonthSpan.SelectedIndex = 0;
         }
 
@@ -76,10 +57,14 @@ namespace WooCommerce_Tool
             {
                 if (Int32.Parse(OrderCount.Text) >= minOrders && Int32.Parse(OrderCount.Text) <= maxOrders)
                 {
-                    Main.Settings.Date = comboBoxDate.SelectedItem.ToString();
+                    /*Main.Settings.Date = comboBoxDate.SelectedItem.ToString();
                     Main.Settings.Time = comboBoxTime.SelectedItem.ToString();
                     Main.Settings.MonthsCount = Int32.Parse((comboBoxMonthSpan.SelectedItem as ComboboxItem).Value.ToString());
-                    Main.Settings.OrderCount = Int32.Parse(OrderCount.Text);
+                    Main.Settings.OrderCount = Int32.Parse(OrderCount.Text);*/
+                    Main.Settings.Date = _viewModel.Date;
+                    Main.Settings.Time = _viewModel.Time;
+                    Main.Settings.MonthsCount = _viewModel.MonthsCount;
+                    Main.Settings.OrderCount = _viewModel.OrderCount;
                     Main.DataLists.GenerateDataLists();
                     bool deletion = (bool)DeleteOrders.IsChecked;
                     Task.Run(() => StartGeneration(deletion));
@@ -96,15 +81,17 @@ namespace WooCommerce_Tool
         }
         public void StartGeneration(bool deletion)
         {
-            var chan = ChangeUIText;
             if (deletion)
             {
-                ChangeUIText("Deleting orders started");
+                //ChangeUIText("Deleting orders started");
+                _viewModel.Status = "Deleting orders started";
                 Main.DeleteAllOrders();
             }
-            ChangeUIText("Started generating orders");
-            Main.GenerateOrders(ChangeUIText);
-            ChangeUIText("Order generation ended successfully");
+            //ChangeUIText("Started generating orders");
+            _viewModel.Status = "Started generating orders";
+            Main.GenerateOrders();
+            //ChangeUIText("Order generation ended successfully");
+            _viewModel.Status = "Order generation ended successfully";
         }
         public void ChangeUIText(string text)
         {

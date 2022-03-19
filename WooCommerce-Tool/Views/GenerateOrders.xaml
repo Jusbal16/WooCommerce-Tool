@@ -112,10 +112,10 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Grid Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left">
-                    <ComboBox x:Name="comboBoxDate"  Width="200"  Background="Transparent" Style="{DynamicResource ComboBoxStyle1}" />
+                    <ComboBox x:Name="comboBoxDate"  Width="200"  Background="Transparent" Style="{DynamicResource ComboBoxStyle1}" ItemsSource ="{Binding MonthComboData}" Text="{Binding Date, UpdateSourceTrigger=PropertyChanged}" />
                 </Grid>
                 <Grid Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Left">
-                    <ComboBox x:Name="comboBoxTime"  Width="200"  Background="Transparent" Style="{DynamicResource ComboBoxStyle1}" />
+                    <ComboBox x:Name="comboBoxTime"  Width="200"  Background="Transparent" Style="{DynamicResource ComboBoxStyle1}" ItemsSource ="{Binding TimeComboData}" Text="{Binding Time, UpdateSourceTrigger=PropertyChanged}"/>
                 </Grid>
             </Grid>
             <!--webhook label -->
@@ -137,11 +137,11 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Grid Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left">
-                    <TextBox x:Name="OrderCount" Style="{StaticResource Textbox}" Width="200" Grid.ColumnSpan="5" />
+                    <TextBox x:Name="OrderCount" Style="{StaticResource Textbox}" Width="200" Grid.ColumnSpan="5" Text="{Binding OrderCount, UpdateSourceTrigger=PropertyChanged}" />
                     <TextBlock IsHitTestVisible="False" Text="Order Count" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="White" Style="{StaticResource OrderCount}"/>
                 </Grid>
                 <Grid Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Left">
-                    <ComboBox x:Name="comboBoxMonthSpan"  Width="200"  Background="Transparent" Style="{DynamicResource ComboBoxStyle1}" />
+                    <ComboBox x:Name="comboBoxMonthSpan"  Width="200"  Background="Transparent" Style="{DynamicResource ComboBoxStyle1}" SelectedValuePath="Key" DisplayMemberPath="Value" ItemsSource ="{Binding MonthSpanComboData}" SelectedValue="{Binding MonthsCount, UpdateSourceTrigger=PropertyChanged}"/>
                 </Grid>
             </Grid>
             <!--Task managament  -->
@@ -184,7 +184,8 @@
                     <Button Content="Generate" Style="{StaticResource ButtonG}" Click="Button_Click_1" />
                 </StackPanel>
                 <Grid Grid.Column="3" VerticalAlignment="Top" HorizontalAlignment="Center" >
-                    <TextBlock Name="GenerationStatus" IsHitTestVisible="False" Text="TEST" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="White"/>
+                    <TextBlock Name="GenerationStatus" IsHitTestVisible="False" Text="{Binding Path=Status, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="White"/>
+                
                 </Grid>
             </Grid>
 
