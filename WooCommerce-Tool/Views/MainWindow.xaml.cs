@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using WooCommerce_Tool.Views;
 
 namespace WooCommerce_Tool
 {
@@ -21,12 +22,14 @@ namespace WooCommerce_Tool
     public partial class MainWindow : Window
     {
         public Main Main { get; set; }
-        public GenerateOrders generateOrders { get; set; }
+        public GenerateOrdersView generateOrdersView { get; set; }
+        public OrderPredictionView orderPredictionView { get; set; }
         public MainWindow()
         {
             InitializeComponent();
             Main = new Main();
-            generateOrders = new GenerateOrders(Main);
+            generateOrdersView = new GenerateOrdersView(Main);
+            orderPredictionView = new OrderPredictionView(Main);
             // reiktu viska uzkrauti
 
             //Dashboard obj = new Dashboard();
@@ -47,6 +50,7 @@ namespace WooCommerce_Tool
         {
             //Create_Task obj = new Create_Task(-1);
             //SwitchScreen(obj);
+            SwitchScreen(orderPredictionView);
         }
         private void btnShow_Click_4(object sender, RoutedEventArgs e)
         {
@@ -56,7 +60,7 @@ namespace WooCommerce_Tool
         private void btnShow_Click_5(object sender, RoutedEventArgs e)
         {
 
-            SwitchScreen(generateOrders);
+            SwitchScreen(generateOrdersView);
 
         }
         private void btnShow_Click_6(object sender, RoutedEventArgs e)

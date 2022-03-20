@@ -23,26 +23,19 @@ namespace WooCommerce_Tool
     /// <summary>
     /// Interaction logic for GenerateOrders.xaml
     /// </summary>
-    public partial class GenerateOrders : UserControl
+    public partial class GenerateOrdersView : UserControl
     {
         
-        public static TextBlock StatusText;
-        [DllImport("kernel32.dll")]
-        static extern IntPtr GetConsoleWindow();
 
-        [DllImport("user32.dll")]
-        static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
         private OrderGenerationViewModel _viewModel;
         private Main Main { get; set; }
-        public GenerateOrders(Main main)
+        public GenerateOrdersView(Main main)
         {
             Main = main;
             _viewModel = new OrderGenerationViewModel(Main.OrderGenerator);
             DataContext = _viewModel;
             OrderGenerationSettingsConstants Constants = new();
             InitializeComponent();
-
-            StatusText = GenerationStatus;
             // fill date
             comboBoxDate.SelectedIndex = 0;
             comboBoxTime.SelectedIndex = 0;
@@ -83,23 +76,12 @@ namespace WooCommerce_Tool
         {
             if (deletion)
             {
-                //ChangeUIText("Deleting orders started");
                 _viewModel.Status = "Deleting orders started";
                 Main.DeleteAllOrders();
             }
-            //ChangeUIText("Started generating orders");
             _viewModel.Status = "Started generating orders";
             Main.GenerateOrders();
-            //ChangeUIText("Order generation ended successfully");
             _viewModel.Status = "Order generation ended successfully";
-        }
-        public void ChangeUIText(string text)
-        {
-            Dispatcher.Invoke(() =>
-            {
-                // Code causing the exception or requires UI thread access
-                StatusText.Text = text;
-            });
         }
         public void ShowMessage(string text, string type)
         {

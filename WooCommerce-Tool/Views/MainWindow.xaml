@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WooCommerce_Tool"
+        xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         mc:Ignorable="d"
          SizeToContent="Manual"
         Title="Shoes Emperor" Height="600" Width="970" Name="FirstWindow" Icon="/Assets/logo.png">
@@ -58,7 +59,7 @@
                             </Grid.RowDefinitions>
                             <Button Style="{StaticResource MenuButtons}" Name="Dashboard" Grid.Row="0" Click="btnShow_Click_1" Content="1"/>
                             <Button Style="{StaticResource MenuButtons}" Name="Taskmanagement" Grid.Row="1" Click="btnShow_Click_2" Content="2"/>
-                            <Button Style="{StaticResource MenuButtons}" Name="CreateTask" Grid.Row="2" Click="btnShow_Click_3" Content="3" />
+                            <Button Style="{StaticResource MenuButtons}" Name="OrderPrediction" Grid.Row="2" Click="btnShow_Click_3" Content="Orders Prediction" />
                             <Button Style="{StaticResource MenuButtons}" Name="Profiles" Grid.Row="3" Click="btnShow_Click_4" Content="4" />
                             <Button Style="{StaticResource MenuButtons}" Name="GenerateOrders" Grid.Row="4" Click="btnShow_Click_5" Content="Generate Orders" />
                             <Button Style="{StaticResource MenuButtons}" Name="Settings" Grid.Row="5" Click="btnShow_Click_6" Content="5" />
