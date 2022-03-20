@@ -20,6 +20,7 @@ namespace WooCommerce_Tool
         public OrderGenerationSettingsConstants Constants { get; set; }
         public OrderGenerationDataLists DataLists { get; set; }
         public OrderGenerator OrderGenerator { get; set; }
+        public OrderPrediction OrderPrediction { get; set; }
 
         public Main()
         {
@@ -36,6 +37,8 @@ namespace WooCommerce_Tool
             Constants = new OrderGenerationSettingsConstants();
             DataLists = new OrderGenerationDataLists(Settings, Constants);
             OrderGenerator = new(ProductsService, CustomersService, OrderService, DataLists);
+            // prediction
+            OrderPrediction = new(ProductsService, CustomersService, OrderService);
         }
         public void DeleteAllOrders()
         {
@@ -45,6 +48,22 @@ namespace WooCommerce_Tool
         public void GenerateOrders()
         {
             OrderGenerator.GenerateOrders();
+        }
+        public void PredGetData()
+        {
+            OrderPrediction.GetData();
+        }
+        public void PredOrderForecasting()
+        {
+            OrderPrediction.OrdersForecasting();
+        }
+        public void ProbOrdersMonthTime()
+        {
+            OrderPrediction.OrdersMonthTimeProbability();
+        }
+        public void ProbOrdersTime()
+        {
+            OrderPrediction.OrdersTimeProbability();
         }
     }
 }
