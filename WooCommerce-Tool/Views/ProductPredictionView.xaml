@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="WooCommerce_Tool.Views.OrderPredictionView"
+﻿<UserControl x:Class="WooCommerce_Tool.Views.ProductPredictionView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -87,7 +87,7 @@
                     <ColumnDefinition Width="200"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="1" VerticalAlignment="Bottom" HorizontalAlignment="Left">
-                    <Label Style="{StaticResource LabelBig}" Name="Label1" Content="Order Prediction" Width="300"/>
+                    <Label Style="{StaticResource LabelBig}" Name="Label1" Content="Product Prediction" Width="300"/>
                 </TextBlock>
             </Grid>
             <!--general label -->
@@ -135,7 +135,7 @@
                                     <lvc:DefaultTooltip BulletSize="20"></lvc:DefaultTooltip>
                                 </lvc:PieChart.DataTooltip>
                             </lvc:PieChart>
-                            <lvc:PieChart LegendLocation="Right" Series="{Binding TimeProbability, UpdateSourceTrigger=PropertyChanged}" Hoverable="True" InnerRadius="20" Margin="50" Grid.Column="1">
+                            <lvc:PieChart LegendLocation="Right" Series="{Binding TimeProbability, UpdateSourceTrigger=PropertyChanged}" Hoverable="True" InnerRadius="5" Margin="30" Grid.Column="1">
                                 <lvc:PieChart.ChartLegend>
                                     <lvc:DefaultLegend BulletSize="15" TextBlock.FontSize="8"></lvc:DefaultLegend>
                                 </lvc:PieChart.ChartLegend>

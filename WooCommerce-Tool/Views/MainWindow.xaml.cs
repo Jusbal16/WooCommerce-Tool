@@ -24,12 +24,14 @@ namespace WooCommerce_Tool
         public Main Main { get; set; }
         public GenerateOrdersView generateOrdersView { get; set; }
         public OrderPredictionView orderPredictionView { get; set; }
+        public ProductPredictionView productPredictionView { get; set; }
         public MainWindow()
         {
             InitializeComponent();
             Main = new Main();
             generateOrdersView = new GenerateOrdersView(Main);
             orderPredictionView = new OrderPredictionView(Main);
+            productPredictionView = new ProductPredictionView(Main);
             // reiktu viska uzkrauti
 
             //Dashboard obj = new Dashboard();
@@ -45,6 +47,7 @@ namespace WooCommerce_Tool
         {
             //Task_Management obj = new Task_Management();
             //SwitchScreen(obj);
+            SwitchScreen(productPredictionView);
         }
         private void btnShow_Click_3(object sender, RoutedEventArgs e)
         {
