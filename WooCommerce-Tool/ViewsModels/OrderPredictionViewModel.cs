@@ -33,7 +33,7 @@ namespace WooCommerce_Tool.ViewsModels
             Messenger.Default.Register<IEnumerable<OrdersMontlyData>>(this, (action) => ReceiveOrders(action));
             Messenger.Default.Register<OrdersMontlyForecasting>(this, (action) => ReceiveForecasting(action));
 
-            Messenger.Default.Register<List<MLPredictionData>>(this, (action) => ReceiveMLForecasting(action));
+            Messenger.Default.Register<List<MLPredictionDataOrders>>(this, (action) => ReceiveMLForecasting(action));
         }
         private void ReceiveMonthTime(List<OrdersMonthTimeProbability> msg)
         {
@@ -65,7 +65,7 @@ namespace WooCommerce_Tool.ViewsModels
             ChartValues<double> Values = new ChartValues<double>();
             ForecastedValues = new ChartValues<double>();
             ForecastedMLValues = new ChartValues<double>();
-            BarLabels = new string[msg.Count()];
+            BarLabels = new string[msg.Count()+3];
             int i = 0;
             foreach (var m in msg)
             {
@@ -74,39 +74,56 @@ namespace WooCommerce_Tool.ViewsModels
                 ForecastedMLValues.Add(double.NaN);
                 BarLabels[i] = m.Year + "/" + m.Month;
                 i++;
-                //BarLabels.Append(m.Year+"/"+m.Month);
-
             }
+            AddMonths(BarLabels[BarLabels.Length-4]);
             Application.Current.Dispatcher.Invoke((Action)delegate {
                 OrdersCount.Add(new LineSeries { Title = "Orders Count", Values = Values, DataLabels = true });
             });
 
         }
+        public void AddMonths(string date)
+        {
+            int count =  BarLabels.Length - 3;
+            DateTime dateTime = DateTime.Parse(date);
+            for (int i = 0;i < 3; i++)
+            {
+                dateTime = dateTime.AddMonths(1);
+                BarLabels[count] = dateTime.ToString("yyyy") + "/" + dateTime.ToString("MM");
+                count++;
+            }
+        }
         private void ReceiveForecasting(OrdersMontlyForecasting msg)
         {
             int horizon = 3;
             int index = 0;
-            for (int i = 0; i < msg.ForecastedOrders.Length; i++)
+            for (int i = 0; i < 3; i++)
             {
                 index = ForecastedValues.Count() - horizon + i;
                 ForecastedValues[index] = Math.Round(msg.ForecastedOrders[i]);
+            }
+            for (int i = 3; i < msg.ForecastedOrders.Length; i++)
+            {
+                ForecastedValues.Add(Math.Round(msg.ForecastedOrders[i]));
             }
             Application.Current.Dispatcher.Invoke((Action)delegate {
                 OrdersCount.Add(new LineSeries { Title = "Forecasted Values", Values = ForecastedValues, DataLabels = true });
             });
 
         }
-        private void ReceiveMLForecasting(List<MLPredictionData> msg)
+        private void ReceiveMLForecasting(List<MLPredictionDataOrders> msg)
         {
             int horizon = 3;
             int index = 0;
             string methodName = msg.ElementAt(0).MethodName;
-            for (int i = 0; i < msg.Count(); i++)
+            for (int i = 0; i < 3; i++)
             {
                 index = ForecastedMLValues.Count() - horizon + i;
                 ForecastedMLValues[index] = Math.Round(msg.ElementAt(i).OrderCount);
             }
-            ForecastedMLValues.Add(70);
+            for (int i = 3; i < msg.Count(); i++)
+            {
+                ForecastedMLValues.Add(Math.Round(msg.ElementAt(i).OrderCount));
+            }
             Application.Current.Dispatcher.Invoke((Action)delegate {
                 OrdersCount.Add(new LineSeries { Title = methodName, Values = ForecastedMLValues, DataLabels = true });
             });
