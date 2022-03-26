@@ -47,6 +47,7 @@ namespace WooCommerce_Tool.Views
             _viewModel.Status = "Forecasting started";
             Main.PredOrderForecasting();
             _viewModel.Status = "Finished";
+            Main.FindBestForecastingMethod();
         }
     }
 }

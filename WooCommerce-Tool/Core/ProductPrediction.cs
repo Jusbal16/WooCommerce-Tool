@@ -116,10 +116,6 @@ namespace WooCommerce_Tool
             var MAE = metrics.Average(error => Math.Abs(error)); // Mean Absolute Error
             var RMSE = Math.Sqrt(metrics.Average(error => Math.Pow(error, 2))); // Root Mean Squared Error
             //
-/*            Console.WriteLine("Evaluation Metrics");
-            Console.WriteLine("---------------------");
-            Console.WriteLine($"Mean Absolute Error: {MAE:F3}");
-            Console.WriteLine($"Root Mean Squared Error: {RMSE:F3}\n");*/
         }
         void Forecast(IDataView testData, int horizon, TimeSeriesPredictionEngine<ProductMontlyData, ProductMontlyForecasting> forecaster, MLContext mlContext)
         {
@@ -140,12 +136,6 @@ namespace WooCommerce_Tool
                         $"Forecast: {estimate}\n" +
                         $"Upper Estimate: {upperEstimate}\n";
                     });
-/*            Console.WriteLine("Rental Forecast");
-            Console.WriteLine("---------------------");
-            foreach (var prediction in forecastOutput)
-            {
-                Console.WriteLine(prediction);
-            }*/
             Messenger.Default.Send<ProductMontlyForecasting>(forecast);
         }
         public IEnumerable<ProductMontlyData> RewriteDataForecasting(List<Order> data)

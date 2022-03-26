@@ -83,5 +83,9 @@ namespace WooCommerce_Tool
         {
             ProductPrediction.GetProducts();
         }
+        public void FindBestForecastingMethod()
+        {
+            OrderPrediction.FindBestModelForForecasting();
+        }
     }
 }

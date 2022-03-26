@@ -9,6 +9,7 @@ using LiveCharts.Wpf;
 using LiveCharts.Defaults;
 using GalaSoft.MvvmLight.Messaging;
 using System.Windows;
+using WooCommerce_Tool.PredictionClasses;
 
 namespace WooCommerce_Tool.ViewsModels
 {
@@ -21,6 +22,7 @@ namespace WooCommerce_Tool.ViewsModels
         private SeriesCollection _TimeProbability;
         private string status;
         ChartValues<double> ForecastedValues;
+        ChartValues<double> ForecastedMLValues;
         public OrderPredictionViewModel()
         {
             OrdersCount = new SeriesCollection();
@@ -30,6 +32,8 @@ namespace WooCommerce_Tool.ViewsModels
             Messenger.Default.Register<List<OrdersTimeProbability>>(this, (action) => ReceiveTime(action));
             Messenger.Default.Register<IEnumerable<OrdersMontlyData>>(this, (action) => ReceiveOrders(action));
             Messenger.Default.Register<OrdersMontlyForecasting>(this, (action) => ReceiveForecasting(action));
+
+            Messenger.Default.Register<List<MLPredictionData>>(this, (action) => ReceiveMLForecasting(action));
         }
         private void ReceiveMonthTime(List<OrdersMonthTimeProbability> msg)
         {
@@ -60,12 +64,14 @@ namespace WooCommerce_Tool.ViewsModels
         {
             ChartValues<double> Values = new ChartValues<double>();
             ForecastedValues = new ChartValues<double>();
+            ForecastedMLValues = new ChartValues<double>();
             BarLabels = new string[msg.Count()];
             int i = 0;
             foreach (var m in msg)
             {
                 Values.Add(m.OrdersCount);
                 ForecastedValues.Add(double.NaN);
+                ForecastedMLValues.Add(double.NaN);
                 BarLabels[i] = m.Year + "/" + m.Month;
                 i++;
                 //BarLabels.Append(m.Year+"/"+m.Month);
@@ -87,6 +93,22 @@ namespace WooCommerce_Tool.ViewsModels
             }
             Application.Current.Dispatcher.Invoke((Action)delegate {
                 OrdersCount.Add(new LineSeries { Title = "Forecasted Values", Values = ForecastedValues, DataLabels = true });
+            });
+
+        }
+        private void ReceiveMLForecasting(List<MLPredictionData> msg)
+        {
+            int horizon = 3;
+            int index = 0;
+            string methodName = msg.ElementAt(0).MethodName;
+            for (int i = 0; i < msg.Count(); i++)
+            {
+                index = ForecastedMLValues.Count() - horizon + i;
+                ForecastedMLValues[index] = Math.Round(msg.ElementAt(i).OrderCount);
+            }
+            ForecastedMLValues.Add(70);
+            Application.Current.Dispatcher.Invoke((Action)delegate {
+                OrdersCount.Add(new LineSeries { Title = methodName, Values = ForecastedMLValues, DataLabels = true });
             });
 
         }
