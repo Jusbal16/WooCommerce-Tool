@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WooCommerce_Tool.PredictionClasses;
+using WooCommerce_Tool.Settings;
 using WooCommerceNET.WooCommerce.v3;
 
 namespace WooCommerce_Tool
@@ -19,36 +20,40 @@ namespace WooCommerce_Tool
         private Orders Orders { get; set; }
         private List<Order> OrdersData { get; set; }
         private List<Product> ProductsData { get; set; }
+        private MLContext mlContext { get; set; }
+        IDataView OrdersDataFull { get; set; }
+        IDataView OrdersDataTrain { get; set; }
+        IDataView OrdersDatatest { get; set; }
+        IEnumerable<ProductMontlyData> SortedOrdersData { get; set; }
+        private PredictionConstants Constants { get; set; }
         public ProductPrediction(Products products, Customers customers, Orders orders)
         {
             Products = products;
             Customers = customers;
             Orders = orders;
+            Constants = new PredictionConstants();
+            mlContext = new MLContext();
         }
         public void GetData()
         {
-            IDictionary<int, int> productId = new Dictionary<int, int>();
             var task = Orders.GetAllOrders();
             task.Wait();
             OrdersData = task.Result;
             var task1 = Products.GetAllProducts();
             task1.Wait();
             ProductsData = task1.Result;
-            int key = 0;
-            foreach (var order in OrdersData)
-            {
-                key = (int)order.line_items.ElementAt(0).product_id;
-                if (productId.ContainsKey(key))
-                {
-                    productId[key]++;
-                }
-                else
-                {
-                    productId.Add(key, 1);
-                }
-            }
-            var SortedPopularProducts = from entry in productId orderby entry.Value descending select entry;
-            
+            SortedOrdersData = RewriteDataForecasting(OrdersData).SkipLast(1);
+            Messenger.Default.Send<IEnumerable<ProductMontlyData>>(SortedOrdersData);
+            int count = SortedOrdersData.Count();
+            int trainDataSize = (count * 80) / 100;
+            //
+            IEnumerable<ProductMontlyData> traindata = SortedOrdersData.Take(trainDataSize);
+            IEnumerable<ProductMontlyData> testdata = SortedOrdersData.Skip(trainDataSize);
+            OrdersDataFull = mlContext.Data.LoadFromEnumerable(SortedOrdersData);
+            OrdersDataTrain = mlContext.Data.LoadFromEnumerable(traindata);
+            OrdersDatatest = mlContext.Data.LoadFromEnumerable(testdata);
+
+
         }
         public void GetProducts()
         {
@@ -68,24 +73,13 @@ namespace WooCommerce_Tool
         }
         public void ProductsForecasting()
         {
-            MLContext mlContext = new MLContext();
-            IEnumerable<ProductMontlyData> ordersData = RewriteDataForecasting(OrdersData);
-            Messenger.Default.Send<IEnumerable<ProductMontlyData>>(ordersData);
-            int count = ordersData.Count();
-            int trainDataSize = (count * 80) / 100;
-            //
-            IEnumerable<ProductMontlyData> traindata = ordersData.Take(trainDataSize);
-            IEnumerable<ProductMontlyData> testdata = ordersData.Skip(trainDataSize);
-            IDataView OrdersDataTrain = mlContext.Data.LoadFromEnumerable(traindata);
-            IDataView OrdersDatatest = mlContext.Data.LoadFromEnumerable(testdata);
-
             var forecastingPipeline = mlContext.Forecasting.ForecastBySsa(
                 outputColumnName: "ForecastedMoney",
                 inputColumnName: "MoneySpend",
-                windowSize: 3,
+                windowSize: 4,
                 seriesLength: 12,
                 trainSize: 12,
-                horizon: 3,
+                horizon: 6,
                 confidenceLevel: 0.95f,
                 confidenceLowerBoundColumn: "LowerBoundOrders",
                 confidenceUpperBoundColumn: "UpperBoundOrders");
@@ -120,23 +114,125 @@ namespace WooCommerce_Tool
         void Forecast(IDataView testData, int horizon, TimeSeriesPredictionEngine<ProductMontlyData, ProductMontlyForecasting> forecaster, MLContext mlContext)
         {
             ProductMontlyForecasting forecast = forecaster.Predict();
-            IEnumerable<string> forecastOutput =
-                mlContext.Data.CreateEnumerable<ProductMontlyData>(testData, reuseRowObject: false)
-                    .Take(horizon)
-                    .Select((ProductMontlyData rental, int index) =>
-                    {
-                        string rentalDate = rental.Year.ToString() + "/" + rental.Month.ToString();
-                        float actualRentals = rental.MoneySpend;
-                        float lowerEstimate = Math.Max(0, forecast.LowerBoundOrders[index]);
-                        float estimate = forecast.ForecastedMoney[index];
-                        float upperEstimate = forecast.UpperBoundOrders[index];
-                        return $"Date: {rentalDate}\n" +
-                        $"Actual Rentals: {actualRentals}\n" +
-                        $"Lower Estimate: {lowerEstimate}\n" +
-                        $"Forecast: {estimate}\n" +
-                        $"Upper Estimate: {upperEstimate}\n";
-                    });
             Messenger.Default.Send<ProductMontlyForecasting>(forecast);
+        }
+        public void FindBestModelForForecasting()
+        {
+            var pipe = mlContext.Transforms.CopyColumns(outputColumnName: "Label", inputColumnName: "MoneySpend")
+                            .Append(mlContext.Transforms.Concatenate("Features", "Year", "Month"));
+            string BestModel = null;
+            double BestModelError = 1000;
+            foreach (var method in Constants.ForecastingMethods)
+            {
+                IDataView Prediction = null;
+                switch (method)
+                {
+                    case "FastTree":
+                        var pipelineFastTree = pipe.Append(mlContext.Regression.Trainers.FastTree());
+                        var modelFastTree = pipelineFastTree.Fit(OrdersDataTrain);
+                        Prediction = modelFastTree.Transform(OrdersDatatest);
+                        break;
+                    case "FastForest":
+                        var pipelineFastForest = pipe.Append(mlContext.Regression.Trainers.FastForest());
+                        var modelFastForest = pipelineFastForest.Fit(OrdersDataTrain);
+                        Prediction = modelFastForest.Transform(OrdersDatatest);
+                        break;
+                    case "FastTreeTweedie":
+                        var pipelineFastTreeTweedie = pipe.Append(mlContext.Regression.Trainers.FastTreeTweedie());
+                        var modelFastTreeTweedie = pipelineFastTreeTweedie.Fit(OrdersDataTrain);
+                        Prediction = modelFastTreeTweedie.Transform(OrdersDatatest);
+                        break;
+                    case "LbfgsPoissonRegression":
+                        var pipelineLbfgsPoissonRegression = pipe.Append(mlContext.Regression.Trainers.LbfgsPoissonRegression());
+                        var modelLbfgsPoissonRegression = pipelineLbfgsPoissonRegression.Fit(OrdersDataTrain);
+                        Prediction = modelLbfgsPoissonRegression.Transform(OrdersDatatest);
+                        break;
+                    case "Gam":
+                        var pipelineGam = pipe.Append(mlContext.Regression.Trainers.Gam());
+                        var modelGam = pipelineGam.Fit(OrdersDataTrain);
+                        Prediction = modelGam.Transform(OrdersDatatest);
+                        break;
+                }
+                CalculateError(ref BestModel, ref BestModelError, Prediction, method);
+            }
+            ForecastML(BestModel);
+        }
+        public void ForecastML(string method)
+        {
+            var pipe = mlContext.Transforms.CopyColumns(outputColumnName: "Label", inputColumnName: "MoneySpend")
+                .Append(mlContext.Transforms.Concatenate("Features", "Year", "Month"));
+            PredictionEngine<ProductMontlyData, MLPredictionDataProducts> PredictionFunction = null;
+            switch (method)
+            {
+                case "FastTree":
+                    var pipelineFastTree = pipe.Append(mlContext.Regression.Trainers.FastTree());
+                    var modelFastTree = pipelineFastTree.Fit(OrdersDataFull);
+                    PredictionFunction = mlContext.Model.CreatePredictionEngine<ProductMontlyData, MLPredictionDataProducts>(modelFastTree);
+                    break;
+                case "FastForest":
+                    var pipelineFastForest = pipe.Append(mlContext.Regression.Trainers.FastForest());
+                    var modelFastForest = pipelineFastForest.Fit(OrdersDataFull);
+                    PredictionFunction = mlContext.Model.CreatePredictionEngine<ProductMontlyData, MLPredictionDataProducts>(modelFastForest);
+                    break;
+                case "FastTreeTweedie":
+                    var pipelineFastTreeTweedie = pipe.Append(mlContext.Regression.Trainers.FastTreeTweedie());
+                    var modelFastTreeTweedie = pipelineFastTreeTweedie.Fit(OrdersDataFull);
+                    PredictionFunction = mlContext.Model.CreatePredictionEngine<ProductMontlyData, MLPredictionDataProducts>(modelFastTreeTweedie);
+                    break;
+                case "LbfgsPoissonRegression":
+                    var pipelineLbfgsPoissonRegression = pipe.Append(mlContext.Regression.Trainers.LbfgsPoissonRegression());
+                    var modelLbfgsPoissonRegression = pipelineLbfgsPoissonRegression.Fit(OrdersDataFull);
+                    PredictionFunction = mlContext.Model.CreatePredictionEngine<ProductMontlyData, MLPredictionDataProducts>(modelLbfgsPoissonRegression);
+                    break;
+                case "Gam":
+                    var pipelineGam = pipe.Append(mlContext.Regression.Trainers.Gam());
+                    var modelGam = pipelineGam.Fit(OrdersDataFull);
+                    PredictionFunction = mlContext.Model.CreatePredictionEngine<ProductMontlyData, MLPredictionDataProducts>(modelGam);
+                    break;
+            }
+
+            List<MLPredictionDataProducts> Predictions = new List<MLPredictionDataProducts>();
+            var testData = new ProductMontlyData();
+            for (int i = 0; i < 6; i++)
+            {
+                testData.Year = float.Parse(returnYearFromLastData(i));
+                testData.Month = float.Parse(returnMonthFromLastData(i));
+                var prediction = PredictionFunction.Predict(testData);
+                prediction.MethodName = method;
+                Predictions.Add(prediction);
+            }
+            Messenger.Default.Send<List<MLPredictionDataProducts>>(Predictions);
+        }
+        public void CalculateError(ref string model, ref double error, IDataView prediction, string modelName)
+        {
+            var metrics = mlContext.Regression.Evaluate(prediction, "Label", "Score");
+            double ForecastingError = Math.Abs(metrics.RSquared) + Math.Abs(metrics.RootMeanSquaredError);
+            if (ForecastingError < error && metrics.RSquared != 0 && metrics.RootMeanSquaredError != 0)
+            {
+                model = modelName;
+                error = ForecastingError;
+            }
+
+        }
+        public string returnYearFromLastData(int i)
+        {
+            DateTime dateTime = GetDateTime();
+            dateTime = dateTime.AddMonths(i + 1);
+            return dateTime.ToString("yyyy");
+        }
+        public string returnMonthFromLastData(int i)
+        {
+            DateTime dateTime = GetDateTime();
+            dateTime = dateTime.AddMonths(i + 1);
+            return dateTime.ToString("MM");
+        }
+        DateTime GetDateTime()
+        {
+            int count = SortedOrdersData.Count();
+            string year = SortedOrdersData.ElementAt(count - 3).Year.ToString();
+            string Month = SortedOrdersData.ElementAt(count - 3).Month.ToString();
+            DateTime dateTime = DateTime.Parse(year + "/" + Month);
+            return dateTime;
         }
         public IEnumerable<ProductMontlyData> RewriteDataForecasting(List<Order> data)
         {

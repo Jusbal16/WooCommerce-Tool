@@ -74,10 +74,10 @@ namespace WooCommerce_Tool
             var forecastingPipeline = mlContext.Forecasting.ForecastBySsa(
                 outputColumnName: "ForecastedOrders",
                 inputColumnName: "OrdersCount",
-                windowSize: 3,
+                windowSize: 4,
                 seriesLength: 12,
                 trainSize: 12,
-                horizon: 3,
+                horizon: 6,
                 confidenceLevel: 0.95f,
                 confidenceLowerBoundColumn: "LowerBoundOrders",
                 confidenceUpperBoundColumn: "UpperBoundOrders");
@@ -115,28 +115,7 @@ namespace WooCommerce_Tool
         void Forecast(IDataView testData, int horizon, TimeSeriesPredictionEngine<OrdersMontlyData, OrdersMontlyForecasting> forecaster, MLContext mlContext)
         {
             OrdersMontlyForecasting forecast = forecaster.Predict();
-            IEnumerable<string> forecastOutput =
-                mlContext.Data.CreateEnumerable<OrdersMontlyData>(testData, reuseRowObject: false)
-                    .Take(horizon)
-                    .Select((OrdersMontlyData rental, int index) =>
-                    {
-                        string rentalDate = rental.Year.ToString() + "/" + rental.Month.ToString();
-                        float actualRentals = rental.OrdersCount;
-                        float lowerEstimate = Math.Max(0, forecast.LowerBoundOrders[index]);
-                        float estimate = forecast.ForecastedOrders[index];
-                        float upperEstimate = forecast.UpperBoundOrders[index];
-                        return $"Date: {rentalDate}\n" +
-                        $"Actual Rentals: {actualRentals}\n" +
-                        $"Lower Estimate: {lowerEstimate}\n" +
-                        $"Forecast: {estimate}\n" +
-                        $"Upper Estimate: {upperEstimate}\n";
-                    });
-            /*Console.WriteLine("Rental Forecast");
-            Console.WriteLine("---------------------");
-            foreach (var prediction in forecastOutput)
-            {
-                Console.WriteLine(prediction);
-            }*/
+
             Messenger.Default.Send<OrdersMontlyForecasting>(forecast);
         }
         public void FindBestModelForForecasting()
@@ -184,39 +163,39 @@ namespace WooCommerce_Tool
         {
             var pipe = mlContext.Transforms.CopyColumns(outputColumnName: "Label", inputColumnName: "OrdersCount")
                 .Append(mlContext.Transforms.Concatenate("Features", "Year", "Month"));
-            PredictionEngine<OrdersMontlyData, MLPredictionData> PredictionFunction = null;
+            PredictionEngine<OrdersMontlyData, MLPredictionDataOrders> PredictionFunction = null;
             switch (method)
             {
                 case "FastTree":
                     var pipelineFastTree = pipe.Append(mlContext.Regression.Trainers.FastTree());
                     var modelFastTree = pipelineFastTree.Fit(OrdersDataFull);
-                    PredictionFunction = mlContext.Model.CreatePredictionEngine<OrdersMontlyData, MLPredictionData>(modelFastTree);
+                    PredictionFunction = mlContext.Model.CreatePredictionEngine<OrdersMontlyData, MLPredictionDataOrders>(modelFastTree);
                     break;
                 case "FastForest":
                     var pipelineFastForest = pipe.Append(mlContext.Regression.Trainers.FastForest());
                     var modelFastForest = pipelineFastForest.Fit(OrdersDataFull);
-                    PredictionFunction = mlContext.Model.CreatePredictionEngine<OrdersMontlyData, MLPredictionData>(modelFastForest);
+                    PredictionFunction = mlContext.Model.CreatePredictionEngine<OrdersMontlyData, MLPredictionDataOrders>(modelFastForest);
                     break;
                 case "FastTreeTweedie":
                     var pipelineFastTreeTweedie = pipe.Append(mlContext.Regression.Trainers.FastTreeTweedie());
                     var modelFastTreeTweedie = pipelineFastTreeTweedie.Fit(OrdersDataFull);
-                    PredictionFunction = mlContext.Model.CreatePredictionEngine<OrdersMontlyData, MLPredictionData>(modelFastTreeTweedie);
+                    PredictionFunction = mlContext.Model.CreatePredictionEngine<OrdersMontlyData, MLPredictionDataOrders>(modelFastTreeTweedie);
                     break;
                 case "LbfgsPoissonRegression":
                     var pipelineLbfgsPoissonRegression = pipe.Append(mlContext.Regression.Trainers.LbfgsPoissonRegression());
                     var modelLbfgsPoissonRegression = pipelineLbfgsPoissonRegression.Fit(OrdersDataFull);
-                    PredictionFunction = mlContext.Model.CreatePredictionEngine<OrdersMontlyData, MLPredictionData>(modelLbfgsPoissonRegression);
+                    PredictionFunction = mlContext.Model.CreatePredictionEngine<OrdersMontlyData, MLPredictionDataOrders>(modelLbfgsPoissonRegression);
                     break;
                 case "Gam":
                     var pipelineGam = pipe.Append(mlContext.Regression.Trainers.Gam());
                     var modelGam = pipelineGam.Fit(OrdersDataFull);
-                    PredictionFunction = mlContext.Model.CreatePredictionEngine<OrdersMontlyData, MLPredictionData>(modelGam);
+                    PredictionFunction = mlContext.Model.CreatePredictionEngine<OrdersMontlyData, MLPredictionDataOrders>(modelGam);
                     break;
             }
 
-            List< MLPredictionData > Predictions = new List< MLPredictionData >();
+            List< MLPredictionDataOrders > Predictions = new List< MLPredictionDataOrders >();
             var testData = new OrdersMontlyData();
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 6; i++)
             {
                 testData.Year = float.Parse(returnYearFromLastData(i));
                 testData.Month = float.Parse(returnMonthFromLastData(i));
@@ -224,7 +203,7 @@ namespace WooCommerce_Tool
                 prediction.MethodName = method;
                 Predictions.Add(prediction);
             }
-            Messenger.Default.Send<List<MLPredictionData>>(Predictions);
+            Messenger.Default.Send<List<MLPredictionDataOrders>>(Predictions);
         }
         public void CalculateError(ref string model, ref double error, IDataView prediction, string modelName)
         {
@@ -240,13 +219,13 @@ namespace WooCommerce_Tool
         public string returnYearFromLastData(int i)
         {
             DateTime dateTime = GetDateTime();
-            dateTime.AddMonths(i+1);
+            dateTime = dateTime.AddMonths(i+1);
             return dateTime.ToString("yyyy");
         }
         public string returnMonthFromLastData(int i)
         {
             DateTime dateTime = GetDateTime();
-            dateTime.AddMonths(i + 1);
+            dateTime = dateTime.AddMonths(i + 1);
             return dateTime.ToString("MM");
         }
         DateTime GetDateTime()

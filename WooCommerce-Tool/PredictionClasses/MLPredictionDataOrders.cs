@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace WooCommerce_Tool.PredictionClasses
 {
-    public class MLPredictionData
+    public class MLPredictionDataOrders
     {
         public string MethodName;
         [ColumnName("Score")]
