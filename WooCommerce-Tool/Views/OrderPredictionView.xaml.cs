@@ -31,15 +31,27 @@ namespace WooCommerce_Tool.Views
             _viewModel = new OrderPredictionViewModel();
             DataContext = _viewModel;
             InitializeComponent();
+            comboBoxStartDate.SelectedIndex = 0;
+            comboBoxEndDate.SelectedIndex = 0;
         }
         private void Button_Click_Prediction(object sender, RoutedEventArgs e)
         {
-            Task.Run(() => Predictions());
+            if (CheckFill())
+            {
+                Main.OrderPredSettings.StartDate = _viewModel.StartDate;
+                Main.OrderPredSettings.EndDate = _viewModel.EndDate;
+                Task.Run(() => Predictions(Main.OrderPredSettings.StartDate, Main.OrderPredSettings.EndDate));
+            }
+            else
+            {
+                ShowMessage("Not all settings are selected", "Error");
+            }
+            
         }
-        public void Predictions()
+        public void Predictions(string Startdate, string EndDate)
         {
             _viewModel.Status = "Downloading orders";
-            Main.PredGetData();
+            Main.PredGetData(Startdate, EndDate);
             _viewModel.Status = "Calculating month time probability";
             Main.ProbOrdersMonthTime();
             _viewModel.Status = "Calculating time probability";
@@ -48,6 +60,24 @@ namespace WooCommerce_Tool.Views
             Main.PredOrderForecasting();
             _viewModel.Status = "Finished";
             Main.FindBestForecastingMethod();
+            Main.LinerRegresionWithNeuralNetwork();
+        }
+        public void ShowMessage(string text, string type)
+        {
+            MessageBoxResult result = MessageBox.Show(text,
+                                              type,
+                                              MessageBoxButton.OK,
+                                              MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes)
+            {
+                Application.Current.Shutdown();
+            }
+        }
+        public bool CheckFill()
+        {
+            if (comboBoxStartDate.SelectedIndex == 0 || comboBoxEndDate.SelectedIndex == 0 )
+                return false;
+            return true;
         }
     }
 }

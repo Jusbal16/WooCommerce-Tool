@@ -22,6 +22,7 @@ namespace WooCommerce_Tool
         public OrderGenerator OrderGenerator { get; set; }
         public OrderPrediction OrderPrediction { get; set; }
         public ProductPrediction ProductPrediction { get; set; }
+        public OrderPredictionSettings OrderPredSettings { get; set; }
 
         public Main()
         {
@@ -39,6 +40,7 @@ namespace WooCommerce_Tool
             DataLists = new OrderGenerationDataLists(Settings, Constants);
             OrderGenerator = new(ProductsService, CustomersService, OrderService, DataLists);
             // prediction
+            OrderPredSettings = new OrderPredictionSettings();
             OrderPrediction = new(ProductsService, CustomersService, OrderService);
             ProductPrediction = new(ProductsService, CustomersService, OrderService);
         }
@@ -51,9 +53,9 @@ namespace WooCommerce_Tool
         {
             OrderGenerator.GenerateOrders();
         }
-        public void PredGetData()
+        public void PredGetData(string Startdate, string EndDate)
         {
-            OrderPrediction.GetData();
+            OrderPrediction.GetData(Startdate, EndDate);
         }
         public void PredOrderForecasting()
         {
@@ -90,6 +92,10 @@ namespace WooCommerce_Tool
         public void FindBestForecastingMethodProduct()
         {
             ProductPrediction.FindBestModelForForecasting();
+        }
+        public void LinerRegresionWithNeuralNetwork()
+        {
+            OrderPrediction.LinerRegresionWithNeuralNetwork();
         }
     }
 }

@@ -29,7 +29,8 @@ namespace WooCommerce_Tool.Views
             _viewModel = new ProductPredictionViewModel();
             DataContext = _viewModel;
             InitializeComponent();
-     
+
+
         }
         private void Button_Click_Prediction(object sender, RoutedEventArgs e)
         {
