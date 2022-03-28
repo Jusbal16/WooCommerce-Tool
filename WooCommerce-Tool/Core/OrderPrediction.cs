@@ -12,6 +12,7 @@ using WooCommerceNET.WooCommerce.v3;
 using GalaSoft.MvvmLight.Messaging;
 using WooCommerce_Tool.Settings;
 using WooCommerce_Tool.PredictionClasses;
+using WooCommerce_Tool.Core;
 
 namespace WooCommerce_Tool
 {
@@ -35,12 +36,29 @@ namespace WooCommerce_Tool
             Constants = new PredictionConstants();
             mlContext = new MLContext();
         }
-        public void GetData()
+        public void GetData(string startDate, string endDate)
         {
             var task = Orders.GetAllOrders();
             task.Wait();
             OrdersData = task.Result;
             SortedOrdersData = RewriteDataForecasting(OrdersData).SkipLast(1);
+            //date
+            int startIndex = 0;
+            int EndIndex = 0;
+            int i = 0;
+            string date;
+            foreach (var order in SortedOrdersData)
+            {
+                date = ReturnDate(order);
+                if (date == startDate)
+                    startIndex = i;
+                if (date == endDate)
+                    EndIndex = i;
+                i++;
+            }
+            SortedOrdersData = SortedOrdersData.Skip(startIndex);
+            SortedOrdersData = SortedOrdersData.Take(EndIndex - startIndex+1);
+            //
             Messenger.Default.Send<IEnumerable<OrdersMontlyData>>(SortedOrdersData);
             int count = SortedOrdersData.Count();
             int trainDataSize = (count * 80) / 100;
@@ -68,15 +86,68 @@ namespace WooCommerce_Tool
                           .OrderBy(g => g.Time).ToList();
             Messenger.Default.Send<List<OrdersTimeProbability>>(orders);
         }
+        public void LinerRegresionWithNeuralNetwork()
+        {
+            double[][] data = DataToDoubleData(SortedOrdersData);
+            //
+            int numInput = 4; // number predictors
+            int numHidden = 12;
+            int numOutput = 1; // regression
+            //
+            NeuralNetwork nn = new NeuralNetwork(numInput, numHidden, numOutput);
+
+            int maxEpochs = 10000;
+            double learnRate = 0.01;
+            //
+            double[] weights = nn.Train(data, maxEpochs, learnRate);
+            // 3 month prediction
+            double[] predictor = new double[4];
+            predictor[0] = data[data.Length - 4][1];
+            predictor[1] = data[data.Length - 4][2];
+            predictor[2] = data[data.Length - 4][3];
+            predictor[3] = data[data.Length - 4][4];
+            NNOrderData nnData = new NNOrderData();
+            nnData.OrderCount = new List<double>();
+            for (int i = 0; i < 6; i++)
+            {
+                double[] forecast = nn.ComputeOutputs(predictor);
+                nnData.OrderCount.Add(forecast[0] * 10);
+                for (int j = 0; j < predictor.Length - 1; j++)
+                    predictor[j] = predictor[j + 1];
+                predictor[predictor.Length -1]= forecast[0];
+            }
+            Messenger.Default.Send<NNOrderData>(nnData);
+        }
+        public double[][] DataToDoubleData(IEnumerable<OrdersMontlyData> ordersData)
+        {
+            int lenght = ordersData.Count();
+            double[][] data = new double[lenght - 4][];
+            for (int i = 0; i < lenght - 4; i++)
+            {
+                data[i] = new double[5];
+                data[i][0] = ordersData.ElementAt(i).OrdersCount / 10.0;
+                data[i][1] = ordersData.ElementAt(i + 1).OrdersCount / 10.0;
+                data[i][2] = ordersData.ElementAt(i + 2).OrdersCount / 10.0;
+                data[i][3] = ordersData.ElementAt(i + 3).OrdersCount / 10.0;
+                data[i][4] = ordersData.ElementAt(i + 4).OrdersCount / 10.0;
+            }
+            return data;
+        }
         public void OrdersForecasting()
-        {   
+        {
+            int size = SortedOrdersData.Count();
+            int WindowSize = 0;
+            if (size >= 12)
+                WindowSize = 4;
+            else
+                return;
 
             var forecastingPipeline = mlContext.Forecasting.ForecastBySsa(
                 outputColumnName: "ForecastedOrders",
                 inputColumnName: "OrdersCount",
-                windowSize: 4,
-                seriesLength: 12,
-                trainSize: 12,
+                windowSize: WindowSize,
+                seriesLength: size,
+                trainSize: size,
                 horizon: 6,
                 confidenceLevel: 0.95f,
                 confidenceLowerBoundColumn: "LowerBoundOrders",
@@ -269,6 +340,10 @@ namespace WooCommerce_Tool
             if (day > 10 && day < 20)
                 return "Midlle of the month";
             return "End of the month";
+        }
+        public string ReturnDate(OrdersMontlyData data)
+        {
+            return data.Year.ToString() + "/" + data.Month.ToString();
         }
 
     }

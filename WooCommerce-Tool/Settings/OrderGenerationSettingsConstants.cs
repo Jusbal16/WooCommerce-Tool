@@ -16,7 +16,7 @@ namespace WooCommerce_Tool.Settings
         public  List<double> DateDivisionConstants => new() { 0.6, 0.8 };
         public  List<string> DateConstants => new() { "Beggining of the month", "Midlle of the month", "End of the month" };
         public  List<int> DateValueConstants => new() { 3, 15, 28 };
-        public int MonthSpan => 12; //max 100
+        public int MonthSpan => 24; //max 100
         public int MaxDateError => 2;
 
         public int ExtremumVariantCount => 100;
