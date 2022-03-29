@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WooCommerce_Tool.Core;
 using WooCommerce_Tool.PredictionClasses;
 using WooCommerce_Tool.Settings;
 using WooCommerceNET.WooCommerce.v3;
@@ -34,15 +35,32 @@ namespace WooCommerce_Tool
             Constants = new PredictionConstants();
             mlContext = new MLContext();
         }
-        public void GetData()
+        public void GetData(string startDate, string endDate)
         {
-            var task = Orders.GetAllOrders();
-            task.Wait();
-            OrdersData = task.Result;
+/*            var task = Orders.GetAllOrders();
+            task.Wait();*/
+            OrdersData = Orders.OrdersData;
             var task1 = Products.GetAllProducts();
             task1.Wait();
             ProductsData = task1.Result;
             SortedOrdersData = RewriteDataForecasting(OrdersData).SkipLast(1);
+            //date
+            int startIndex = 0;
+            int EndIndex = 0;
+            int i = 0;
+            string date;
+            foreach (var order in SortedOrdersData)
+            {
+                date = ReturnDate(order);
+                if (date == startDate)
+                    startIndex = i;
+                if (date == endDate)
+                    EndIndex = i;
+                i++;
+            }
+            SortedOrdersData = SortedOrdersData.Skip(startIndex);
+            SortedOrdersData = SortedOrdersData.Take(EndIndex - startIndex + 1);
+            //
             Messenger.Default.Send<IEnumerable<ProductMontlyData>>(SortedOrdersData);
             int count = SortedOrdersData.Count();
             int trainDataSize = (count * 80) / 100;
@@ -54,6 +72,53 @@ namespace WooCommerce_Tool
             OrdersDatatest = mlContext.Data.LoadFromEnumerable(testdata);
 
 
+        }
+        public void LinerRegresionWithNeuralNetwork()
+        {
+            double[][] data = DataToDoubleData(SortedOrdersData);
+            //
+            int numInput = 4; // number predictors
+            int numHidden = 12;
+            int numOutput = 1; // regression
+            //
+            NeuralNetwork nn = new NeuralNetwork(numInput, numHidden, numOutput);
+
+            int maxEpochs = 10000;
+            double learnRate = 0.01;
+            //
+            double[] weights = nn.Train(data, maxEpochs, learnRate);
+            // 3 month prediction
+            double[] predictor = new double[4];
+            predictor[0] = data[data.Length - 4][1];
+            predictor[1] = data[data.Length - 4][2];
+            predictor[2] = data[data.Length - 4][3];
+            predictor[3] = data[data.Length - 4][4];
+            NNProductData nnData = new NNProductData();
+            nnData.MoneySpend = new List<double>();
+            for (int i = 0; i < 6; i++)
+            {
+                double[] forecast = nn.ComputeOutputs(predictor);
+                nnData.MoneySpend.Add(forecast[0] * 1000);
+                for (int j = 0; j < predictor.Length - 1; j++)
+                    predictor[j] = predictor[j + 1];
+                predictor[predictor.Length - 1] = forecast[0];
+            }
+            Messenger.Default.Send<NNProductData>(nnData);
+        }
+        public double[][] DataToDoubleData(IEnumerable<ProductMontlyData> ordersData)
+        {
+            int lenght = ordersData.Count();
+            double[][] data = new double[lenght - 4][];
+            for (int i = 0; i < lenght - 4; i++)
+            {
+                data[i] = new double[5];
+                data[i][0] = ordersData.ElementAt(i).MoneySpend / 1000.0;
+                data[i][1] = ordersData.ElementAt(i + 1).MoneySpend / 1000.0;
+                data[i][2] = ordersData.ElementAt(i + 2).MoneySpend / 1000.0;
+                data[i][3] = ordersData.ElementAt(i + 3).MoneySpend / 1000.0;
+                data[i][4] = ordersData.ElementAt(i + 4).MoneySpend / 1000.0;
+            }
+            return data;
         }
         public void GetProducts()
         {
@@ -73,12 +138,18 @@ namespace WooCommerce_Tool
         }
         public void ProductsForecasting()
         {
+            int size = SortedOrdersData.Count();
+            int WindowSize = 0;
+            if (size >= 12)
+                WindowSize = 4;
+            else
+                return;
             var forecastingPipeline = mlContext.Forecasting.ForecastBySsa(
                 outputColumnName: "ForecastedMoney",
                 inputColumnName: "MoneySpend",
-                windowSize: 4,
-                seriesLength: 12,
-                trainSize: 12,
+                windowSize: WindowSize,
+                seriesLength: size,
+                trainSize: size,
                 horizon: 6,
                 confidenceLevel: 0.95f,
                 confidenceLowerBoundColumn: "LowerBoundOrders",
@@ -259,6 +330,10 @@ namespace WooCommerce_Tool
             foreach (var c in categories)
                 cat += c.name.ToString() + "|";
             return cat;
+        }
+        public string ReturnDate(ProductMontlyData data)
+        {
+            return data.Year.ToString() + "/" + data.Month.ToString();
         }
     }
 }

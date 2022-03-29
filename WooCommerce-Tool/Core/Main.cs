@@ -23,7 +23,7 @@ namespace WooCommerce_Tool
         public OrderPrediction OrderPrediction { get; set; }
         public ProductPrediction ProductPrediction { get; set; }
         public OrderPredictionSettings OrderPredSettings { get; set; }
-
+        private List<Order> OrdersData { get; set; }
         public Main()
         {
             //init data
@@ -69,9 +69,9 @@ namespace WooCommerce_Tool
         {
             OrderPrediction.OrdersTimeProbability();
         }
-        public void PredGetDataProducts()
+        public void PredGetDataProducts(string Startdate, string EndDate)
         {
-            ProductPrediction.GetData();
+            ProductPrediction.GetData(Startdate, EndDate);
         }
         public void PredProductForecasting()
         {
@@ -96,6 +96,16 @@ namespace WooCommerce_Tool
         public void LinerRegresionWithNeuralNetwork()
         {
             OrderPrediction.LinerRegresionWithNeuralNetwork();
+        }
+        public void LinerRegresionWithNeuralNetworkProduct()
+        {
+            ProductPrediction.LinerRegresionWithNeuralNetwork();
+        }
+        public void GetAllOrders()
+        {
+            OrderService.OrdersFlag = false;
+            var task = OrderService.GetAllOrders();
+            task.Wait();
         }
     }
 }

@@ -63,6 +63,7 @@ namespace WooCommerce_Tool
                 order.line_items.Add(item);
                 order.customer_note = DataLists.DateList.ElementAt(i).Date + DataLists.TimeList.ElementAt(i).TimeOfDay + "-Generator";
                 orders.Add(order);
+                Orders.AddOrder(order);
                 orderCount++;
 
                 if ((i % ordersPerRequest) == ordersPerRequest-1)

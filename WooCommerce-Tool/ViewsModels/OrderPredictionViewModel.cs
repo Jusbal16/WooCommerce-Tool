@@ -108,7 +108,7 @@ namespace WooCommerce_Tool.ViewsModels
             AddMonths(BarLabels[BarLabels.Length - 4]);
             Application.Current.Dispatcher.Invoke((Action)delegate
             {
-                OrdersCount.Add(new LineSeries { Title = "Orders Count", Values = Values, DataLabels = true });
+                OrdersCount.Add(new LineSeries { Title = "Orders Count", Values = Values});
             });
 
         }
@@ -138,7 +138,7 @@ namespace WooCommerce_Tool.ViewsModels
             }
             Application.Current.Dispatcher.Invoke((Action)delegate
             {
-                OrdersCount.Add(new LineSeries { Title = "Forecasted Values", Values = ForecastedValues, DataLabels = true });
+                OrdersCount.Add(new LineSeries { Title = "Forecasted Values", Values = ForecastedValues });
             });
 
         }
@@ -157,7 +157,7 @@ namespace WooCommerce_Tool.ViewsModels
             }
             Application.Current.Dispatcher.Invoke((Action)delegate
             {
-                OrdersCount.Add(new LineSeries { Title = "Forecasted NN Values", Values = ForecastedNNValues, DataLabels = true });
+                OrdersCount.Add(new LineSeries { Title = "Forecasted NN Values", Values = ForecastedNNValues});
             });
         }
         private void ReceiveMLForecasting(List<MLPredictionDataOrders> msg)
@@ -176,7 +176,7 @@ namespace WooCommerce_Tool.ViewsModels
             }
             Application.Current.Dispatcher.Invoke((Action)delegate
             {
-                OrdersCount.Add(new LineSeries { Title = methodName, Values = ForecastedMLValues, DataLabels = true });
+                OrdersCount.Add(new LineSeries { Title = methodName, Values = ForecastedMLValues });
             });
 
         }

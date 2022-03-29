@@ -38,9 +38,9 @@ namespace WooCommerce_Tool
         }
         public void GetData(string startDate, string endDate)
         {
-            var task = Orders.GetAllOrders();
-            task.Wait();
-            OrdersData = task.Result;
+/*            var task = Orders.GetAllOrders();
+            task.Wait();*/
+            OrdersData = Orders.OrdersData;
             SortedOrdersData = RewriteDataForecasting(OrdersData).SkipLast(1);
             //date
             int startIndex = 0;

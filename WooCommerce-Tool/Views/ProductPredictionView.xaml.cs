@@ -29,17 +29,32 @@ namespace WooCommerce_Tool.Views
             _viewModel = new ProductPredictionViewModel();
             DataContext = _viewModel;
             InitializeComponent();
+            comboBoxStartDate.SelectedIndex = 0;
+            comboBoxEndDate.SelectedIndex = 0;
 
 
         }
         private void Button_Click_Prediction(object sender, RoutedEventArgs e)
         {
-            Task.Run(() => Predictions());
+            CleanUp();
+            if (Main.OrderService.OrdersFlag)
+                if (CheckFill())
+                {
+                    Main.OrderPredSettings.StartDate = _viewModel.StartDate;
+                    Main.OrderPredSettings.EndDate = _viewModel.EndDate;
+                    Task.Run(() => Predictions(Main.OrderPredSettings.StartDate, Main.OrderPredSettings.EndDate));
+                }
+                else
+                {
+                    ShowMessage("Not all settings are selected", "Error");
+                }
+            else
+                ShowMessage("Still downloading orders, please wait", "Error");
         }
-        public void Predictions()
+        public void Predictions(string Startdate, string EndDate)
         {
             _viewModel.Status = "Downloading orders";
-            Main.PredGetDataProducts();
+            Main.PredGetDataProducts(Startdate, EndDate);
             _viewModel.Status = "Getting Categories";
             Main.PredGetProductCategories();
             _viewModel.Status = "Getting Products";
@@ -48,6 +63,32 @@ namespace WooCommerce_Tool.Views
             Main.PredProductForecasting();
             _viewModel.Status = "Finished";
             Main.FindBestForecastingMethodProduct();
+            Main.LinerRegresionWithNeuralNetworkProduct();
+        }
+        public void ShowMessage(string text, string type)
+        {
+            MessageBoxResult result = MessageBox.Show(text,
+                                              type,
+                                              MessageBoxButton.OK,
+                                              MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes)
+            {
+                Application.Current.Shutdown();
+            }
+        }
+        public bool CheckFill()
+        {
+            if (comboBoxStartDate.SelectedIndex == 0 || comboBoxEndDate.SelectedIndex == 0)
+                return false;
+            return true;
+        }
+        public void CleanUp()
+        {
+            _viewModel.BarLabels = null;
+            _viewModel.Status = null;
+            _viewModel.OrdersCount.Clear();
+            _viewModel.MonthProbability.Clear();
+            _viewModel.TimeProbability.Clear();
         }
     }
 }
