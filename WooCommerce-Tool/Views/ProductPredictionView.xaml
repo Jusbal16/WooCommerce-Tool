@@ -147,7 +147,22 @@
                     </TabItem>
                 </TabControl>
             </Grid>
+            <!--Datetime-->
             <Grid Grid.Row="3" Background="#0F1A2C" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <ComboBox x:Name="comboBoxStartDate"  Width="120" Background="Transparent" Style="{DynamicResource ComboBoxStyle1}" ItemsSource ="{Binding StartDateComboData}" Text="{Binding StartDate, UpdateSourceTrigger=PropertyChanged}" />
+                </Grid>
+                <Grid Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <ComboBox x:Name="comboBoxEndDate"  Width="120"  Background="Transparent" Style="{DynamicResource ComboBoxStyle1}" ItemsSource ="{Binding EndDateComboData}" Text="{Binding EndDate, UpdateSourceTrigger=PropertyChanged}" />
+                </Grid>
+
             </Grid>
             <Grid Grid.Row="4"  >
                 <Grid.ColumnDefinitions>

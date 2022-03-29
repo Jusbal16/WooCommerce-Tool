@@ -36,17 +36,21 @@ namespace WooCommerce_Tool.Views
         }
         private void Button_Click_Prediction(object sender, RoutedEventArgs e)
         {
-            if (CheckFill())
-            {
-                Main.OrderPredSettings.StartDate = _viewModel.StartDate;
-                Main.OrderPredSettings.EndDate = _viewModel.EndDate;
-                Task.Run(() => Predictions(Main.OrderPredSettings.StartDate, Main.OrderPredSettings.EndDate));
-            }
+            CleanUp();
+            if (Main.OrderService.OrdersFlag)
+                if (CheckFill())
+                {
+                    Main.OrderPredSettings.StartDate = _viewModel.StartDate;
+                    Main.OrderPredSettings.EndDate = _viewModel.EndDate;
+                    Task.Run(() => Predictions(Main.OrderPredSettings.StartDate, Main.OrderPredSettings.EndDate));
+                }
+                else
+                {
+                    ShowMessage("Not all settings are selected", "Error");
+                }
             else
-            {
-                ShowMessage("Not all settings are selected", "Error");
-            }
-            
+                ShowMessage("Still downloading orders, please wait", "Error");
+
         }
         public void Predictions(string Startdate, string EndDate)
         {
@@ -79,5 +83,14 @@ namespace WooCommerce_Tool.Views
                 return false;
             return true;
         }
+        public void CleanUp()
+        {
+            _viewModel.BarLabels = null;
+            _viewModel.Status = null;
+            _viewModel.OrdersCount.Clear();
+            _viewModel.MonthProbability.Clear();
+            _viewModel.TimeProbability.Clear();
+        }
+
     }
 }

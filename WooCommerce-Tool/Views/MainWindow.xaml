@@ -57,13 +57,16 @@
                                 <RowDefinition Height="70" />
                                 <RowDefinition Height="70" />
                             </Grid.RowDefinitions>
-                            <Button Style="{StaticResource MenuButtons}" Name="Dashboard" Grid.Row="0" Click="btnShow_Click_1" Content="1"/>
+                            <Button Style="{StaticResource MenuButtons}" Name="Dashboard" Grid.Row="0" Click="btnShow_Click_1" Content="Home"/>
                             <Button Style="{StaticResource MenuButtons}" Name="Taskmanagement" Grid.Row="1" Click="btnShow_Click_2" Content="Product Prediction"/>
                             <Button Style="{StaticResource MenuButtons}" Name="OrderPrediction" Grid.Row="2" Click="btnShow_Click_3" Content="Orders Prediction" />
-                            <Button Style="{StaticResource MenuButtons}" Name="Profiles" Grid.Row="3" Click="btnShow_Click_4" Content="4" />
+                            <Button Style="{StaticResource MenuButtons}" Name="Profiles" Grid.Row="3" Click="btnShow_Click_4" Content="Store Predictions" />
                             <Button Style="{StaticResource MenuButtons}" Name="GenerateOrders" Grid.Row="4" Click="btnShow_Click_5" Content="Generate Orders" />
                             <Button Style="{StaticResource MenuButtons}" Name="Settings" Grid.Row="5" Click="btnShow_Click_6" Content="5" />
-
+                            <Grid Grid.Row="6" VerticalAlignment="Bottom" HorizontalAlignment="Center" >
+                                <TextBlock Name="Status" IsHitTestVisible="False" Text="{Binding Path=Status, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="White"/>
+                            </Grid>
+                            <!--{Binding Path=Status, UpdateSourceTrigger=PropertyChanged}-->
                         </Grid>
                     </StackPanel>
                 </ScrollViewer>

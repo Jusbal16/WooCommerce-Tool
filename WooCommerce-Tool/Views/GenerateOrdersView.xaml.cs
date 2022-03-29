@@ -46,31 +46,34 @@ namespace WooCommerce_Tool
         {
             int minOrders = Main.Constants.MinOrderCountRange;
             int maxOrders = Main.Constants.MaxOrderCountRange;
-            if (CheckFill())
-            {
-                if (Int32.Parse(OrderCount.Text) >= minOrders && Int32.Parse(OrderCount.Text) <= maxOrders)
+            if (Main.OrderService.OrdersFlag)
+                if (CheckFill())
                 {
-                    /*Main.Settings.Date = comboBoxDate.SelectedItem.ToString();
-                    Main.Settings.Time = comboBoxTime.SelectedItem.ToString();
-                    Main.Settings.MonthsCount = Int32.Parse((comboBoxMonthSpan.SelectedItem as ComboboxItem).Value.ToString());
-                    Main.Settings.OrderCount = Int32.Parse(OrderCount.Text);*/
-                    Main.Settings.Date = _viewModel.Date;
-                    Main.Settings.Time = _viewModel.Time;
-                    Main.Settings.MonthsCount = _viewModel.MonthsCount;
-                    Main.Settings.OrderCount = _viewModel.OrderCount;
-                    Main.DataLists.GenerateDataLists();
-                    bool deletion = (bool)DeleteOrders.IsChecked;
-                    Task.Run(() => StartGeneration(deletion));
+                    if (Int32.Parse(OrderCount.Text) >= minOrders && Int32.Parse(OrderCount.Text) <= maxOrders)
+                    {
+                        /*Main.Settings.Date = comboBoxDate.SelectedItem.ToString();
+                        Main.Settings.Time = comboBoxTime.SelectedItem.ToString();
+                        Main.Settings.MonthsCount = Int32.Parse((comboBoxMonthSpan.SelectedItem as ComboboxItem).Value.ToString());
+                        Main.Settings.OrderCount = Int32.Parse(OrderCount.Text);*/
+                        Main.Settings.Date = _viewModel.Date;
+                        Main.Settings.Time = _viewModel.Time;
+                        Main.Settings.MonthsCount = _viewModel.MonthsCount;
+                        Main.Settings.OrderCount = _viewModel.OrderCount;
+                        Main.DataLists.GenerateDataLists();
+                        bool deletion = (bool)DeleteOrders.IsChecked;
+                        Task.Run(() => StartGeneration(deletion));
+                    }
+                    else
+                    {
+                        ShowMessage("Order count must be higher than " + minOrders.ToString() + " and lover than " + maxOrders.ToString(), "Error");
+                    }
                 }
                 else
                 {
-                    ShowMessage("Order count must be higher than " + minOrders.ToString() + " and lover than " + maxOrders.ToString(), "Error");
+                    ShowMessage("Not all settings are selected", "Error");
                 }
-            }
-            else
-            {
-                ShowMessage("Not all settings are selected", "Error");
-            }
+           else
+                ShowMessage("Still downloading orders, please wait", "Error");
         }
         public void StartGeneration(bool deletion)
         {

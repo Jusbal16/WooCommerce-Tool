@@ -13,6 +13,8 @@ namespace WooCommerce_Tool
     public class Orders
     {
         private WCObject wc { get; set; }
+        public List<Order> OrdersData { get; set; }
+        public bool OrdersFlag { get; set; }
         public Orders(RestAPI rest)
         {
             wc = new WCObject(rest);
@@ -21,11 +23,8 @@ namespace WooCommerce_Tool
         //[Obsolete]
         public async Task DeleteAllOrders()
         {
-            var task = GetAllOrders(); ;
-            task.Wait();
-            List<Order> orders = task.Result;
             OrderBatch orderBatch = new OrderBatch();
-            List<int> ids = orders.Select(x => (int)x.id).ToList();
+            List<int> ids = OrdersData.Select(x => (int)x.id).ToList();
 
             for (int i = 0; i < ids.Count; i = i + 100)
             {
@@ -34,7 +33,7 @@ namespace WooCommerce_Tool
             }
 
         }
-        public async Task<List<Order>> GetAllOrders()
+        public async Task GetAllOrders()
         {
             List<Order> orders = new List<Order>();
 
@@ -57,11 +56,13 @@ namespace WooCommerce_Tool
                     endWhile = true;
                 }
             }
-            return orders;
+            OrdersData = orders;
+            OrdersFlag = true;
+            //return orders;
         }
-        public async Task AddOrder(Order order)
+        public void AddOrder(Order order)
         {
-            await wc.Order.Add(order);
+            OrdersData.Add(order); 
         }
 
         //[Obsolete]

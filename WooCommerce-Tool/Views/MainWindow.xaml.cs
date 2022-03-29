@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using WooCommerce_Tool.Views;
+using WooCommerce_Tool.ViewsModels;
 
 namespace WooCommerce_Tool
 {
@@ -25,13 +26,19 @@ namespace WooCommerce_Tool
         public GenerateOrdersView generateOrdersView { get; set; }
         public OrderPredictionView orderPredictionView { get; set; }
         public ProductPredictionView productPredictionView { get; set; }
+        public StorePredictions storePredictionView { get; set; }
+        private MainWindowViewModel _viewModel { get; set; }
         public MainWindow()
         {
+            _viewModel = new MainWindowViewModel();
+            DataContext = _viewModel;
             InitializeComponent();
             Main = new Main();
             generateOrdersView = new GenerateOrdersView(Main);
             orderPredictionView = new OrderPredictionView(Main);
             productPredictionView = new ProductPredictionView(Main);
+            storePredictionView = new StorePredictions(Main);
+            Task.Run(() => GetAllOrders());
             // reiktu viska uzkrauti
 
             //Dashboard obj = new Dashboard();
@@ -57,8 +64,7 @@ namespace WooCommerce_Tool
         }
         private void btnShow_Click_4(object sender, RoutedEventArgs e)
         {
-            //Profiles obj = new Profiles();
-            //SwitchScreen(obj);
+            SwitchScreen(storePredictionView);
         }
         private void btnShow_Click_5(object sender, RoutedEventArgs e)
         {
@@ -80,6 +86,12 @@ namespace WooCommerce_Tool
                 StackPanelMain.Children.Clear();
                 StackPanelMain.Children.Add(screen);
             }
+        }
+        public void GetAllOrders()
+        {
+            _viewModel.Status = "Started downloading orders";
+            Main.GetAllOrders();
+            _viewModel.Status = "Data is ready";
         }
 
     }

@@ -11,6 +11,7 @@ using GalaSoft.MvvmLight.Messaging;
 using System.Windows;
 using Order_Generation.PredictionTimeSeries;
 using WooCommerce_Tool.PredictionClasses;
+using WooCommerce_Tool.Settings;
 
 namespace WooCommerce_Tool.ViewsModels
 {
@@ -24,16 +25,38 @@ namespace WooCommerce_Tool.ViewsModels
         private string status;
         ChartValues<double> ForecastedValues;
         ChartValues<double> ForecastedMLValues;
+        ChartValues<double> ForecastedNNValues;
+        private List<string> _StartDateComboData;
+        private List<string> _EndDateComboData;
+        private ProductPredictionSettings Settings { get; set; }
         public ProductPredictionViewModel()
         {
             OrdersCount = new SeriesCollection();
             MonthProbability = new SeriesCollection();
             TimeProbability = new SeriesCollection();
+            Settings = new ProductPredictionSettings();
             Messenger.Default.Register<List<ProductPopularData>>(this, (action) => ReceivePopularProducts(action));
             Messenger.Default.Register<List<ProductCategoriesData>>(this, (action) => ReceiveCategories(action));
             Messenger.Default.Register<IEnumerable<ProductMontlyData>>(this, (action) => ReceiveOrders(action));
             Messenger.Default.Register<ProductMontlyForecasting>(this, (action) => ReceiveForecasting(action));
             Messenger.Default.Register<List<MLPredictionDataProducts>>(this, (action) => ReceiveMLForecasting(action));
+            Messenger.Default.Register<NNProductData>(this, (action) => ReceiveNNForecasting(action));
+            //filling combobox
+            StartDateComboData = new List<string>();
+            EndDateComboData = new List<string>();
+            StartDateComboData.Add("Select start date");
+            EndDateComboData.Add("Select end date");
+            DateTime datetime = DateTime.Today;
+            int monthCount = ((DateTime.Today.Year - datetime.AddYears(-5).Year) * 12) + DateTime.Today.Month - datetime.AddYears(-5).Month;
+            string date = null;
+            datetime = datetime.AddMonths(-1);
+            for (int i = 0; i < monthCount; i++)
+            {
+                date = ReturnValidDateForm(datetime);
+                StartDateComboData.Add(date);
+                EndDateComboData.Add(date);
+                datetime = datetime.AddMonths(-1);
+            }
         }
         private void ReceivePopularProducts(List<ProductPopularData> msg)
         {
@@ -71,6 +94,7 @@ namespace WooCommerce_Tool.ViewsModels
             ChartValues<double> Values = new ChartValues<double>();
             ForecastedValues = new ChartValues<double>();
             ForecastedMLValues = new ChartValues<double>();
+            ForecastedNNValues = new ChartValues<double>();
             BarLabels = new string[msg.Count()+3];
             int i = 0;
             foreach (var m in msg)
@@ -78,6 +102,7 @@ namespace WooCommerce_Tool.ViewsModels
                 Values.Add(Math.Round(m.MoneySpend));
                 ForecastedValues.Add(double.NaN);
                 ForecastedMLValues.Add(double.NaN);
+                ForecastedNNValues.Add(double.NaN);
                 BarLabels[i] = m.Year + "/" + m.Month;
                 i++;
                 //BarLabels.Append(m.Year+"/"+m.Month);
@@ -85,7 +110,7 @@ namespace WooCommerce_Tool.ViewsModels
             }
             AddMonths(BarLabels[BarLabels.Length - 4]);
             Application.Current.Dispatcher.Invoke((Action)delegate {
-                OrdersCount.Add(new LineSeries { Title = "Orders Count", Values = Values, DataLabels = true });
+                OrdersCount.Add(new LineSeries { Title = "Orders Count", Values = Values });
             });
 
         }
@@ -114,7 +139,7 @@ namespace WooCommerce_Tool.ViewsModels
                 ForecastedValues.Add(Math.Round(msg.ForecastedMoney[i]));
             }
             Application.Current.Dispatcher.Invoke((Action)delegate {
-                OrdersCount.Add(new LineSeries { Title = "Forecasted Values", Values = ForecastedValues, DataLabels = true });
+                OrdersCount.Add(new LineSeries { Title = "Forecasted Values", Values = ForecastedValues });
             });
 
         }
@@ -133,9 +158,27 @@ namespace WooCommerce_Tool.ViewsModels
                 ForecastedMLValues.Add(Math.Round(msg.ElementAt(i).MoneySpend));
             }
             Application.Current.Dispatcher.Invoke((Action)delegate {
-                OrdersCount.Add(new LineSeries { Title = methodName, Values = ForecastedMLValues, DataLabels = true });
+                OrdersCount.Add(new LineSeries { Title = methodName, Values = ForecastedMLValues });
             });
 
+        }
+        private void ReceiveNNForecasting(NNProductData msg)
+        {
+            int horizon = 3;
+            int index = 0;
+            for (int i = 0; i < horizon; i++)
+            {
+                index = ForecastedNNValues.Count() - horizon + i;
+                ForecastedNNValues[index] = Math.Round(msg.MoneySpend.ElementAt(i));
+            }
+            for (int i = 3; i < msg.MoneySpend.Count(); i++)
+            {
+                ForecastedNNValues.Add(Math.Round(msg.MoneySpend.ElementAt(i)));
+            }
+            Application.Current.Dispatcher.Invoke((Action)delegate
+            {
+                OrdersCount.Add(new LineSeries { Title = "Forecasted NN Values", Values = ForecastedNNValues });
+            });
         }
         public string[] BarLabels
         {
@@ -186,6 +229,44 @@ namespace WooCommerce_Tool.ViewsModels
                 status = value;
                 OnPropertyChanged("Status");
             }
+        }
+        public List<string> StartDateComboData
+        {
+            get { return _StartDateComboData; }
+            set { _StartDateComboData = value; }
+        }
+        public List<string> EndDateComboData
+        {
+            get { return _EndDateComboData; }
+            set { _EndDateComboData = value; }
+        }
+        public string EndDate
+        {
+            get { return Settings.EndDate; }
+            set
+            {
+                if (Settings.EndDate != value)
+                {
+                    Settings.EndDate = value;
+                    OnPropertyChanged("EndDate");
+                }
+            }
+        }
+        public string StartDate
+        {
+            get { return Settings.StartDate; }
+            set
+            {
+                if (Settings.StartDate != value)
+                {
+                    Settings.StartDate = value;
+                    OnPropertyChanged("StartDate");
+                }
+            }
+        }
+        private string ReturnValidDateForm(DateTime date)
+        {
+            return date.ToString("yyyy") + "/" + date.ToString("MM").Replace("0", string.Empty);
         }
 
 
