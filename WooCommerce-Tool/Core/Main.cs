@@ -53,9 +53,9 @@ namespace WooCommerce_Tool
         {
             OrderGenerator.GenerateOrders();
         }
-        public void PredGetData(string Startdate, string EndDate)
+        public void PredGetData(OrderPredictionSettings settings)
         {
-            OrderPrediction.GetData(Startdate, EndDate);
+            OrderPrediction.GetData(settings);
         }
         public void PredOrderForecasting()
         {
@@ -69,9 +69,9 @@ namespace WooCommerce_Tool
         {
             OrderPrediction.OrdersTimeProbability();
         }
-        public void PredGetDataProducts(string Startdate, string EndDate)
+        public void PredGetDataProducts(ProductPredictionSettings settings)
         {
-            ProductPrediction.GetData(Startdate, EndDate);
+            ProductPrediction.GetData(settings);
         }
         public void PredProductForecasting()
         {
@@ -107,5 +107,34 @@ namespace WooCommerce_Tool
             var task = OrderService.GetAllOrders();
             task.Wait();
         }
+        public void GetAllProducts()
+        {
+            ProductsService.ProductFlag = false;
+            var task = ProductsService.GetAllProducts();
+            task.Wait();
+        }
+        public void GetAllCustomers()
+        {
+            CustomersService.CustomersFlag = false;
+            var task = CustomersService.GetAllCustomers();
+            task.Wait();
+        }
+        public List<string> GetCategories()
+        {
+            List<string> list = (from d in ProductsService.ProductsData
+                       group d by new { Category = ReturnString(d.categories) } into p
+                       orderby p.Key.Category
+                       select p.Key.Category).ToList();
+
+            return list;
+        }
+        public string ReturnString(List<ProductCategoryLine> categories)
+        {
+            string cat = "";
+            foreach (var c in categories)
+                cat += c.name.ToString() + "|";
+            return cat;
+        }
+
     }
 }

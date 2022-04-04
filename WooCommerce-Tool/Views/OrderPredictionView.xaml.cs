@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using LiveCharts;
 using LiveCharts.Wpf;
+using WooCommerce_Tool.Settings;
 using WooCommerce_Tool.ViewsModels;
 
 namespace WooCommerce_Tool.Views
@@ -25,14 +26,18 @@ namespace WooCommerce_Tool.Views
     {
         private Main Main { get; set; }
         private OrderPredictionViewModel _viewModel;
+        private OrderPredictionSettings Settings;
         public OrderPredictionView(Main main)
         {
             this.Main = main;
             _viewModel = new OrderPredictionViewModel();
+            Settings = new OrderPredictionSettings();
             DataContext = _viewModel;
             InitializeComponent();
             comboBoxStartDate.SelectedIndex = 0;
             comboBoxEndDate.SelectedIndex = 0;
+            comboBoxMonth.SelectedIndex = 0;
+            comboBoxTime.SelectedIndex = 0;
         }
         private void Button_Click_Prediction(object sender, RoutedEventArgs e)
         {
@@ -40,22 +45,24 @@ namespace WooCommerce_Tool.Views
             if (Main.OrderService.OrdersFlag)
                 if (CheckFill())
                 {
-                    Main.OrderPredSettings.StartDate = _viewModel.StartDate;
-                    Main.OrderPredSettings.EndDate = _viewModel.EndDate;
-                    Task.Run(() => Predictions(Main.OrderPredSettings.StartDate, Main.OrderPredSettings.EndDate));
+                    Settings.StartDate = _viewModel.StartDate;
+                    Settings.EndDate = _viewModel.EndDate;
+                    Settings.Month = _viewModel.Month;
+                    Settings.Time = _viewModel.Time;
+                    Task.Run(() => Predictions(Settings));
                 }
                 else
                 {
                     ShowMessage("Not all settings are selected", "Error");
                 }
             else
-                ShowMessage("Still downloading orders, please wait", "Error");
+                ShowMessage("Still downloading data, please wait", "Error");
 
         }
-        public void Predictions(string Startdate, string EndDate)
+        public void Predictions(OrderPredictionSettings settings)
         {
             _viewModel.Status = "Downloading orders";
-            Main.PredGetData(Startdate, EndDate);
+            Main.PredGetData(settings);
             _viewModel.Status = "Calculating month time probability";
             Main.ProbOrdersMonthTime();
             _viewModel.Status = "Calculating time probability";
@@ -79,7 +86,7 @@ namespace WooCommerce_Tool.Views
         }
         public bool CheckFill()
         {
-            if (comboBoxStartDate.SelectedIndex == 0 || comboBoxEndDate.SelectedIndex == 0 )
+            if (comboBoxStartDate.SelectedIndex == 0 || comboBoxEndDate.SelectedIndex == 0 || comboBoxMonth.SelectedIndex == 0 || comboBoxTime.SelectedIndex == 0)
                 return false;
             return true;
         }

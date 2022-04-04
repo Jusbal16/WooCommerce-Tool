@@ -46,7 +46,7 @@ namespace WooCommerce_Tool
         {
             int minOrders = Main.Constants.MinOrderCountRange;
             int maxOrders = Main.Constants.MaxOrderCountRange;
-            if (Main.OrderService.OrdersFlag)
+            if (Main.OrderService.OrdersFlag && Main.ProductsService.ProductFlag && Main.CustomersService.CustomersFlag)
                 if (CheckFill())
                 {
                     if (Int32.Parse(OrderCount.Text) >= minOrders && Int32.Parse(OrderCount.Text) <= maxOrders)
@@ -73,7 +73,7 @@ namespace WooCommerce_Tool
                     ShowMessage("Not all settings are selected", "Error");
                 }
            else
-                ShowMessage("Still downloading orders, please wait", "Error");
+                ShowMessage("Still downloading data, please wait", "Error");
         }
         public void StartGeneration(bool deletion)
         {

@@ -11,11 +11,13 @@ namespace WooCommerce_Tool
     public class Products
     {
         private WCObject wc { get; set; }
+        public List<Product> ProductsData { get; set;}
+        public bool ProductFlag { get; set; }
         public Products(RestAPI rest)
         {
             wc = new WCObject(rest);
         }
-        public async Task<List<Product>> GetAllProducts()
+        public async Task GetAllProducts()
         {
             List<Product> products = new List<Product>();
 
@@ -38,7 +40,9 @@ namespace WooCommerce_Tool
                     endWhile = true;
                 }
             }
-            return products;
+            ProductsData = products;
+            ProductFlag = true;
+            //return products;
         }
     }
 }

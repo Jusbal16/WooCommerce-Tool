@@ -36,12 +36,8 @@ namespace WooCommerce_Tool
         public void GenerateOrders()
         {
             
-            var taskCustomers = Customers.GetAllCustomers();
-            taskCustomers.Wait();
-            List<Customer> customers = taskCustomers.Result;
-            var taskProducts = Products.GetAllProducts();
-            taskProducts.Wait();
-            List<Product> products = taskProducts.Result;
+            List<Customer> customers = Customers.CustomersData;
+            List<Product> products = Products.ProductsData;
             int orderCount = 0;
             int ordersPerRequest = DataLists.Constants.OrderGenerationPerRequest; ;
             List<Order> orders = new List<Order>();

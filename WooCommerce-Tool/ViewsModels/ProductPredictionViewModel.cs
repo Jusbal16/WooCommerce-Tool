@@ -28,6 +28,7 @@ namespace WooCommerce_Tool.ViewsModels
         ChartValues<double> ForecastedNNValues;
         private List<string> _StartDateComboData;
         private List<string> _EndDateComboData;
+        private List<string> _CategoryComboData;
         private ProductPredictionSettings Settings { get; set; }
         public ProductPredictionViewModel()
         {
@@ -44,8 +45,11 @@ namespace WooCommerce_Tool.ViewsModels
             //filling combobox
             StartDateComboData = new List<string>();
             EndDateComboData = new List<string>();
+            CategoryComboData = new List<string>();
             StartDateComboData.Add("Select start date");
             EndDateComboData.Add("Select end date");
+            CategoryComboData.Add("Select category");
+            CategoryComboData.Add("All");
             DateTime datetime = DateTime.Today;
             int monthCount = ((DateTime.Today.Year - datetime.AddYears(-5).Year) * 12) + DateTime.Today.Month - datetime.AddYears(-5).Month;
             string date = null;
@@ -239,6 +243,27 @@ namespace WooCommerce_Tool.ViewsModels
         {
             get { return _EndDateComboData; }
             set { _EndDateComboData = value; }
+        }
+        public List<string> CategoryComboData
+        {
+            get { return _CategoryComboData; }
+            set 
+            { 
+                _CategoryComboData = value;
+                OnPropertyChanged("CategoryComboData");
+            }
+        }
+        public string Category
+        {
+            get { return Settings.Category; }
+            set
+            {
+                if (Settings.Category != value)
+                {
+                    Settings.Category = value;
+                    OnPropertyChanged("Category");
+                }
+            }
         }
         public string EndDate
         {

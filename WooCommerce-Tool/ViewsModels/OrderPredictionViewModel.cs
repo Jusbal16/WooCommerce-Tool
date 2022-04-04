@@ -27,13 +27,17 @@ namespace WooCommerce_Tool.ViewsModels
         ChartValues<double> ForecastedNNValues;
         private List<string> _StartDateComboData;
         private List<string> _EndDateComboData;
+        private List<string> _MonthComboData;
+        private List<string> _TimeComboData;
         private OrderPredictionSettings Settings { get; set; }
+        private OrderGenerationSettingsConstants SettingsConstants { get; set; }
         public OrderPredictionViewModel()
         {
             OrdersCount = new SeriesCollection();
             MonthProbability = new SeriesCollection();
             TimeProbability = new SeriesCollection();
             Settings = new OrderPredictionSettings();
+            SettingsConstants = new OrderGenerationSettingsConstants();
             Messenger.Default.Register<List<OrdersMonthTimeProbability>>(this, (action) => ReceiveMonthTime(action));
             Messenger.Default.Register<List<OrdersTimeProbability>>(this, (action) => ReceiveTime(action));
             Messenger.Default.Register<IEnumerable<OrdersMontlyData>>(this, (action) => ReceiveOrders(action));
@@ -43,8 +47,14 @@ namespace WooCommerce_Tool.ViewsModels
             //filling combobox
             StartDateComboData = new List<string>();
             EndDateComboData = new List<string>();
+            TimeComboData = new List<string>();
+            MonthComboData = new List<string>();
             StartDateComboData.Add("Select start date");
             EndDateComboData.Add("Select end date");
+            TimeComboData.Add("Select Time");
+            TimeComboData.Add("All");
+            MonthComboData.Add("Select month time");
+            MonthComboData.Add("All");
             DateTime datetime = DateTime.Today;
             int monthCount = ((DateTime.Today.Year - datetime.AddYears(-5).Year) * 12) + DateTime.Today.Month - datetime.AddYears(-5).Month;
             string date = null;
@@ -56,6 +66,10 @@ namespace WooCommerce_Tool.ViewsModels
                 EndDateComboData.Add(date);
                 datetime = datetime.AddMonths(-1);
             }
+            foreach (var cons in SettingsConstants.DateConstants)
+                MonthComboData.Add(cons);
+            foreach (var cons in SettingsConstants.TimeConstants)
+                TimeComboData.Add(cons);
         }
         private string ReturnValidDateForm(DateTime date)
         {
@@ -239,6 +253,40 @@ namespace WooCommerce_Tool.ViewsModels
         {
             get { return _EndDateComboData; }
             set { _EndDateComboData = value; }
+        }
+        public List<string> MonthComboData
+        {
+            get { return _MonthComboData; }
+            set { _MonthComboData = value; }
+        }
+        public List<string> TimeComboData
+        {
+            get { return _TimeComboData; }
+            set { _TimeComboData = value; }
+        }
+        public string Month
+        {
+            get { return Settings.Month; }
+            set
+            {
+                if (Settings.Month != value)
+                {
+                    Settings.Month = value;
+                    OnPropertyChanged("Month");
+                }
+            }
+        }
+        public string Time
+        {
+            get { return Settings.Time; }
+            set
+            {
+                if (Settings.Time != value)
+                {
+                    Settings.Time = value;
+                    OnPropertyChanged("Time");
+                }
+            }
         }
         public string EndDate
         {
