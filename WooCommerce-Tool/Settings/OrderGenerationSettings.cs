@@ -11,16 +11,8 @@ namespace WooCommerce_Tool.Settings
         public string Date { get; set; } 
         public int MonthsCount { get; set; }
         public string Time { get; set; }
-        public int ProductCount { get; set; }
-        public double MinPrice { get; set; }
-        public double MaxPrice { get; set; }
-        public string Region { get; set; }
         public int OrderCount { get; set; }
-
-        public OrderGenerationSettings()
-        {
-
-        }
+        public bool Deletion { get; set; }
     }
 }
 //nustatymai

@@ -12,9 +12,5 @@ namespace WooCommerce_Tool.Settings
         public string EndDate { get; set; }
         public string Month { get; set; }
         public string Time { get; set; }
-        public OrderPredictionSettings()
-        {
-
-        }
     }
 }

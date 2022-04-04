@@ -16,7 +16,7 @@ using WooCommerce_Tool.Core;
 
 namespace WooCommerce_Tool
 {
-    public class OrderPrediction
+    public class OrderPrediction : Prediction
     {
         private Products Products { get; set; }
         private Customers Customers { get; set; }
@@ -93,10 +93,14 @@ namespace WooCommerce_Tool
         }
         public void LinerRegresionWithNeuralNetwork()
         {
-            double[][] data = DataToDoubleData(SortedOrdersData);
+            float max = SortedOrdersData.Max(x => x.OrdersCount);
+            float min = SortedOrdersData.Min(x => x.OrdersCount);
+            double[][] data = DataToDoubleData(SortedOrdersData, min, max);
+            if (data.Length < 8)
+                return;
             //
             int numInput = 4; // number predictors
-            int numHidden = SortedOrdersData.Count();
+            int numHidden = data.Length;
             int numOutput = 1; // regression
             //
             NeuralNetwork nn = new NeuralNetwork(numInput, numHidden, numOutput);
@@ -116,25 +120,25 @@ namespace WooCommerce_Tool
             for (int i = 0; i < 6; i++)
             {
                 double[] forecast = nn.ComputeOutputs(predictor);
-                nnData.OrderCount.Add(forecast[0] * 10);
+                nnData.OrderCount.Add(ReNormalizeData((float)forecast[0], min, max));
                 for (int j = 0; j < predictor.Length - 1; j++)
                     predictor[j] = predictor[j + 1];
                 predictor[predictor.Length -1]= forecast[0];
             }
             Messenger.Default.Send<NNOrderData>(nnData);
         }
-        public double[][] DataToDoubleData(IEnumerable<OrdersMontlyData> ordersData)
+        public double[][] DataToDoubleData(IEnumerable<OrdersMontlyData> ordersData, float min, float max)
         {
             int lenght = ordersData.Count();
             double[][] data = new double[lenght - 4][];
             for (int i = 0; i < lenght - 4; i++)
             {
                 data[i] = new double[5];
-                data[i][0] = ordersData.ElementAt(i).OrdersCount / 10.0;
-                data[i][1] = ordersData.ElementAt(i + 1).OrdersCount / 10.0;
-                data[i][2] = ordersData.ElementAt(i + 2).OrdersCount / 10.0;
-                data[i][3] = ordersData.ElementAt(i + 3).OrdersCount / 10.0;
-                data[i][4] = ordersData.ElementAt(i + 4).OrdersCount / 10.0;
+                data[i][0] = DataNormalization(ordersData.ElementAt(i).OrdersCount, min, max);
+                data[i][1] = DataNormalization(ordersData.ElementAt(i+1).OrdersCount, min, max);
+                data[i][2] = DataNormalization(ordersData.ElementAt(i+2).OrdersCount, min, max);
+                data[i][3] = DataNormalization(ordersData.ElementAt(i+3).OrdersCount, min, max);
+                data[i][4] = DataNormalization(ordersData.ElementAt(i+4).OrdersCount, min, max);
             }
             return data;
         }
@@ -165,28 +169,6 @@ namespace WooCommerce_Tool
             var forecastEngine = forecaster.CreateTimeSeriesEngine<OrdersMontlyData, OrdersMontlyForecasting>(mlContext);
             //
             Forecast(OrdersDatatest, 3, forecastEngine, mlContext);
-        }
-        public void Evaluate(IDataView testData, ITransformer model, MLContext mlContext)
-        {
-            IDataView predictions = model.Transform(testData);
-            //
-            IEnumerable<float> actual =
-                (IEnumerable<float>)mlContext.Data.CreateEnumerable<OrdersMontlyData>(testData, true)
-                    .Select(observed => observed.OrdersCount);
-            //
-            IEnumerable<float> forecast =
-            mlContext.Data.CreateEnumerable<OrdersMontlyForecasting>(predictions, true)
-                .Select(prediction => prediction.ForecastedOrders[0]);
-            //
-            var metrics = actual.Zip(forecast, (actualValue, forecastValue) => actualValue - forecastValue);
-            //
-            var MAE = metrics.Average(error => Math.Abs(error)); // Mean Absolute Error
-            var RMSE = Math.Sqrt(metrics.Average(error => Math.Pow(error, 2))); // Root Mean Squared Error
-            //
-            /*Console.WriteLine("Evaluation Metrics");
-            Console.WriteLine("---------------------");
-            Console.WriteLine($"Mean Absolute Error: {MAE:F3}");
-            Console.WriteLine($"Root Mean Squared Error: {RMSE:F3}\n");*/
         }
         void Forecast(IDataView testData, int horizon, TimeSeriesPredictionEngine<OrdersMontlyData, OrdersMontlyForecasting> forecaster, MLContext mlContext)
         {
@@ -350,16 +332,6 @@ namespace WooCommerce_Tool
  
             return false;
         }
-        public string year(string date)
-        {
-            DateTimeOffset test = DateTimeOffset.Parse(date.Split('-')[0]);
-            return test.ToString("yyy");
-        }
-        public string Month(string date)
-        {
-            DateTimeOffset test = DateTimeOffset.Parse(date.Split('-')[0]);
-            return test.ToString("MM");
-        }
         public int TimeInterval(string date)
         {
             DateTimeOffset test = DateTimeOffset.Parse(date.Split('-')[0]);
@@ -378,6 +350,15 @@ namespace WooCommerce_Tool
         public string ReturnDate(OrdersMontlyData data)
         {
             return data.Year.ToString() + "/" + data.Month.ToString();
+        
+        }
+        public static int IntLength(int i)
+        {
+            if (i < 0)
+                throw new ArgumentOutOfRangeException();
+            if (i == 0)
+                return 1;
+            return (int)Math.Floor(Math.Log10(i)) + 1;
         }
 
     }

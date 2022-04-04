@@ -35,7 +35,6 @@ namespace WooCommerce_Tool.Views
             comboBoxStartDate.SelectedIndex = 0;
             comboBoxEndDate.SelectedIndex = 0;
             comboBoxCategory.SelectedIndex = 0;
-
         }
         private void Button_Click_Prediction(object sender, RoutedEventArgs e)
         {
