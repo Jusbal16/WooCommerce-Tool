@@ -8,6 +8,7 @@ using WooCommerceNET;
 using WooCommerceNET.WooCommerce.v3;
 using WooCommerce.NET.WordPress.v2;
 using WooCommerce_Tool.ViewsModels;
+using WooCommerce_Tool.Core;
 
 namespace WooCommerce_Tool
 {
@@ -16,33 +17,26 @@ namespace WooCommerce_Tool
         public Orders OrderService { get; set; }
         public Customers CustomersService { get; set; }
         public Products ProductsService { get; set; }
-        public OrderGenerationSettings Settings { get; set; }
-        public OrderGenerationSettingsConstants Constants { get; set; }
-        public OrderGenerationDataLists DataLists { get; set; }
         public OrderGenerator OrderGenerator { get; set; }
         public OrderPrediction OrderPrediction { get; set; }
         public ProductPrediction ProductPrediction { get; set; }
-        public OrderPredictionSettings OrderPredSettings { get; set; }
-        private List<Order> OrdersData { get; set; }
+        public Prediction predictionClass { get; set; }
         public Main()
         {
-            //init data
-            string myShopifyUrl = "https://test-bakis.myshopify.com";
-            string token = "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";
-
             RestAPI rest = new RestAPI("http://localhost/Testing-Site/wp-json/wc/v3/", "ck_2e559d28784d55fb3f15a42319b4cdfea4b77e9f", "cs_6cc03fa54f45ef8f25b193991bbc75fa01d04c13");
             OrderService = new(rest);
             CustomersService = new(rest);
             ProductsService = new(rest);
             //data lists
-            Settings = new OrderGenerationSettings();
-            Constants = new OrderGenerationSettingsConstants();
-            DataLists = new OrderGenerationDataLists(Settings, Constants);
-            OrderGenerator = new(ProductsService, CustomersService, OrderService, DataLists);
+            OrderGenerator = new(ProductsService, CustomersService, OrderService);
             // prediction
-            OrderPredSettings = new OrderPredictionSettings();
+            predictionClass = new Prediction();
             OrderPrediction = new(ProductsService, CustomersService, OrderService);
             ProductPrediction = new(ProductsService, CustomersService, OrderService);
+        }
+        public void GenerateDataList(OrderGenerationSettings settings)
+        {
+            OrderGenerator.GenerateDataList(settings);
         }
         public void DeleteAllOrders()
         {

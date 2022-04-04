@@ -41,7 +41,7 @@ namespace WooCommerce_Tool
                 }
             }
             CustomersData = customers;
-            CustomersFlag = false;
+            CustomersFlag = true;
             //return customers;
         }
     }

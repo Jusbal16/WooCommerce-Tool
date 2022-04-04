@@ -28,13 +28,16 @@ namespace WooCommerce_Tool
         
 
         private OrderGenerationViewModel _viewModel;
+        private OrderGenerationSettingsConstants Constants { get; set; }
+        private OrderGenerationSettings Settings { get; set; }
         private Main Main { get; set; }
         public GenerateOrdersView(Main main)
         {
+            Settings = new OrderGenerationSettings();
             Main = main;
             _viewModel = new OrderGenerationViewModel(Main.OrderGenerator);
             DataContext = _viewModel;
-            OrderGenerationSettingsConstants Constants = new();
+            Constants = new();
             InitializeComponent();
             // fill date
             comboBoxDate.SelectedIndex = 0;
@@ -44,24 +47,21 @@ namespace WooCommerce_Tool
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            int minOrders = Main.Constants.MinOrderCountRange;
-            int maxOrders = Main.Constants.MaxOrderCountRange;
+            int minOrders = Constants.MinOrderCountRange;
+            int maxOrders = Constants.MaxOrderCountRange;
             if (Main.OrderService.OrdersFlag && Main.ProductsService.ProductFlag && Main.CustomersService.CustomersFlag)
                 if (CheckFill())
                 {
                     if (Int32.Parse(OrderCount.Text) >= minOrders && Int32.Parse(OrderCount.Text) <= maxOrders)
                     {
-                        /*Main.Settings.Date = comboBoxDate.SelectedItem.ToString();
-                        Main.Settings.Time = comboBoxTime.SelectedItem.ToString();
-                        Main.Settings.MonthsCount = Int32.Parse((comboBoxMonthSpan.SelectedItem as ComboboxItem).Value.ToString());
-                        Main.Settings.OrderCount = Int32.Parse(OrderCount.Text);*/
-                        Main.Settings.Date = _viewModel.Date;
-                        Main.Settings.Time = _viewModel.Time;
-                        Main.Settings.MonthsCount = _viewModel.MonthsCount;
-                        Main.Settings.OrderCount = _viewModel.OrderCount;
-                        Main.DataLists.GenerateDataLists();
+                        Settings.Date = _viewModel.Date;
+                        Settings.Time = _viewModel.Time;
+                        Settings.MonthsCount = _viewModel.MonthsCount;
+                        Settings.OrderCount = _viewModel.OrderCount;
+                        //Main.DataLists.GenerateDataLists();
+                        Settings.Deletion = (bool)DeleteOrders.IsChecked;
                         bool deletion = (bool)DeleteOrders.IsChecked;
-                        Task.Run(() => StartGeneration(deletion));
+                        Task.Run(() => StartGeneration(Settings));
                     }
                     else
                     {
@@ -75,9 +75,10 @@ namespace WooCommerce_Tool
            else
                 ShowMessage("Still downloading data, please wait", "Error");
         }
-        public void StartGeneration(bool deletion)
+        public void StartGeneration(OrderGenerationSettings settings)
         {
-            if (deletion)
+            Main.GenerateDataList(settings);
+            if (settings.Deletion)
             {
                 _viewModel.Status = "Deleting orders started";
                 Main.DeleteAllOrders();

@@ -26,12 +26,14 @@ namespace WooCommerce_Tool
         private Customers Customers { get; set; }
         private Orders Orders { get; set; }
         private OrderGenerationDataLists DataLists { get; set; }
-        public OrderGenerator(Products products, Customers customers, Orders orders, OrderGenerationDataLists dataList)
+        public OrderGenerationSettings Settings { get; set; }
+        public OrderGenerationSettingsConstants Constants { get; set; }
+        public OrderGenerator(Products products, Customers customers, Orders orders)
         {
+            Constants = new OrderGenerationSettingsConstants();
             Products = products;
             Customers = customers;
             Orders = orders;
-            DataLists = dataList;
         }
         public void GenerateOrders()
         {
@@ -94,6 +96,12 @@ namespace WooCommerce_Tool
                 {
                     NewValue = _theValue
                 });
+        }
+        public void GenerateDataList(OrderGenerationSettings settings)
+        {
+            Settings = settings;
+            DataLists = new OrderGenerationDataLists(Settings, Constants);
+            DataLists.GenerateDataLists();
         }
 
     }

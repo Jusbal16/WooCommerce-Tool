@@ -9,6 +9,8 @@ namespace WooCommerce_Tool.Settings
     public class PredictionConstants
     {
         public List<string> ForecastingMethods => new() { "FastTree", "FastForest", "FastTreeTweedie", "LbfgsPoissonRegression", "Gam"};
-        
+        public int DataNormalizationMin => 0;
+        public int DataNormalizationMax => 10;
+
     }
 }
