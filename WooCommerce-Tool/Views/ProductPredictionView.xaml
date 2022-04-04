@@ -162,6 +162,9 @@
                 <Grid Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <ComboBox x:Name="comboBoxEndDate"  Width="120"  Background="Transparent" Style="{DynamicResource ComboBoxStyle1}" ItemsSource ="{Binding EndDateComboData}" Text="{Binding EndDate, UpdateSourceTrigger=PropertyChanged}" />
                 </Grid>
+                <Grid Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <ComboBox x:Name="comboBoxCategory"  Width="120"  Background="Transparent" Style="{DynamicResource ComboBoxStyle1}" ItemsSource ="{Binding CategoryComboData}" Text="{Binding Category, UpdateSourceTrigger=PropertyChanged}" />
+                </Grid>
 
             </Grid>
             <Grid Grid.Row="4"  >

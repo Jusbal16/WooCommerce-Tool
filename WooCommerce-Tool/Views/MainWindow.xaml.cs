@@ -38,7 +38,7 @@ namespace WooCommerce_Tool
             orderPredictionView = new OrderPredictionView(Main);
             productPredictionView = new ProductPredictionView(Main);
             storePredictionView = new StorePredictions(Main);
-            Task.Run(() => GetAllOrders());
+            Task.Run(() => GetAllData());
             // reiktu viska uzkrauti
 
             //Dashboard obj = new Dashboard();
@@ -87,10 +87,16 @@ namespace WooCommerce_Tool
                 StackPanelMain.Children.Add(screen);
             }
         }
-        public void GetAllOrders()
+        public void GetAllData()
         {
             _viewModel.Status = "Started downloading orders";
             Main.GetAllOrders();
+            _viewModel.Status = "Started downloading products";
+            Main.GetAllProducts();
+            _viewModel.Status = "Started downloading customers";
+            Main.GetAllCustomers();
+            List<string> list = Main.GetCategories();
+            productPredictionView.FillCattegeoryComboBox(list);
             _viewModel.Status = "Data is ready";
         }
 

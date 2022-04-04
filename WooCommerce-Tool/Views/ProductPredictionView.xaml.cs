@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using WooCommerce_Tool.Settings;
 using WooCommerce_Tool.ViewsModels;
 
 namespace WooCommerce_Tool.Views
@@ -23,38 +24,41 @@ namespace WooCommerce_Tool.Views
     {
         private Main Main { get; set; }
         private ProductPredictionViewModel _viewModel;
+        private ProductPredictionSettings Settings { get; set; }
         public ProductPredictionView(Main main)
         {
             this.Main = main;
             _viewModel = new ProductPredictionViewModel();
+            Settings = new ProductPredictionSettings();
             DataContext = _viewModel;
             InitializeComponent();
             comboBoxStartDate.SelectedIndex = 0;
             comboBoxEndDate.SelectedIndex = 0;
-
+            comboBoxCategory.SelectedIndex = 0;
 
         }
         private void Button_Click_Prediction(object sender, RoutedEventArgs e)
         {
             CleanUp();
-            if (Main.OrderService.OrdersFlag)
+            if (Main.OrderService.OrdersFlag && Main.ProductsService.ProductFlag)
                 if (CheckFill())
                 {
-                    Main.OrderPredSettings.StartDate = _viewModel.StartDate;
-                    Main.OrderPredSettings.EndDate = _viewModel.EndDate;
-                    Task.Run(() => Predictions(Main.OrderPredSettings.StartDate, Main.OrderPredSettings.EndDate));
+                    Settings.StartDate = _viewModel.StartDate;
+                    Settings.EndDate = _viewModel.EndDate;
+                    Settings.Category = _viewModel.Category;    
+                    Task.Run(() => Predictions(Settings));
                 }
                 else
                 {
                     ShowMessage("Not all settings are selected", "Error");
                 }
             else
-                ShowMessage("Still downloading orders, please wait", "Error");
+                ShowMessage("Still downloading data, please wait", "Error");
         }
-        public void Predictions(string Startdate, string EndDate)
+        public void Predictions(ProductPredictionSettings settings)
         {
             _viewModel.Status = "Downloading orders";
-            Main.PredGetDataProducts(Startdate, EndDate);
+            Main.PredGetDataProducts(settings);
             _viewModel.Status = "Getting Categories";
             Main.PredGetProductCategories();
             _viewModel.Status = "Getting Products";
@@ -78,7 +82,7 @@ namespace WooCommerce_Tool.Views
         }
         public bool CheckFill()
         {
-            if (comboBoxStartDate.SelectedIndex == 0 || comboBoxEndDate.SelectedIndex == 0)
+            if (comboBoxStartDate.SelectedIndex == 0 || comboBoxEndDate.SelectedIndex == 0 || comboBoxCategory.SelectedIndex == 0)
                 return false;
             return true;
         }
@@ -90,5 +94,14 @@ namespace WooCommerce_Tool.Views
             _viewModel.MonthProbability.Clear();
             _viewModel.TimeProbability.Clear();
         }
+        public void FillCattegeoryComboBox(List<string> cat)
+        {
+            Application.Current.Dispatcher.Invoke((Action)delegate
+            {
+                _viewModel.CategoryComboData.AddRange(cat);
+            });
+
+        }
+              
     }
 }

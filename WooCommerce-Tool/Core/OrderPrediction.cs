@@ -28,6 +28,8 @@ namespace WooCommerce_Tool
         IEnumerable<OrdersMontlyData> SortedOrdersData { get; set; }
         private PredictionConstants Constants {get; set;}
         private MLContext mlContext { get; set; }
+        private OrderPredictionSettings Settings { get; set; }
+        private OrderGenerationSettingsConstants GenerationConstants { get; set; }
         public OrderPrediction(Products products, Customers customers, Orders orders)
         {
             Products = products;
@@ -36,10 +38,12 @@ namespace WooCommerce_Tool
             Constants = new PredictionConstants();
             mlContext = new MLContext();
         }
-        public void GetData(string startDate, string endDate)
+        public void GetData(OrderPredictionSettings settings)
         {
-/*            var task = Orders.GetAllOrders();
-            task.Wait();*/
+            GenerationConstants = new OrderGenerationSettingsConstants();
+            Settings = settings;
+            /*            var task = Orders.GetAllOrders();
+                        task.Wait();*/
             OrdersData = Orders.OrdersData;
             SortedOrdersData = RewriteDataForecasting(OrdersData).SkipLast(1);
             //date
@@ -50,14 +54,15 @@ namespace WooCommerce_Tool
             foreach (var order in SortedOrdersData)
             {
                 date = ReturnDate(order);
-                if (date == startDate)
+                if (date == Settings.StartDate)
                     startIndex = i;
-                if (date == endDate)
+                if (date == Settings.EndDate)
                     EndIndex = i;
                 i++;
             }
             SortedOrdersData = SortedOrdersData.Skip(startIndex);
-            SortedOrdersData = SortedOrdersData.Take(EndIndex - startIndex+1);
+            if (EndIndex != 0)
+                SortedOrdersData = SortedOrdersData.Take(EndIndex - startIndex+1);
             //
             Messenger.Default.Send<IEnumerable<OrdersMontlyData>>(SortedOrdersData);
             int count = SortedOrdersData.Count();
@@ -91,7 +96,7 @@ namespace WooCommerce_Tool
             double[][] data = DataToDoubleData(SortedOrdersData);
             //
             int numInput = 4; // number predictors
-            int numHidden = 12;
+            int numHidden = SortedOrdersData.Count();
             int numOutput = 1; // regression
             //
             NeuralNetwork nn = new NeuralNetwork(numInput, numHidden, numOutput);
@@ -309,12 +314,41 @@ namespace WooCommerce_Tool
         }
         public IEnumerable<OrdersMontlyData> RewriteDataForecasting(List<Order> data)
         {
+            //group  by month
+            if (Settings.Month != "All")
+                data = data.Where(x => TimeOfTheMonth(x.customer_note)).ToList();
+            //group by time
+            if (Settings.Time != "All")
+                data = data.Where(x => TimeOfTheDay(x.customer_note)).ToList();
+            // group by month
             List<OrdersMontlyData> orders = (from p in data
-                          group p by new { month = Month(p.customer_note), year = year(p.customer_note) } into d
-                          select new OrdersMontlyData{ Year = float.Parse(d.Key.year), Month = float.Parse(d.Key.month), OrdersCount = d.Count() })
+                                             group p by new { month = Month(p.customer_note), year = year(p.customer_note) } into d
+                                             select new OrdersMontlyData { Year = float.Parse(d.Key.year), Month = float.Parse(d.Key.month), OrdersCount = d.Count() })
                           .OrderBy(g => g.Year)
                           .ThenBy(g => g.Month).ToList();
             return orders;
+        }
+        public bool TimeOfTheMonth(string date)
+        {
+            DateTimeOffset test = DateTimeOffset.Parse(date.Split('-')[0]);
+            int day = int.Parse(test.ToString("dd"));
+            if (Settings.Month == "Beggining of the month" && day < 10)
+                return true;
+            if (Settings.Month == "Midlle of the month" && day > 10 && day < 20)
+                return true;
+            if (Settings.Month == "End of the month" && day > 20)
+                return true;
+            return false;
+        }
+        public bool TimeOfTheDay(string date)
+        {
+            int hh = TimeInterval(date);
+            int index = GenerationConstants.TimeConstants.FindIndex(x => x.Contains(Settings.Time));
+            int time = GenerationConstants.TimeValueConstants.ElementAt(index);
+            if (hh >= (time - 1) && hh < (time + 1))
+                return true;
+ 
+            return false;
         }
         public string year(string date)
         {

@@ -11,11 +11,13 @@ namespace WooCommerce_Tool
     public class Customers
     {
         private WCObject wc { get; set; }
+        public List<Customer> CustomersData { get; set;}
+        public bool CustomersFlag { get; set; }
         public Customers(RestAPI rest)
         {
             wc = new WCObject(rest);
         }
-        public async Task<List<Customer>> GetAllCustomers()
+        public async Task GetAllCustomers()
         {
             List<Customer> customers = new List<Customer>();
 
@@ -38,7 +40,9 @@ namespace WooCommerce_Tool
                     endWhile = true;
                 }
             }
-            return customers;
+            CustomersData = customers;
+            CustomersFlag = false;
+            //return customers;
         }
     }
 }

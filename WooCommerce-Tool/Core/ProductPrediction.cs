@@ -27,6 +27,7 @@ namespace WooCommerce_Tool
         IDataView OrdersDatatest { get; set; }
         IEnumerable<ProductMontlyData> SortedOrdersData { get; set; }
         private PredictionConstants Constants { get; set; }
+        private ProductPredictionSettings Settings { get; set; }
         public ProductPrediction(Products products, Customers customers, Orders orders)
         {
             Products = products;
@@ -35,14 +36,11 @@ namespace WooCommerce_Tool
             Constants = new PredictionConstants();
             mlContext = new MLContext();
         }
-        public void GetData(string startDate, string endDate)
+        public void GetData(ProductPredictionSettings settings)
         {
-/*            var task = Orders.GetAllOrders();
-            task.Wait();*/
+            Settings = settings;
             OrdersData = Orders.OrdersData;
-            var task1 = Products.GetAllProducts();
-            task1.Wait();
-            ProductsData = task1.Result;
+            ProductsData = Products.ProductsData;
             SortedOrdersData = RewriteDataForecasting(OrdersData).SkipLast(1);
             //date
             int startIndex = 0;
@@ -52,14 +50,15 @@ namespace WooCommerce_Tool
             foreach (var order in SortedOrdersData)
             {
                 date = ReturnDate(order);
-                if (date == startDate)
+                if (date == Settings.StartDate)
                     startIndex = i;
-                if (date == endDate)
+                if (date == Settings.EndDate)
                     EndIndex = i;
                 i++;
             }
             SortedOrdersData = SortedOrdersData.Skip(startIndex);
-            SortedOrdersData = SortedOrdersData.Take(EndIndex - startIndex + 1);
+            if (EndIndex != 0)
+                SortedOrdersData = SortedOrdersData.Take(EndIndex - startIndex + 1);
             //
             Messenger.Default.Send<IEnumerable<ProductMontlyData>>(SortedOrdersData);
             int count = SortedOrdersData.Count();
@@ -192,7 +191,7 @@ namespace WooCommerce_Tool
             var pipe = mlContext.Transforms.CopyColumns(outputColumnName: "Label", inputColumnName: "MoneySpend")
                             .Append(mlContext.Transforms.Concatenate("Features", "Year", "Month"));
             string BestModel = null;
-            double BestModelError = 1000;
+            double BestModelError = 10000;
             foreach (var method in Constants.ForecastingMethods)
             {
                 IDataView Prediction = null;
@@ -307,6 +306,10 @@ namespace WooCommerce_Tool
         }
         public IEnumerable<ProductMontlyData> RewriteDataForecasting(List<Order> data)
         {
+            // group by category
+            if (Settings.Category != "All")
+                data = data.Where(x => ReturnCategory((long)x.line_items.ElementAt(0).product_id)).ToList();
+            //
             List<ProductMontlyData> orders = (from p in data
                                              group p by new { month = Month(p.customer_note), year = year(p.customer_note) } into d
                                              select new ProductMontlyData { Year = float.Parse(d.Key.year), Month = float.Parse(d.Key.month), MoneySpend = d.Sum(x => (float)x.line_items.ElementAt(0).price) })
@@ -323,6 +326,13 @@ namespace WooCommerce_Tool
         {
             DateTimeOffset test = DateTimeOffset.Parse(date.Split('-')[0]);
             return test.ToString("MM");
+        }
+        public bool ReturnCategory(long id)
+        {
+            var product = ProductsData.Single(x => (long)x.id == id);
+            if (Settings.Category == ReturnString(product.categories))
+                return true;
+            return false;
         }
         public string ReturnString(List<ProductCategoryLine> categories)
         {
