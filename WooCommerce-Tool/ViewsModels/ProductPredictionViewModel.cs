@@ -12,6 +12,7 @@ using System.Windows;
 using Order_Generation.PredictionTimeSeries;
 using WooCommerce_Tool.PredictionClasses;
 using WooCommerce_Tool.Settings;
+using System.Collections.ObjectModel;
 
 namespace WooCommerce_Tool.ViewsModels
 {
@@ -28,7 +29,7 @@ namespace WooCommerce_Tool.ViewsModels
         ChartValues<double> ForecastedNNValues;
         private List<string> _StartDateComboData;
         private List<string> _EndDateComboData;
-        private List<string> _CategoryComboData;
+        private ObservableCollection<string> _CategoryComboData;
         private ProductPredictionSettings Settings { get; set; }
         public ProductPredictionViewModel()
         {
@@ -45,7 +46,7 @@ namespace WooCommerce_Tool.ViewsModels
             //filling combobox
             StartDateComboData = new List<string>();
             EndDateComboData = new List<string>();
-            CategoryComboData = new List<string>();
+            CategoryComboData = new ObservableCollection<string>();
             StartDateComboData.Add("Select start date");
             EndDateComboData.Add("Select end date");
             CategoryComboData.Add("Select category");
@@ -64,7 +65,7 @@ namespace WooCommerce_Tool.ViewsModels
         }
         private void ReceivePopularProducts(List<ProductPopularData> msg)
         {
-            List<ProductPopularData> list = new();
+            List<ProductPopularData> list = new List<ProductPopularData>();
             if (msg.Count() > 10)
             {
                 list = (from m in msg
@@ -79,7 +80,7 @@ namespace WooCommerce_Tool.ViewsModels
         }
         private void ReceiveCategories(List<ProductCategoriesData> msg)
         {
-            List<ProductCategoriesData> list = new();
+            List<ProductCategoriesData> list = new List<ProductCategoriesData>();
             if (msg.Count() > 10)
             {
                 list = (from m in msg
@@ -196,7 +197,9 @@ namespace WooCommerce_Tool.ViewsModels
         public Func<double, string> BarFormatter
         {
             get { return _BarFormatter; }
-            set { _BarFormatter = value => value.ToString("N"); }
+            set {
+                _BarFormatter = value; 
+            }
         }
         public SeriesCollection OrdersCount
         {
@@ -244,7 +247,7 @@ namespace WooCommerce_Tool.ViewsModels
             get { return _EndDateComboData; }
             set { _EndDateComboData = value; }
         }
-        public List<string> CategoryComboData
+        public ObservableCollection<string> CategoryComboData
         {
             get { return _CategoryComboData; }
             set 

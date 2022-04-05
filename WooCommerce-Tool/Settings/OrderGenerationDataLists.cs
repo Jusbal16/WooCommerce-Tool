@@ -12,9 +12,9 @@ namespace WooCommerce_Tool.Settings
     {
 
         private Random rnd = new Random();
-        public List<DateTime> DateList = new();
-        public List<DateTime> TimeList = new();
-        public List<int> ProductCount = new();
+        public List<DateTime> DateList = new List<DateTime>();
+        public List<DateTime> TimeList = new List<DateTime>();
+        public List<int> ProductCount = new List<int>();
         public OrderGenerationSettings Settings { get; set; }
         public OrderGenerationSettingsConstants Constants { get; set; }
         public OrderGenerationDataLists(OrderGenerationSettings settings, OrderGenerationSettingsConstants constants)

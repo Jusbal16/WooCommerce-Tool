@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,8 +14,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using GalaSoft.MvvmLight.Messaging;
 using LiveCharts;
 using LiveCharts.Wpf;
+using WooCommerce_Tool.DB_Models;
+using WooCommerce_Tool.PredictionClasses;
 using WooCommerce_Tool.Settings;
 using WooCommerce_Tool.ViewsModels;
 
@@ -38,6 +43,7 @@ namespace WooCommerce_Tool.Views
             comboBoxEndDate.SelectedIndex = 0;
             comboBoxMonth.SelectedIndex = 0;
             comboBoxTime.SelectedIndex = 0;
+            RefreshNameList();
         }
         private void Button_Click_Prediction(object sender, RoutedEventArgs e)
         {
@@ -98,6 +104,58 @@ namespace WooCommerce_Tool.Views
             _viewModel.MonthProbability.Clear();
             _viewModel.TimeProbability.Clear();
         }
+        public void RefreshNameList()
+        {
+            _viewModel.NamesComboData.Clear();
+            _viewModel.NamesComboData.Add("Select data to delete");
+            comboBoxDBNames.SelectedIndex = 0;
+            ObservableCollection<string> listOfName = new ObservableCollection<string>(Main.ReturnSavedPredictionsNamesOnlyOrders());
+            foreach (string t in listOfName)
+                _viewModel.NamesComboData.Add(t);
+        }
 
+
+        private void comboBoxDBNames_DropDownClosed(object sender, EventArgs e)
+        {
+            Clear();
+            string Name = _viewModel.Name;
+            ToolOrder Order = Main.ReturnOrderByName(Name);
+            //
+            comboBoxStartDate.SelectedValue = Order.StartDate;
+            comboBoxEndDate.SelectedValue = Order.EndDate;
+            comboBoxMonth.SelectedValue = Order.TimeOfTheMonth;
+            comboBoxTime.SelectedValue = Order.TimeOfTheDay;
+            //
+            IEnumerable<OrdersMontlyData> data = JsonSerializer.Deserialize<IEnumerable<OrdersMontlyData>>(Order.TotalOrder);
+            Messenger.Default.Send<IEnumerable<OrdersMontlyData>>(data);
+            //
+            List<OrdersMonthTimeProbability> data1 = JsonSerializer.Deserialize<List<OrdersMonthTimeProbability>>(Order.ProbabilityTimeOfTheMonth);
+            Messenger.Default.Send<List<OrdersMonthTimeProbability>>(data1);
+            //
+            List<OrdersTimeProbability> data2 = JsonSerializer.Deserialize<List<OrdersTimeProbability>>(Order.ProbabilityTimeOfTheDay);
+            Messenger.Default.Send<List<OrdersTimeProbability>>(data2);
+            //
+            NNOrderData data3 = JsonSerializer.Deserialize<NNOrderData>(Order.NnOrder);
+            Messenger.Default.Send<NNOrderData>(data3);
+            //
+            OrdersMontlyForecasting data4 = JsonSerializer.Deserialize<OrdersMontlyForecasting>(Order.TimeSeriesOrder);
+            Messenger.Default.Send<OrdersMontlyForecasting>(data4);
+            //
+            List<MLPredictionDataOrders> data5 = JsonSerializer.Deserialize<List<MLPredictionDataOrders>>(Order.RegresionOrder);
+            Messenger.Default.Send<List<MLPredictionDataOrders>>(data5);
+        }
+        private void Clear()
+        {
+            comboBoxStartDate.SelectedIndex = 0;
+            comboBoxEndDate.SelectedIndex = 0;
+            comboBoxMonth.SelectedIndex = 0;
+            comboBoxTime.SelectedIndex = 0;
+            Messenger.Default.Send<IEnumerable<OrdersMontlyData>>(null);
+            Messenger.Default.Send<List<OrdersMonthTimeProbability>>(null);
+            Messenger.Default.Send<List<OrdersTimeProbability>>(null);
+            Messenger.Default.Send<NNOrderData>(null);
+            Messenger.Default.Send<OrdersMontlyForecasting>(null);
+            Messenger.Default.Send<List<MLPredictionDataOrders>>(null);
+        }
     }
 }

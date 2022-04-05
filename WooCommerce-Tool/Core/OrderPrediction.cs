@@ -28,7 +28,7 @@ namespace WooCommerce_Tool
         IEnumerable<OrdersMontlyData> SortedOrdersData { get; set; }
         private PredictionConstants Constants {get; set;}
         private MLContext mlContext { get; set; }
-        private OrderPredictionSettings Settings { get; set; }
+        public OrderPredictionSettings Settings { get; set; }
         private OrderGenerationSettingsConstants GenerationConstants { get; set; }
         public OrderPrediction(Products products, Customers customers, Orders orders)
         {

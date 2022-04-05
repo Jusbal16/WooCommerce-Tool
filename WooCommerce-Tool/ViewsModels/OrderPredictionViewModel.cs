@@ -11,6 +11,7 @@ using GalaSoft.MvvmLight.Messaging;
 using System.Windows;
 using WooCommerce_Tool.PredictionClasses;
 using WooCommerce_Tool.Settings;
+using System.Collections.ObjectModel;
 
 namespace WooCommerce_Tool.ViewsModels
 {
@@ -29,6 +30,7 @@ namespace WooCommerce_Tool.ViewsModels
         private List<string> _EndDateComboData;
         private List<string> _MonthComboData;
         private List<string> _TimeComboData;
+        private ObservableCollection<string> _NamesComboData;
         private OrderPredictionSettings Settings { get; set; }
         private OrderGenerationSettingsConstants SettingsConstants { get; set; }
         public OrderPredictionViewModel()
@@ -49,6 +51,8 @@ namespace WooCommerce_Tool.ViewsModels
             EndDateComboData = new List<string>();
             TimeComboData = new List<string>();
             MonthComboData = new List<string>();
+            NamesComboData = new ObservableCollection<string>();
+            NamesComboData.Add("Select saved prediction");
             StartDateComboData.Add("Select start date");
             EndDateComboData.Add("Select end date");
             TimeComboData.Add("Select Time");
@@ -77,7 +81,11 @@ namespace WooCommerce_Tool.ViewsModels
         }
         private void ReceiveMonthTime(List<OrdersMonthTimeProbability> msg)
         {
-
+            if (msg == null)
+            {
+                MonthProbability.Clear();
+                return;
+            }
             Application.Current.Dispatcher.Invoke((Action)delegate
             {
                 foreach (var m in msg)
@@ -87,7 +95,12 @@ namespace WooCommerce_Tool.ViewsModels
         }
         private void ReceiveTime(List<OrdersTimeProbability> msg)
         {
-            List<OrdersTimeProbability> list = new();
+            if (msg == null)
+            {
+                TimeProbability.Clear();
+                return;
+            }
+            List<OrdersTimeProbability> list = new List<OrdersTimeProbability>();
             if (msg.Count() > 10)
             {
                 list = (from m in msg
@@ -104,6 +117,11 @@ namespace WooCommerce_Tool.ViewsModels
         }
         private void ReceiveOrders(IEnumerable<OrdersMontlyData> msg)
         {
+            if (msg == null)
+            {
+                OrdersCount.Clear();
+                return;
+            }
             ChartValues<double> Values = new ChartValues<double>();
             ForecastedValues = new ChartValues<double>();
             ForecastedMLValues = new ChartValues<double>();
@@ -139,6 +157,11 @@ namespace WooCommerce_Tool.ViewsModels
         }
         private void ReceiveForecasting(OrdersMontlyForecasting msg)
         {
+            if (msg == null)
+            {
+                OrdersCount.Clear();
+                return;
+            }
             int horizon = 3;
             int index = 0;
             for (int i = 0; i < 3; i++)
@@ -158,6 +181,11 @@ namespace WooCommerce_Tool.ViewsModels
         }
         private void ReceiveNNForecasting(NNOrderData msg)
         {
+            if (msg == null)
+            {
+                OrdersCount.Clear();
+                return;
+            }
             int horizon = 3;
             int index = 0;
             for (int i = 0;i < horizon; i++)
@@ -176,6 +204,11 @@ namespace WooCommerce_Tool.ViewsModels
         }
         private void ReceiveMLForecasting(List<MLPredictionDataOrders> msg)
         {
+            if (msg == null)
+            {
+                OrdersCount.Clear();
+                return;
+            }
             int horizon = 3;
             int index = 0;
             string methodName = msg.ElementAt(0).MethodName;
@@ -206,7 +239,7 @@ namespace WooCommerce_Tool.ViewsModels
         public Func<double, string> BarFormatter
         {
             get { return _BarFormatter; }
-            set { _BarFormatter = value => value.ToString("N"); }
+            set { _BarFormatter = value; }
         }
         public SeriesCollection OrdersCount
         {
@@ -263,6 +296,23 @@ namespace WooCommerce_Tool.ViewsModels
         {
             get { return _TimeComboData; }
             set { _TimeComboData = value; }
+        }
+        public ObservableCollection<string> NamesComboData
+        {
+            get { return _NamesComboData; }
+            set { _NamesComboData = value; }
+        }
+        public string Name
+        {
+            get { return Settings.Name; }
+            set
+            {
+                if (Settings.Name != value)
+                {
+                    Settings.Name = value;
+                    OnPropertyChanged("Name");
+                }
+            }
         }
         public string Month
         {

@@ -27,7 +27,7 @@ namespace WooCommerce_Tool
         IDataView OrdersDatatest { get; set; }
         IEnumerable<ProductMontlyData> SortedOrdersData { get; set; }
         private PredictionConstants Constants { get; set; }
-        private ProductPredictionSettings Settings { get; set; }
+        public ProductPredictionSettings Settings { get; set; }
         public ProductPrediction(Products products, Customers customers, Orders orders)
         {
             Products = products;
