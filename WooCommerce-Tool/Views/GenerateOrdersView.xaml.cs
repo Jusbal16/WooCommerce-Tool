@@ -37,7 +37,7 @@ namespace WooCommerce_Tool
             Main = main;
             _viewModel = new OrderGenerationViewModel(Main.OrderGenerator);
             DataContext = _viewModel;
-            Constants = new();
+            Constants = new OrderGenerationSettingsConstants();
             InitializeComponent();
             // fill date
             comboBoxDate.SelectedIndex = 0;

@@ -10,10 +10,10 @@
 
         <!--Watermark -->
 
-        <Style TargetType="TextBlock"  x:Key="OrderCount" >
+        <Style TargetType="TextBlock"  x:Key="Name" >
             <Setter Property="Visibility" Value="Collapsed"/>
             <Style.Triggers>
-                <DataTrigger Binding="{Binding Text, ElementName=OrderCount}" Value="">
+                <DataTrigger Binding="{Binding Text, ElementName=Name}" Value="">
                     <Setter Property="Visibility" Value="Visible"/>
                 </DataTrigger>
             </Style.Triggers>
@@ -113,11 +113,11 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Grid Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left">
-                    <TextBox x:Name="PredictionName" Style="{StaticResource Textbox}" Width="200" Grid.ColumnSpan="5" Text="{Binding OrderCount, UpdateSourceTrigger=PropertyChanged}" />
-                    <TextBlock IsHitTestVisible="False" Text="Prediction name" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="White" Style="{StaticResource OrderCount}"/>
+                    <TextBox x:Name="Name" Style="{StaticResource Textbox}" Width="200" Grid.ColumnSpan="5" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBlock IsHitTestVisible="False" Text="Prediction name" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="White" Style="{StaticResource Name}"/>
                 </Grid>
                 <Grid Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Left">
-                    <ComboBox x:Name="comboBoxTime"  Width="200"  Background="Transparent" Style="{DynamicResource ComboBoxStyle1}" ItemsSource ="{Binding TimeComboData}" Text="{Binding Time, UpdateSourceTrigger=PropertyChanged}"/>
+                    <ComboBox x:Name="comboBoxType"  Width="200"  Background="Transparent" Style="{DynamicResource ComboBoxStyle1}" ItemsSource ="{Binding TypeComboData}" Text="{Binding Type, UpdateSourceTrigger=PropertyChanged}"/>
                 </Grid>
             </Grid>
             <!--webhook label -->
@@ -164,7 +164,7 @@
                     <ColumnDefinition Width="200"/>
                 </Grid.ColumnDefinitions>
                 <Grid Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left">
-                    <ComboBox x:Name="DeletePrediction"  Width="200"  Background="Transparent" Style="{DynamicResource ComboBoxStyle1}" ItemsSource ="{Binding TimeComboData}" Text="{Binding Time, UpdateSourceTrigger=PropertyChanged}"/>
+                    <ComboBox x:Name="DeletePrediction"  Width="200"  Background="Transparent" Style="{DynamicResource ComboBoxStyle1}" ItemsSource ="{Binding DeletionComboData}" Text="{Binding DeletionName, UpdateSourceTrigger=PropertyChanged}"/>
                 </Grid>
 
             </Grid>
@@ -180,8 +180,8 @@
                     <Button Content="Delete" Style="{StaticResource ButtonR}" Click="Button_Click_2" />
                 </StackPanel>
                 <Grid Grid.Column="3" VerticalAlignment="Top" HorizontalAlignment="Center" >
-                   <!-- <TextBlock Name="GenerationStatus" IsHitTestVisible="False" Text="{Binding Path=Status, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="White"/>
--->
+                    <TextBlock Name="Status" IsHitTestVisible="False" Text="{Binding Path=Status, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="White"/>
+
                 </Grid>
             </Grid>
             <Grid Grid.Row="8"  >

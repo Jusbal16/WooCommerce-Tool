@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -95,9 +96,11 @@ namespace WooCommerce_Tool.Views
         }
         public void FillCattegeoryComboBox(List<string> cat)
         {
+            ObservableCollection<string> ListOfCategories = new ObservableCollection<string>(cat);
             Application.Current.Dispatcher.Invoke((Action)delegate
             {
-                _viewModel.CategoryComboData.AddRange(cat);
+                foreach(var cat in ListOfCategories)
+                    _viewModel.CategoryComboData.Add(cat);
             });
 
         }

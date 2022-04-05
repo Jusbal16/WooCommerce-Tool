@@ -9,6 +9,7 @@ using WooCommerceNET.WooCommerce.v3;
 using WooCommerce.NET.WordPress.v2;
 using WooCommerce_Tool.ViewsModels;
 using WooCommerce_Tool.Core;
+using WooCommerce_Tool.DB_Models;
 
 namespace WooCommerce_Tool
 {
@@ -21,18 +22,21 @@ namespace WooCommerce_Tool
         public OrderPrediction OrderPrediction { get; set; }
         public ProductPrediction ProductPrediction { get; set; }
         public Prediction predictionClass { get; set; }
+        public StorePredictions StorePredictions { get; set; }
         public Main()
         {
             RestAPI rest = new RestAPI("http://localhost/Testing-Site/wp-json/wc/v3/", "ck_2e559d28784d55fb3f15a42319b4cdfea4b77e9f", "cs_6cc03fa54f45ef8f25b193991bbc75fa01d04c13");
-            OrderService = new(rest);
-            CustomersService = new(rest);
-            ProductsService = new(rest);
+            OrderService = new Orders(rest);
+            CustomersService = new Customers(rest);
+            ProductsService = new Products(rest);
             //data lists
-            OrderGenerator = new(ProductsService, CustomersService, OrderService);
+            OrderGenerator = new OrderGenerator(ProductsService, CustomersService, OrderService);
             // prediction
             predictionClass = new Prediction();
-            OrderPrediction = new(ProductsService, CustomersService, OrderService);
-            ProductPrediction = new(ProductsService, CustomersService, OrderService);
+            OrderPrediction = new OrderPrediction(ProductsService, CustomersService, OrderService);
+            ProductPrediction = new ProductPrediction(ProductsService, CustomersService, OrderService);
+            // 
+            StorePredictions = new StorePredictions();
         }
         public void GenerateDataList(OrderGenerationSettings settings)
         {
@@ -129,6 +133,34 @@ namespace WooCommerce_Tool
                 cat += c.name.ToString() + "|";
             return cat;
         }
+        public void AddToDB(ToolOrder order, ToolProduct product)
+        {
+            StorePredictions.AddToDB(order, product);
+        }
+        public List<string> ReturnSavedPredictionsNames()
+        {
+            return StorePredictions.ReturnSavedPredictionsNames();
+        }
+        public void Delete(string name)
+        {
+            StorePredictions.Delete(name);
+        }
 
+        public List<string> ReturnSavedPredictionsNamesOnlyOrders()
+        {
+            return StorePredictions.ReturnSavedPredictionsNamesOnlyOrders();
+        }
+        public List<string> ReturnSavedPredictionsNamesOnlyProducts()
+        {
+            return StorePredictions.ReturnSavedPredictionsNamesOnlyProducts();
+        }
+        public ToolOrder ReturnOrderByName(string name)
+        {
+            return StorePredictions.ReturnOrderByName(name);
+        }
+        public ToolProduct ReturnProductByName(string name)
+        {
+            return StorePredictions.ReturnProductByName(name);
+        }
     }
 }
