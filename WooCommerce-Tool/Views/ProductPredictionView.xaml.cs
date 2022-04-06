@@ -1,8 +1,11 @@
-﻿using System;
+﻿using GalaSoft.MvvmLight.Messaging;
+using Order_Generation.PredictionTimeSeries;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,6 +16,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using WooCommerce_Tool.DB_Models;
+using WooCommerce_Tool.PredictionClasses;
 using WooCommerce_Tool.Settings;
 using WooCommerce_Tool.ViewsModels;
 
@@ -36,6 +41,7 @@ namespace WooCommerce_Tool.Views
             comboBoxStartDate.SelectedIndex = 0;
             comboBoxEndDate.SelectedIndex = 0;
             comboBoxCategory.SelectedIndex = 0;
+            RefreshNameList();
         }
         private void Button_Click_Prediction(object sender, RoutedEventArgs e)
         {
@@ -104,6 +110,59 @@ namespace WooCommerce_Tool.Views
             });
 
         }
-              
+        private void comboBoxDBNames_DropDownClosed(object sender, EventArgs e)
+        {
+            if (comboBoxDBNames.SelectedIndex ==0)
+                return;
+            Clear();
+            string Name = _viewModel.Name;
+            ToolProduct product = Main.ReturnProductByName(Name);
+            //
+            comboBoxStartDate.SelectedValue = product.StartDate;   
+            comboBoxEndDate.SelectedValue = product.EndDate;
+            comboBoxCategory.SelectedValue = product.Category;
+            //
+            IEnumerable<ProductMontlyData> data = JsonSerializer.Deserialize<IEnumerable<ProductMontlyData>>(product.TotalProducts);
+            Messenger.Default.Send<IEnumerable<ProductMontlyData>>(data);
+            //
+            NNProductData data1 = JsonSerializer.Deserialize<NNProductData>(product.NnProducts);
+            Messenger.Default.Send<NNProductData>(data1);
+            //
+            List<ProductPopularData> data2 = JsonSerializer.Deserialize<List<ProductPopularData>>(product.ProbabilityProducts);
+            Messenger.Default.Send<List<ProductPopularData>>(data2);
+            //
+            List<ProductCategoriesData> data3 = JsonSerializer.Deserialize<List<ProductCategoriesData>>(product.ProbabilityCategory);
+            Messenger.Default.Send<List<ProductCategoriesData>>(data3);
+            //
+            ProductMontlyForecasting data4 = JsonSerializer.Deserialize<ProductMontlyForecasting>(product.TimeSeriesProducts);
+            Messenger.Default.Send<ProductMontlyForecasting>(data4);
+            //
+            List<MLPredictionDataProducts> data5 = JsonSerializer.Deserialize<List<MLPredictionDataProducts>>(product.RegresionProducts);
+            Messenger.Default.Send<List<MLPredictionDataProducts>>(data5);
+            //
+        }
+        private void Clear()
+        {
+            comboBoxStartDate.SelectedIndex = 0;
+            comboBoxEndDate.SelectedIndex = 0;
+            comboBoxCategory.SelectedIndex = 0;
+            Messenger.Default.Send<IEnumerable<ProductMontlyData>>(null);
+            Messenger.Default.Send<NNProductData>(null);
+            Messenger.Default.Send<List<ProductPopularData>>(null);
+            Messenger.Default.Send<List<ProductCategoriesData>>(null);
+            Messenger.Default.Send<ProductMontlyForecasting>(null);
+            Messenger.Default.Send<List<MLPredictionDataProducts>>(null);
+        }
+        public void RefreshNameList()
+        {
+            _viewModel.NamesComboData.Clear();
+            _viewModel.NamesComboData.Add("Select data to delete");
+            comboBoxDBNames.SelectedIndex = 0;
+            ObservableCollection<string> listOfName = new ObservableCollection<string>(Main.ReturnSavedPredictionsNamesOnlyProducts());
+            foreach (string t in listOfName)
+                _viewModel.NamesComboData.Add(t);
+        }
+
+
     }
 }

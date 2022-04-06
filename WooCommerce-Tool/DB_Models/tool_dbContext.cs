@@ -39,17 +39,11 @@ namespace WooCommerce_Tool.DB_Models
                     .ValueGeneratedNever()
                     .HasColumnName("ID");
 
-                entity.Property(e => e.ApiKey)
-                    .HasColumnType("ntext")
-                    .HasColumnName("API_key");
+                entity.Property(e => e.ApiKey).HasColumnName("API_key");
 
-                entity.Property(e => e.ApiSecret)
-                    .HasColumnType("ntext")
-                    .HasColumnName("API_secret");
+                entity.Property(e => e.ApiSecret).HasColumnName("API_secret");
 
-                entity.Property(e => e.Url)
-                    .HasColumnType("ntext")
-                    .HasColumnName("URL");
+                entity.Property(e => e.Url).HasColumnName("URL");
             });
 
             modelBuilder.Entity<ToolOrder>(entity =>
@@ -70,11 +64,19 @@ namespace WooCommerce_Tool.DB_Models
 
                 entity.Property(e => e.RegresionOrder).HasColumnName("Regresion_order");
 
+                entity.Property(e => e.ShopId).HasColumnName("Shop_ID");
+
                 entity.Property(e => e.StartDate).HasColumnName("Start_Date");
 
                 entity.Property(e => e.TimeSeriesOrder).HasColumnName("TimeSeries_order");
 
                 entity.Property(e => e.TotalOrder).HasColumnName("Total_order");
+
+                entity.HasOne(d => d.Shop)
+                    .WithMany(p => p.ToolOrders)
+                    .HasForeignKey(d => d.ShopId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Tool_order_Tool_login");
             });
 
             modelBuilder.Entity<ToolProduct>(entity =>
@@ -95,11 +97,19 @@ namespace WooCommerce_Tool.DB_Models
 
                 entity.Property(e => e.RegresionProducts).HasColumnName("Regresion_products");
 
+                entity.Property(e => e.ShopId).HasColumnName("Shop_ID");
+
                 entity.Property(e => e.StartDate).HasColumnName("Start_date");
 
                 entity.Property(e => e.TimeSeriesProducts).HasColumnName("TimeSeries_products");
 
                 entity.Property(e => e.TotalProducts).HasColumnName("Total_products");
+
+                entity.HasOne(d => d.Shop)
+                    .WithMany(p => p.ToolProducts)
+                    .HasForeignKey(d => d.ShopId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Tool_product_Tool_login");
             });
 
             OnModelCreatingPartial(modelBuilder);

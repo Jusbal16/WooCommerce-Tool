@@ -7,9 +7,8 @@ namespace WooCommerce_Tool.DB_Models
 {
     public partial class ToolOrder
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Key]
-        public int? Id { get; set; }
+        public int Id { get; set; }
+        public int ShopId { get; set; }
         public string? Name { get; set; }
         public string? StartDate { get; set; }
         public string? EndDate { get; set; }
@@ -21,5 +20,7 @@ namespace WooCommerce_Tool.DB_Models
         public string? RegresionOrder { get; set; }
         public string? ProbabilityTimeOfTheDay { get; set; }
         public string? ProbabilityTimeOfTheMonth { get; set; }
+
+        public virtual ToolLogin Shop { get; set; } = null!;
     }
 }

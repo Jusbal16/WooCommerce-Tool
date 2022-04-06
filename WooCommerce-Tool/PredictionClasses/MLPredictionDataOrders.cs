@@ -9,8 +9,8 @@ namespace WooCommerce_Tool.PredictionClasses
 {
     public class MLPredictionDataOrders
     {
-        public string MethodName;
+        public string MethodName { get; set; }
         [ColumnName("Score")]
-        public float OrderCount;
+        public float OrderCount { get; set; }
     }
 }

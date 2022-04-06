@@ -117,6 +117,8 @@ namespace WooCommerce_Tool.Views
 
         private void comboBoxDBNames_DropDownClosed(object sender, EventArgs e)
         {
+            if (comboBoxDBNames.SelectedIndex == 0)
+                return;
             Clear();
             string Name = _viewModel.Name;
             ToolOrder Order = Main.ReturnOrderByName(Name);
