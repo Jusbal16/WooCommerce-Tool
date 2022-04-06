@@ -11,5 +11,6 @@ namespace WooCommerce_Tool.Settings
         public string StartDate { get; set; }
         public string EndDate { get; set; }
         public string Category { get; set; }
+        public string Name { get; set; }
     }
 }

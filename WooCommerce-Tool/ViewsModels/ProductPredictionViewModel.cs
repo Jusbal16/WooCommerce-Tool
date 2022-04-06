@@ -29,6 +29,7 @@ namespace WooCommerce_Tool.ViewsModels
         ChartValues<double> ForecastedNNValues;
         private List<string> _StartDateComboData;
         private List<string> _EndDateComboData;
+        private ObservableCollection<string> _NamesComboData;
         private ObservableCollection<string> _CategoryComboData;
         private ProductPredictionSettings Settings { get; set; }
         public ProductPredictionViewModel()
@@ -47,6 +48,8 @@ namespace WooCommerce_Tool.ViewsModels
             StartDateComboData = new List<string>();
             EndDateComboData = new List<string>();
             CategoryComboData = new ObservableCollection<string>();
+            NamesComboData = new ObservableCollection<string>();
+            NamesComboData.Add("Select saved prediction");
             StartDateComboData.Add("Select start date");
             EndDateComboData.Add("Select end date");
             CategoryComboData.Add("Select category");
@@ -65,6 +68,11 @@ namespace WooCommerce_Tool.ViewsModels
         }
         private void ReceivePopularProducts(List<ProductPopularData> msg)
         {
+            if (msg == null)
+            {
+                MonthProbability.Clear();
+                return;
+            }
             List<ProductPopularData> list = new List<ProductPopularData>();
             if (msg.Count() > 10)
             {
@@ -80,6 +88,11 @@ namespace WooCommerce_Tool.ViewsModels
         }
         private void ReceiveCategories(List<ProductCategoriesData> msg)
         {
+            if (msg == null)
+            {
+                TimeProbability.Clear();
+                return;
+            }
             List<ProductCategoriesData> list = new List<ProductCategoriesData>();
             if (msg.Count() > 10)
             {
@@ -96,6 +109,11 @@ namespace WooCommerce_Tool.ViewsModels
         }
         private void ReceiveOrders(IEnumerable<ProductMontlyData> msg)
         {
+            if (msg == null)
+            {
+                OrdersCount.Clear();
+                return;
+            }
             ChartValues<double> Values = new ChartValues<double>();
             ForecastedValues = new ChartValues<double>();
             ForecastedMLValues = new ChartValues<double>();
@@ -132,6 +150,11 @@ namespace WooCommerce_Tool.ViewsModels
         }
         private void ReceiveForecasting(ProductMontlyForecasting msg)
         {
+            if (msg == null)
+            {
+                OrdersCount.Clear();
+                return;
+            }
             int horizon = 3;
             int index = 0;
             for (int i = 0; i < 3; i++)
@@ -150,6 +173,11 @@ namespace WooCommerce_Tool.ViewsModels
         }
         private void ReceiveMLForecasting(List<MLPredictionDataProducts> msg)
         {
+            if (msg == null)
+            {
+                OrdersCount.Clear();
+                return;
+            }
             int horizon = 3;
             int index = 0;
             string methodName = msg.ElementAt(0).MethodName;
@@ -169,6 +197,11 @@ namespace WooCommerce_Tool.ViewsModels
         }
         private void ReceiveNNForecasting(NNProductData msg)
         {
+            if (msg == null)
+            {
+                OrdersCount.Clear();
+                return;
+            }
             int horizon = 3;
             int index = 0;
             for (int i = 0; i < horizon; i++)
@@ -247,6 +280,11 @@ namespace WooCommerce_Tool.ViewsModels
             get { return _EndDateComboData; }
             set { _EndDateComboData = value; }
         }
+        public ObservableCollection<string> NamesComboData
+        {
+            get { return _NamesComboData; }
+            set { _NamesComboData = value; }
+        }
         public ObservableCollection<string> CategoryComboData
         {
             get { return _CategoryComboData; }
@@ -254,6 +292,18 @@ namespace WooCommerce_Tool.ViewsModels
             { 
                 _CategoryComboData = value;
                 OnPropertyChanged("CategoryComboData");
+            }
+        }
+        public string Name
+        {
+            get { return Settings.Name; }
+            set
+            {
+                if (Settings.Name != value)
+                {
+                    Settings.Name = value;
+                    OnPropertyChanged("Name");
+                }
             }
         }
         public string Category

@@ -23,9 +23,9 @@ namespace WooCommerce_Tool
         public ProductPrediction ProductPrediction { get; set; }
         public Prediction predictionClass { get; set; }
         public StorePredictions StorePredictions { get; set; }
-        public Main()
+        public Main(int id, string url, string key, string secret)
         {
-            RestAPI rest = new RestAPI("http://localhost/Testing-Site/wp-json/wc/v3/", "ck_2e559d28784d55fb3f15a42319b4cdfea4b77e9f", "cs_6cc03fa54f45ef8f25b193991bbc75fa01d04c13");
+            RestAPI rest = new RestAPI(url, key, secret);
             OrderService = new Orders(rest);
             CustomersService = new Customers(rest);
             ProductsService = new Products(rest);
@@ -36,7 +36,7 @@ namespace WooCommerce_Tool
             OrderPrediction = new OrderPrediction(ProductsService, CustomersService, OrderService);
             ProductPrediction = new ProductPrediction(ProductsService, CustomersService, OrderService);
             // 
-            StorePredictions = new StorePredictions();
+            StorePredictions = new StorePredictions(id);
         }
         public void GenerateDataList(OrderGenerationSettings settings)
         {

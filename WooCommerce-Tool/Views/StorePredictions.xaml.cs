@@ -42,7 +42,6 @@ namespace WooCommerce_Tool.Views
                 if (CheckName())
                 {
                     Task.Run(() => AddToDB());
-                    RefreshNameList();
                 }
                 else
                 {
@@ -85,7 +84,9 @@ namespace WooCommerce_Tool.Views
                 product = _viewModel.ReturnProductObject(main.ProductPrediction.Settings);
                 main.AddToDB(null, product);
             }
+            RefreshNameList();
             _viewModel.Status = "Successfully added";
+
         }
         public bool CheckFill()
         {
@@ -125,12 +126,15 @@ namespace WooCommerce_Tool.Views
         }
         public void RefreshNameList()
         {
-            _viewModel.DeletionComboData.Clear();
-            _viewModel.DeletionComboData.Add("Select data to delete");
-            DeletePrediction.SelectedIndex = 0;
-            ObservableCollection<string> listOfName = new ObservableCollection<string>(main.ReturnSavedPredictionsNames());
-            foreach (string t in listOfName)
-                _viewModel.DeletionComboData.Add(t);
+            Application.Current.Dispatcher.Invoke((Action)delegate
+            {
+                _viewModel.DeletionComboData.Clear();
+                _viewModel.DeletionComboData.Add("Select data to delete");
+                DeletePrediction.SelectedIndex = 0;
+                ObservableCollection<string> listOfName = new ObservableCollection<string>(main.ReturnSavedPredictionsNames());
+                foreach (string t in listOfName)
+                    _viewModel.DeletionComboData.Add(t);
+            });
         }
     }
 }

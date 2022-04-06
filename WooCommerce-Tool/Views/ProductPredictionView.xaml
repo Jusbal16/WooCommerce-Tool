@@ -94,10 +94,15 @@
             <Grid Grid.Row="1" Background="#0F1A2C" >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="50"/>
-                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left">
                         <Label Style="{StaticResource LabelSmall}" x:Name="Label2" Content="Results" FontFamily="Montsera"/>
+                </TextBlock>
+                <TextBlock Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Left">
+                        <ComboBox x:Name="comboBoxDBNames"  Width="120"  Background="Transparent" DropDownClosed="comboBoxDBNames_DropDownClosed" Style="{DynamicResource ComboBoxStyle1}" ItemsSource ="{Binding NamesComboData}" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
                 </TextBlock>
             </Grid>
             <!--Chart -->

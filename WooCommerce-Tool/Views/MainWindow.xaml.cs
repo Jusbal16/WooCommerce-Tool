@@ -28,12 +28,12 @@ namespace WooCommerce_Tool
         public ProductPredictionView productPredictionView { get; set; }
         public StorePredictions storePredictionView { get; set; }
         private MainWindowViewModel _viewModel { get; set; }
-        public MainWindow()
+        public MainWindow(int id, string url, string key, string secret)
         {
             _viewModel = new MainWindowViewModel();
             DataContext = _viewModel;
             InitializeComponent();
-            Main = new Main();
+            Main = new Main(id, url, key, secret);
             generateOrdersView = new GenerateOrdersView(Main);
             orderPredictionView = new OrderPredictionView(Main);
             productPredictionView = new ProductPredictionView(Main);
@@ -54,12 +54,14 @@ namespace WooCommerce_Tool
         {
             //Task_Management obj = new Task_Management();
             //SwitchScreen(obj);
+            productPredictionView.RefreshNameList();
             SwitchScreen(productPredictionView);
         }
         private void btnShow_Click_3(object sender, RoutedEventArgs e)
         {
             //Create_Task obj = new Create_Task(-1);
             //SwitchScreen(obj);
+            orderPredictionView.RefreshNameList();
             SwitchScreen(orderPredictionView);
         }
         private void btnShow_Click_4(object sender, RoutedEventArgs e)

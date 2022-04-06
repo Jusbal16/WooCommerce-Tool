@@ -32,8 +32,42 @@
         <Setter Property="BorderThickness" Value="2"/>
         <Setter Property="BorderBrush" Value="White"/>
         <Setter Property="Foreground" Value="White"/>
+        
     </Style>
-    <!-- Combobox -->
+    <!-- PaswwordBox -->
+    <Style TargetType="PasswordBox" x:Key="PasswordBox">
+        <Setter Property="Background" Value="#0F1523"/>
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="BorderBrush" Value="White"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Height" Value="20"/>
+        <Setter Property="PasswordChar" Value="*" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type PasswordBox}">
+                    <Border x:Name="Border"
+                CornerRadius="2"
+                Padding="2"
+                BorderThickness="1">
+                        <Border.Background>
+                            <SolidColorBrush Color="#0F1523" />
+                        </Border.Background>
+                        <Border.BorderBrush>
+                            <SolidColorBrush Color="White" />
+                        </Border.BorderBrush>
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal" />
+                                <VisualState x:Name="Disabled" />
+                                <VisualState x:Name="MouseOver" />
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <ScrollViewer x:Name="PART_ContentHost" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 
 
 

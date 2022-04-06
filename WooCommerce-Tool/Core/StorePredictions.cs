@@ -10,8 +10,10 @@ namespace WooCommerce_Tool.Core
     public class StorePredictions
     {
         private tool_dbContext _dbContext;
-        public StorePredictions()
+        private int ShopID { get; set; }
+        public StorePredictions(int shopID)
         {
+            ShopID = shopID;
             _dbContext = new tool_dbContext();
         }
         public void AddToDB(ToolOrder order, ToolProduct product)
@@ -19,12 +21,14 @@ namespace WooCommerce_Tool.Core
             if (order != null)
             {
                 order.Id = getPrimaryKeyOrder();
+                order.ShopId = ShopID;
                 _dbContext.ToolOrders.Add(order);
                 _dbContext.SaveChanges();
             }
             if (product != null)
             {
                 product.Id = getPrimaryKeyProduct();
+                product.ShopId = ShopID;
                 _dbContext.ToolProducts.Add(product);
                 _dbContext.SaveChanges();
             }

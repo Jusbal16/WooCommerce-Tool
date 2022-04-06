@@ -1,0 +1,77 @@
+﻿<Window x:Class="WooCommerce_Tool.Views.Login"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WooCommerce_Tool.Views"
+        mc:Ignorable="d"
+         Title="Shoes Emperor" Height="400" Width="400" Name="FirstWindow" Icon="/Assets/logo.png">
+
+    <Window.Resources>
+        <ResourceDictionary >
+            <ResourceDictionary.MergedDictionaries >
+                <ResourceDictionary x:Name="Styles"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid  Background="#051424" >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <!--Login-->
+        <Grid Grid.Row="2" Grid.Column="0"  >
+            <TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <Label Style="{StaticResource LabelBig}" Name="Label1" Content="Login"/>
+            </TextBlock>
+        </Grid>
+        <!--Url-->
+        <Grid Grid.Row="3" Grid.Column="0"  >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <TextBox x:Name="URL" Style="{StaticResource Textbox}" Width="250" Grid.ColumnSpan="5"  Text="{Binding URL, UpdateSourceTrigger=PropertyChanged}" Grid.Column="1" Margin="10,0,0,0" HorizontalAlignment="Left"/>
+            <TextBlock IsHitTestVisible="False" Text="URL" VerticalAlignment="Center" HorizontalAlignment="Right"  Foreground="White" Grid.Column="0" />
+        </Grid>
+        <!--Key-->
+        <Grid Grid.Row="4" Grid.Column="0"  >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <!--<TextBox x:Name="Key" Style="{StaticResource Textbox}" Width="250" Grid.ColumnSpan="5" Text="{Binding Key, UpdateSourceTrigger=PropertyChanged}" Grid.Column="1" Margin="10,0,0,0" HorizontalAlignment="Left" />-->
+            <PasswordBox x:Name="Key" Style="{StaticResource PasswordBox}" PasswordChanged="Key_PasswordChanged" Width="250" Grid.ColumnSpan="5" Grid.Column="1" Margin="10,0,0,0" HorizontalAlignment="Left" />
+            <TextBlock IsHitTestVisible="False" Text="API key" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,0,0" Foreground="White" Grid.Column="0" />
+        </Grid>
+        <!--Secret-->
+        <Grid Grid.Row="5" Grid.Column="0"  >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="100"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <!--<TextBox x:Name="Secret" Style="{StaticResource Textbox}" Width="250" Grid.ColumnSpan="5" Text="{Binding Secret, UpdateSourceTrigger=PropertyChanged}" />-->
+            <PasswordBox x:Name="Secret" Style="{StaticResource PasswordBox}" PasswordChanged="Secret_PasswordChanged"  Width="250" Grid.ColumnSpan="5" HorizontalAlignment="Left" Grid.Column="1" Margin="10,0,0,0"/>
+            <TextBlock IsHitTestVisible="False" Text="API secret key" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,0,0" Foreground="White" Grid.Column="0" />
+        </Grid>
+        <!--checkbox-->
+        <Grid Grid.Row="6" Grid.Column="0"  >
+            <CheckBox x:Name="RememberMe" Content="Remember me" Style="{StaticResource checkbox}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+        </Grid>
+        <!--Button-->
+        <Grid Grid.Row="7" Grid.Column="0"  >
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" >
+                <Button Content="Login" Style="{StaticResource ButtonG}" Click="Button_Click"  />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

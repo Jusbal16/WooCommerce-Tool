@@ -9,8 +9,8 @@ namespace WooCommerce_Tool.PredictionClasses
 {
     public class MLPredictionDataProducts
     {
-        public string MethodName;
+        public string MethodName { get; set; }
         [ColumnName("Score")]
-        public float MoneySpend;
+        public float MoneySpend { get; set; }
     }
 }
