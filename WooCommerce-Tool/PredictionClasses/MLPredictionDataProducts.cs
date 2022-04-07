@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace WooCommerce_Tool.PredictionClasses
 {
+    // product ML regresion prediction data structure
     public class MLPredictionDataProducts
     {
         public string MethodName { get; set; }

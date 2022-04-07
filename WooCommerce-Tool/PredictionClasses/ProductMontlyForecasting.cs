@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Order_Generation.PredictionTimeSeries
 {
+    // product timeseries prediction data structure
     internal class ProductMontlyForecasting
     {
         public float[] ForecastedMoney { get; set; }

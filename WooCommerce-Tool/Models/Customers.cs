@@ -8,6 +8,7 @@ using WooCommerceNET.WooCommerce.v3;
 
 namespace WooCommerce_Tool
 {
+    // Customer data structure for api
     public class Customers
     {
         private WCObject wc { get; set; }
@@ -17,6 +18,7 @@ namespace WooCommerce_Tool
         {
             wc = new WCObject(rest);
         }
+        // get all customers from api and store them
         public async Task GetAllCustomers()
         {
             List<Customer> customers = new List<Customer>();
@@ -42,7 +44,6 @@ namespace WooCommerce_Tool
             }
             CustomersData = customers;
             CustomersFlag = true;
-            //return customers;
         }
     }
 }

@@ -14,13 +14,11 @@ namespace WooCommerce_Tool
     {
         public string NewValue { get; set; }
     }
-
     public delegate void ValueChangedEventHandler(object sender, ValueChangedEventArgs e);
     public class OrderGenerator
     {
         private string _theValue;
         public event ValueChangedEventHandler ValueChanged;
-
         public Random rnd = new Random();
         private Products Products { get; set; }
         private Customers Customers { get; set; }
@@ -35,9 +33,9 @@ namespace WooCommerce_Tool
             Customers = customers;
             Orders = orders;
         }
+        // generate order 
         public void GenerateOrders()
         {
-            
             List<Customer> customers = Customers.CustomersData;
             List<Product> products = Products.ProductsData;
             int orderCount = 0;
@@ -49,7 +47,6 @@ namespace WooCommerce_Tool
             {
                 var customer = customers.ElementAt(rnd.Next(customers.Count()));
                 var product = products.ElementAt(rnd.Next(products.Count()));
-                // 1 customer
                 // create order
                 var order = new Order();
                 order.customer_id = (ulong?)customer.id;
@@ -63,8 +60,8 @@ namespace WooCommerce_Tool
                 orders.Add(order);
                 Orders.AddOrder(order);
                 orderCount++;
-
-                if ((i % ordersPerRequest) == ordersPerRequest-1)
+                // maximum 100 order per batch
+                if ((i % ordersPerRequest) == ordersPerRequest - 1)
                 {
                     batchOrders.create = orders;
                     var taskOrders = Orders.AddOrders(batchOrders);
@@ -73,7 +70,7 @@ namespace WooCommerce_Tool
                     orders.Clear();
                     ChangeUIText(orderCount.ToString() + " of " + DataLists.Settings.OrderCount.ToString() + " orders added");
                 }
-                
+
             }
             if (orders.Count() != 0)
             {
@@ -82,21 +79,18 @@ namespace WooCommerce_Tool
                 taskOrders.Wait();
                 ChangeUIText(orderCount.ToString() + " of " + DataLists.Settings.OrderCount.ToString() + " orders added");
             }
-
-
-
         }
+        // send status to ui
         public void ChangeUIText(string text)
         {
             _theValue = text;
-
-            //raise event
             if (this.ValueChanged != null)
                 ValueChanged(this, new ValueChangedEventArgs()
                 {
                     NewValue = _theValue
                 });
         }
+        // generate data list for orders
         public void GenerateDataList(OrderGenerationSettings settings)
         {
             Settings = settings;
@@ -106,11 +100,4 @@ namespace WooCommerce_Tool
 
     }
 }
-//nustatymai
-// data - (darbo dienos, savaitgaliai, menesio pradzia, vidurys, pabaiga)
-// laikas - (dienos pradzia, vidurys, vakaras, povakaris, naktis)
-// kiekis prekiu (mediana ar vidurkis) - List arba min max
-// kaina (mediana ar vidurkis) - List arba min max
-// regionas - (europa, azija, amerika, afrika)
-// uzsakymu kiekis
 

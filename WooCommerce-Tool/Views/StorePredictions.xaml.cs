@@ -35,6 +35,7 @@ namespace WooCommerce_Tool.Views
             comboBoxType.SelectedIndex = 0;
             RefreshNameList();
         }
+        // insert selected data to db
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             if (CheckFill())
@@ -53,6 +54,7 @@ namespace WooCommerce_Tool.Views
                 ShowMessage("Not all settings are selected", "Error");
             }
         }
+        // delete selected data from db
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
             if (DeletePrediction.SelectedIndex != 0)
@@ -60,18 +62,19 @@ namespace WooCommerce_Tool.Views
                 string name = _viewModel.DeletionName;
                 main.Delete(name);
                 RefreshNameList();
-                _viewModel.Status = "Prediction("+name+") deleted ";
+                _viewModel.Status = "Prediction(" + name + ") deleted ";
             }
             else
             {
                 ShowMessage("Not all settings are selected", "Error");
             }
         }
+        //Add to db selected data
         private void AddToDB()
         {
             ToolOrder order = new ToolOrder();
             ToolProduct product = new ToolProduct();
-            
+
             if (_viewModel.Type == "Only orders" || _viewModel.Type == "Both")
             {
                 _viewModel.Status = "Adding order prediction to data base";
@@ -88,6 +91,7 @@ namespace WooCommerce_Tool.Views
             _viewModel.Status = "Successfully added";
 
         }
+        // check if all forms ar filled
         public bool CheckFill()
         {
             if (String.IsNullOrEmpty(Name.Text))
@@ -96,6 +100,7 @@ namespace WooCommerce_Tool.Views
                 return false;
             return true;
         }
+        // check what data to insert in db
         public bool CheckName()
         {
             string name = _viewModel.Name;
@@ -118,12 +123,7 @@ namespace WooCommerce_Tool.Views
                 Application.Current.Shutdown();
             }
         }
-        private List<string> ReturnSavedPredictionsNames()
-        {
-            List<string> List = new List<string>();
-
-            return List;
-        }
+        // refresh category combobox names from db
         public void RefreshNameList()
         {
             Application.Current.Dispatcher.Invoke((Action)delegate

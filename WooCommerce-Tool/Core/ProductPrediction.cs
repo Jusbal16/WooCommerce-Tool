@@ -17,7 +17,6 @@ namespace WooCommerce_Tool
     public class ProductPrediction : Prediction
     {
         private Products Products { get; set; }
-        private Customers Customers { get; set; }
         private Orders Orders { get; set; }
         private List<Order> OrdersData { get; set; }
         private List<Product> ProductsData { get; set; }
@@ -25,17 +24,18 @@ namespace WooCommerce_Tool
         IDataView OrdersDataFull { get; set; }
         IDataView OrdersDataTrain { get; set; }
         IDataView OrdersDatatest { get; set; }
-        IEnumerable<ProductMontlyData> SortedOrdersData { get; set; }
+        public IEnumerable<ProductMontlyData> SortedOrdersData { get; set; }
         private PredictionConstants Constants { get; set; }
         public ProductPredictionSettings Settings { get; set; }
-        public ProductPrediction(Products products, Customers customers, Orders orders)
+        public ProductPrediction(Products products, Orders orders)
         {
             Products = products;
-            Customers = customers;
             Orders = orders;
             Constants = new PredictionConstants();
             mlContext = new MLContext();
         }
+        // get data for predictons
+        // by start, end dates and by other filter selected in ui
         public void GetData(ProductPredictionSettings settings)
         {
             Settings = settings;
@@ -47,12 +47,13 @@ namespace WooCommerce_Tool
             int EndIndex = 0;
             int i = 0;
             string date;
+            // reduce data by date
             foreach (var order in SortedOrdersData)
             {
                 date = ReturnDate(order);
-                if (date == Settings.StartDate)
+                if (CheckDate(date, Settings.StartDate))
                     startIndex = i;
-                if (date == Settings.EndDate)
+                if (CheckDate(date, Settings.EndDate))
                     EndIndex = i;
                 i++;
             }
@@ -60,7 +61,9 @@ namespace WooCommerce_Tool
             if (EndIndex != 0)
                 SortedOrdersData = SortedOrdersData.Take(EndIndex - startIndex + 1);
             //
+            // send data to ui
             Messenger.Default.Send<IEnumerable<ProductMontlyData>>(SortedOrdersData);
+            //
             int count = SortedOrdersData.Count();
             int trainDataSize = (count * 80) / 100;
             //
@@ -72,6 +75,7 @@ namespace WooCommerce_Tool
 
 
         }
+        // Liner regresion with NN
         public void LinerRegresionWithNeuralNetwork()
         {
             float max = SortedOrdersData.Max(x => x.MoneySpend);
@@ -106,9 +110,11 @@ namespace WooCommerce_Tool
                     predictor[j] = predictor[j + 1];
                 predictor[predictor.Length - 1] = forecast[0];
             }
+            // send data to ui
             Messenger.Default.Send<NNProductData>(nnData);
         }
-        public double[][] DataToDoubleData(IEnumerable<ProductMontlyData> ordersData, float min, float max)
+        // convert data to array for NN
+        private double[][] DataToDoubleData(IEnumerable<ProductMontlyData> ordersData, float min, float max)
         {
             int lenght = ordersData.Count();
             double[][] data = new double[lenght - 4][];
@@ -123,30 +129,37 @@ namespace WooCommerce_Tool
             }
             return data;
         }
+        // get all popular products
         public void GetProducts()
         {
             List<ProductPopularData> products = (from p in OrdersData
                                                  group p by new { Name = p.line_items.ElementAt(0).name } into d
                                                     select new ProductPopularData { ProductName = d.Key.Name, Count = d.Count() })
                           .OrderBy(g => g.Count).ToList();
+            // send data to ui
             Messenger.Default.Send<List<ProductPopularData>>(products);
         }
+        // get all popular Categories
         public void GetCategories()
         {
             List<ProductCategoriesData> products = (from p in ProductsData
                                                     group p by new { Category = ReturnString(p.categories)} into d
                                                        select new ProductCategoriesData { CategoryName = d.Key.Category, Count = d.Count() })
                           .OrderBy(g => g.Count).ToList();
+            // send data to ui
             Messenger.Default.Send<List<ProductCategoriesData>>(products);
         }
+        // time series forecasting
         public void ProductsForecasting()
         {
             int size = SortedOrdersData.Count();
+            // if data is to small, time series is not possible
             int WindowSize = 0;
             if (size >= 12)
                 WindowSize = 4;
             else
                 return;
+            //create pipeline
             var forecastingPipeline = mlContext.Forecasting.ForecastBySsa(
                 outputColumnName: "ForecastedMoney",
                 inputColumnName: "MoneySpend",
@@ -157,25 +170,30 @@ namespace WooCommerce_Tool
                 confidenceLevel: 0.95f,
                 confidenceLowerBoundColumn: "LowerBoundOrders",
                 confidenceUpperBoundColumn: "UpperBoundOrders");
-            //
+            // train model
             SsaForecastingTransformer forecaster = forecastingPipeline.Fit(OrdersDataTrain);
-            //
+            // create engine
             var forecastEngine = forecaster.CreateTimeSeriesEngine<ProductMontlyData, ProductMontlyForecasting>(mlContext);
-            //
+            // predict
             Forecast(OrdersDatatest, 3, forecastEngine, mlContext);
 
         }
-        void Forecast(IDataView testData, int horizon, TimeSeriesPredictionEngine<ProductMontlyData, ProductMontlyForecasting> forecaster, MLContext mlContext)
+        // time series forecasting
+        private void Forecast(IDataView testData, int horizon, TimeSeriesPredictionEngine<ProductMontlyData, ProductMontlyForecasting> forecaster, MLContext mlContext)
         {
             ProductMontlyForecasting forecast = forecaster.Predict();
+            // send data to ui
             Messenger.Default.Send<ProductMontlyForecasting>(forecast);
         }
+        //ML prediction
         public void FindBestModelForForecasting()
         {
+            //create pipeline
             var pipe = mlContext.Transforms.CopyColumns(outputColumnName: "Label", inputColumnName: "MoneySpend")
                             .Append(mlContext.Transforms.Concatenate("Features", "Year", "Month"));
             string BestModel = null;
             double BestModelError = 10000;
+            // go trought different models for best model
             foreach (var method in Constants.ForecastingMethods)
             {
                 IDataView Prediction = null;
@@ -207,11 +225,14 @@ namespace WooCommerce_Tool
                         Prediction = modelGam.Transform(OrdersDatatest);
                         break;
                 }
+                // calculate each model error, return best (with smallest error)
                 CalculateError(ref BestModel, ref BestModelError, Prediction, method);
             }
+            // predict with best model
             ForecastML(BestModel);
         }
-        public void ForecastML(string method)
+        // forecasting with best fitting model
+        private void ForecastML(string method)
         {
             var pipe = mlContext.Transforms.CopyColumns(outputColumnName: "Label", inputColumnName: "MoneySpend")
                 .Append(mlContext.Transforms.Concatenate("Features", "Year", "Month"));
@@ -244,20 +265,23 @@ namespace WooCommerce_Tool
                     PredictionFunction = mlContext.Model.CreatePredictionEngine<ProductMontlyData, MLPredictionDataProducts>(modelGam);
                     break;
             }
-
+            // predict with test data
             List<MLPredictionDataProducts> Predictions = new List<MLPredictionDataProducts>();
             var testData = new ProductMontlyData();
             for (int i = 0; i < 6; i++)
             {
-                testData.Year = float.Parse(returnYearFromLastData(i));
-                testData.Month = float.Parse(returnMonthFromLastData(i));
+                var datetime = GetDateTime();
+                testData.Year = float.Parse(returnYearFromLastData(i, datetime));
+                testData.Month = float.Parse(returnMonthFromLastData(i, datetime));
                 var prediction = PredictionFunction.Predict(testData);
                 prediction.MethodName = method;
                 Predictions.Add(prediction);
             }
+            // send data to ui
             Messenger.Default.Send<List<MLPredictionDataProducts>>(Predictions);
         }
-        public void CalculateError(ref string model, ref double error, IDataView prediction, string modelName)
+        // calculate model error with know results
+        private void CalculateError(ref string model, ref double error, IDataView prediction, string modelName)
         {
             var metrics = mlContext.Regression.Evaluate(prediction, "Label", "Score");
             double ForecastingError = Math.Abs(metrics.RSquared) + Math.Abs(metrics.RootMeanSquaredError);
@@ -268,19 +292,9 @@ namespace WooCommerce_Tool
             }
 
         }
-        public string returnYearFromLastData(int i)
-        {
-            DateTime dateTime = GetDateTime();
-            dateTime = dateTime.AddMonths(i + 1);
-            return dateTime.ToString("yyyy");
-        }
-        public string returnMonthFromLastData(int i)
-        {
-            DateTime dateTime = GetDateTime();
-            dateTime = dateTime.AddMonths(i + 1);
-            return dateTime.ToString("MM");
-        }
-        DateTime GetDateTime()
+
+        // return forecasted date time
+        private DateTime GetDateTime()
         {
             int count = SortedOrdersData.Count();
             string year = SortedOrdersData.ElementAt(count - 3).Year.ToString();
@@ -288,34 +302,45 @@ namespace WooCommerce_Tool
             DateTime dateTime = DateTime.Parse(year + "/" + Month);
             return dateTime;
         }
-        public IEnumerable<ProductMontlyData> RewriteDataForecasting(List<Order> data)
+        // rewrite data from api returned object, to predictions prepared object
+        private IEnumerable<ProductMontlyData> RewriteDataForecasting(List<Order> data)
         {
             // group by category
             if (Settings.Category != "All")
                 data = data.Where(x => ReturnCategory((long)x.line_items.ElementAt(0).product_id)).ToList();
             //
             List<ProductMontlyData> orders = (from p in data
-                                             group p by new { month = Month(p.customer_note), year = year(p.customer_note) } into d
-                                             select new ProductMontlyData { Year = float.Parse(d.Key.year), Month = float.Parse(d.Key.month), MoneySpend = d.Sum(x => (float)x.line_items.ElementAt(0).price) })
+                                              group p by new { month = Month(p.customer_note), year = year(p.customer_note) } into d
+                                              select new ProductMontlyData { Year = float.Parse(d.Key.year), Month = float.Parse(d.Key.month), MoneySpend = d.Where(x => CheckIfNotNull((float)x.line_items.ElementAt(0).price) == true).Sum(x => (float)x.line_items.ElementAt(0).price) })
                           .OrderBy(g => g.Year)
                           .ThenBy(g => g.Month).ToList();
             return orders;
         }
-        public bool ReturnCategory(long id)
+        // check if variable has value
+        private bool CheckIfNotNull(float a)
+        {
+            if (a != null)
+                return true;
+            return false;
+        }
+        // return category from product data for LINQ
+        private bool ReturnCategory(long id)
         {
             var product = ProductsData.Single(x => (long)x.id == id);
             if (Settings.Category == ReturnString(product.categories))
                 return true;
             return false;
         }
-        public string ReturnString(List<ProductCategoryLine> categories)
+        // return combined string from list of strings
+        private string ReturnString(List<ProductCategoryLine> categories)
         {
             string cat = "";
             foreach (var c in categories)
                 cat += c.name.ToString() + "|";
             return cat;
         }
-        public string ReturnDate(ProductMontlyData data)
+        // return object date as one string
+        private string ReturnDate(ProductMontlyData data)
         {
             return data.Year.ToString() + "/" + data.Month.ToString();
         }

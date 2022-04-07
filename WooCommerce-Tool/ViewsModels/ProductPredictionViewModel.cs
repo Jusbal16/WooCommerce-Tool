@@ -54,6 +54,7 @@ namespace WooCommerce_Tool.ViewsModels
             EndDateComboData.Add("Select end date");
             CategoryComboData.Add("Select category");
             CategoryComboData.Add("All");
+            // fill combobox with dates
             DateTime datetime = DateTime.Today;
             int monthCount = ((DateTime.Today.Year - datetime.AddYears(-5).Year) * 12) + DateTime.Today.Month - datetime.AddYears(-5).Month;
             string date = null;
@@ -66,6 +67,7 @@ namespace WooCommerce_Tool.ViewsModels
                 datetime = datetime.AddMonths(-1);
             }
         }
+        // receive popular product probability data and fill it to charts
         private void ReceivePopularProducts(List<ProductPopularData> msg)
         {
             if (msg == null)
@@ -86,6 +88,7 @@ namespace WooCommerce_Tool.ViewsModels
             });
 
         }
+        // receive category probability data and fill it to charts
         private void ReceiveCategories(List<ProductCategoriesData> msg)
         {
             if (msg == null)
@@ -107,6 +110,7 @@ namespace WooCommerce_Tool.ViewsModels
             });
 
         }
+        // receive All order data and fill it to charts
         private void ReceiveOrders(IEnumerable<ProductMontlyData> msg)
         {
             if (msg == null)
@@ -137,6 +141,7 @@ namespace WooCommerce_Tool.ViewsModels
             });
 
         }
+        // add months to barlabes for graph
         public void AddMonths(string date)
         {
             int count = BarLabels.Length - 3;
@@ -148,6 +153,7 @@ namespace WooCommerce_Tool.ViewsModels
                 count++;
             }
         }
+        // receive TimeSeries prediction data and fill it to charts
         private void ReceiveForecasting(ProductMontlyForecasting msg)
         {
             if (msg == null)
@@ -171,6 +177,7 @@ namespace WooCommerce_Tool.ViewsModels
             });
 
         }
+        // receive ML (regresion) prediction data and fill it to charts
         private void ReceiveMLForecasting(List<MLPredictionDataProducts> msg)
         {
             if (msg == null)
@@ -195,6 +202,7 @@ namespace WooCommerce_Tool.ViewsModels
             });
 
         }
+        // receive neural network prediction data and fill it to charts
         private void ReceiveNNForecasting(NNProductData msg)
         {
             if (msg == null)
@@ -218,6 +226,7 @@ namespace WooCommerce_Tool.ViewsModels
                 OrdersCount.Add(new LineSeries { Title = "Forecasted NN Values", Values = ForecastedNNValues });
             });
         }
+        // BarLabels chart binding from ui
         public string[] BarLabels
         {
             get { return _BarLabels; }
@@ -227,6 +236,7 @@ namespace WooCommerce_Tool.ViewsModels
                 OnPropertyChanged("BarLabels");
             }
         }
+        // BarFormatter chart binding from ui
         public Func<double, string> BarFormatter
         {
             get { return _BarFormatter; }
@@ -234,6 +244,7 @@ namespace WooCommerce_Tool.ViewsModels
                 _BarFormatter = value; 
             }
         }
+        // OrdersCount chart binding from ui
         public SeriesCollection OrdersCount
         {
             get { return _OrderCount; }
@@ -243,6 +254,7 @@ namespace WooCommerce_Tool.ViewsModels
                 OnPropertyChanged("OrdersCount");
             }
         }
+        // MonthProbability chart binding from ui
         public SeriesCollection MonthProbability
         {
             get { return _MonthProbability; }
@@ -252,6 +264,7 @@ namespace WooCommerce_Tool.ViewsModels
                 OnPropertyChanged("MonthProbability");
             }
         }
+        // TimeProbability chart binding from ui
         public SeriesCollection TimeProbability
         {
             get { return _TimeProbability; }
@@ -261,6 +274,7 @@ namespace WooCommerce_Tool.ViewsModels
                 OnPropertyChanged("TimeProbability");
             }
         }
+        // Status binding from ui
         public string Status
         {
             get { return status; }
@@ -270,21 +284,25 @@ namespace WooCommerce_Tool.ViewsModels
                 OnPropertyChanged("Status");
             }
         }
+        // StartDate item source binding combobox
         public List<string> StartDateComboData
         {
             get { return _StartDateComboData; }
             set { _StartDateComboData = value; }
         }
+        // EndDate item source binding combobox
         public List<string> EndDateComboData
         {
             get { return _EndDateComboData; }
             set { _EndDateComboData = value; }
         }
+        // names item source binding combobox
         public ObservableCollection<string> NamesComboData
         {
             get { return _NamesComboData; }
             set { _NamesComboData = value; }
         }
+        // Category item source binding combobox
         public ObservableCollection<string> CategoryComboData
         {
             get { return _CategoryComboData; }
@@ -294,6 +312,7 @@ namespace WooCommerce_Tool.ViewsModels
                 OnPropertyChanged("CategoryComboData");
             }
         }
+        // name binding from ui
         public string Name
         {
             get { return Settings.Name; }
@@ -306,6 +325,7 @@ namespace WooCommerce_Tool.ViewsModels
                 }
             }
         }
+        // Category binding from ui
         public string Category
         {
             get { return Settings.Category; }
@@ -318,6 +338,7 @@ namespace WooCommerce_Tool.ViewsModels
                 }
             }
         }
+        // EndDate binding from ui
         public string EndDate
         {
             get { return Settings.EndDate; }
@@ -330,6 +351,7 @@ namespace WooCommerce_Tool.ViewsModels
                 }
             }
         }
+        // StartDate binding from ui
         public string StartDate
         {
             get { return Settings.StartDate; }
@@ -342,13 +364,10 @@ namespace WooCommerce_Tool.ViewsModels
                 }
             }
         }
+        // return valid date in string form from datetime 
         private string ReturnValidDateForm(DateTime date)
         {
-            return date.ToString("yyyy") + "/" + date.ToString("MM").Replace("0", string.Empty);
+            return date.ToString("yyyy") + "/" + date.ToString("MM");
         }
-
-
-
-
     }
 }

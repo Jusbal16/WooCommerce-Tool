@@ -72,9 +72,10 @@ namespace WooCommerce_Tool
                 {
                     ShowMessage("Not all settings are selected", "Error");
                 }
-           else
+            else
                 ShowMessage("Still downloading data, please wait", "Error");
         }
+        // generate orders
         public void StartGeneration(OrderGenerationSettings settings)
         {
             Main.GenerateDataList(settings);
@@ -87,6 +88,7 @@ namespace WooCommerce_Tool
             Main.GenerateOrders();
             _viewModel.Status = "Order generation ended successfully";
         }
+        // show ui messages
         public void ShowMessage(string text, string type)
         {
             MessageBoxResult result = MessageBox.Show(text,
@@ -98,6 +100,7 @@ namespace WooCommerce_Tool
                 Application.Current.Shutdown();
             }
         }
+        // check if form has only int type text
         public void OnlyInt(TextCompositionEventArgs e)
         {
             int result;
@@ -111,6 +114,7 @@ namespace WooCommerce_Tool
         {
             OnlyInt(e);
         }
+        // check if all forms are filled
         public bool CheckFill()
         {
             if (String.IsNullOrEmpty(OrderCount.Text))

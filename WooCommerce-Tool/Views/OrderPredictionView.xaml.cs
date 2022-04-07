@@ -69,6 +69,11 @@ namespace WooCommerce_Tool.Views
         {
             _viewModel.Status = "Downloading orders";
             Main.PredGetData(settings);
+            if (!checkData(settings))
+            {
+                ShowMessage("Not enough data","Error");
+                return;
+            }
             _viewModel.Status = "Calculating month time probability";
             Main.ProbOrdersMonthTime();
             _viewModel.Status = "Calculating time probability";
@@ -79,6 +84,7 @@ namespace WooCommerce_Tool.Views
             Main.FindBestForecastingMethod();
             Main.LinerRegresionWithNeuralNetwork();
         }
+        // show message method
         public void ShowMessage(string text, string type)
         {
             MessageBoxResult result = MessageBox.Show(text,
@@ -90,12 +96,14 @@ namespace WooCommerce_Tool.Views
                 Application.Current.Shutdown();
             }
         }
+        // check if all forms ar filled
         public bool CheckFill()
         {
             if (comboBoxStartDate.SelectedIndex == 0 || comboBoxEndDate.SelectedIndex == 0 || comboBoxMonth.SelectedIndex == 0 || comboBoxTime.SelectedIndex == 0)
                 return false;
             return true;
         }
+        //clean up graph for new data
         public void CleanUp()
         {
             _viewModel.BarLabels = null;
@@ -104,6 +112,7 @@ namespace WooCommerce_Tool.Views
             _viewModel.MonthProbability.Clear();
             _viewModel.TimeProbability.Clear();
         }
+        // fill category with new data
         public void RefreshNameList()
         {
             _viewModel.NamesComboData.Clear();
@@ -113,13 +122,13 @@ namespace WooCommerce_Tool.Views
             foreach (string t in listOfName)
                 _viewModel.NamesComboData.Add(t);
         }
-
-
+        // fill graph with selected data from db
         private void comboBoxDBNames_DropDownClosed(object sender, EventArgs e)
         {
             if (comboBoxDBNames.SelectedIndex == 0)
                 return;
-            Clear();
+            //clear graph
+            CleanUp();
             string Name = _viewModel.Name;
             ToolOrder Order = Main.ReturnOrderByName(Name);
             //
@@ -146,18 +155,18 @@ namespace WooCommerce_Tool.Views
             List<MLPredictionDataOrders> data5 = JsonSerializer.Deserialize<List<MLPredictionDataOrders>>(Order.RegresionOrder);
             Messenger.Default.Send<List<MLPredictionDataOrders>>(data5);
         }
-        private void Clear()
+        // check data if predictions are possible
+        public bool checkData(OrderPredictionSettings settings)
         {
-            comboBoxStartDate.SelectedIndex = 0;
-            comboBoxEndDate.SelectedIndex = 0;
-            comboBoxMonth.SelectedIndex = 0;
-            comboBoxTime.SelectedIndex = 0;
-            Messenger.Default.Send<IEnumerable<OrdersMontlyData>>(null);
-            Messenger.Default.Send<List<OrdersMonthTimeProbability>>(null);
-            Messenger.Default.Send<List<OrdersTimeProbability>>(null);
-            Messenger.Default.Send<NNOrderData>(null);
-            Messenger.Default.Send<OrdersMontlyForecasting>(null);
-            Messenger.Default.Send<List<MLPredictionDataOrders>>(null);
+            var StartDate = DateTime.Parse(settings.StartDate);
+            var EndDate = DateTime.Parse(settings.EndDate);
+            int months = ((EndDate.Year - StartDate.Year) * 12) + EndDate.Month - StartDate.Month;
+            int dataCount = Main.OrderPrediction.SortedOrdersData.Count();
+            if (months + 1 == dataCount)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

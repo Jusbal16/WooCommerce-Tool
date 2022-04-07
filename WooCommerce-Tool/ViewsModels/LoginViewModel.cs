@@ -15,6 +15,7 @@ namespace WooCommerce_Tool.ViewsModels
         {
             Settings = new LoginSettings();
         }
+        // URL binding from ui
         public string URL
         {
             get { return Settings.URL; }
@@ -27,6 +28,7 @@ namespace WooCommerce_Tool.ViewsModels
                 }
             }
         }
+        // Key binding from ui
         public string Key
         {
             get { return Settings.Key; }
@@ -39,6 +41,7 @@ namespace WooCommerce_Tool.ViewsModels
                 }
             }
         }
+        // Secret binding from ui
         public string Secret
         {
             get { return Settings.Secret; }

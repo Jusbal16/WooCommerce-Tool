@@ -8,6 +8,7 @@ using WooCommerceNET.WooCommerce.v3;
 
 namespace WooCommerce_Tool
 {
+    // Product data structure for api
     public class Products
     {
         private WCObject wc { get; set; }
@@ -17,6 +18,7 @@ namespace WooCommerce_Tool
         {
             wc = new WCObject(rest);
         }
+        // get all products from api and store them
         public async Task GetAllProducts()
         {
             List<Product> products = new List<Product>();
@@ -42,7 +44,6 @@ namespace WooCommerce_Tool
             }
             ProductsData = products;
             ProductFlag = true;
-            //return products;
         }
     }
 }

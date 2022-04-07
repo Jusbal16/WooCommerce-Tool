@@ -47,7 +47,7 @@ namespace WooCommerce_Tool.Views
         {
             CleanUp();
             if (Main.OrderService.OrdersFlag && Main.ProductsService.ProductFlag)
-                if (CheckFill())
+                if (CheckFill()) 
                 {
                     Settings.StartDate = _viewModel.StartDate;
                     Settings.EndDate = _viewModel.EndDate;
@@ -65,6 +65,11 @@ namespace WooCommerce_Tool.Views
         {
             _viewModel.Status = "Downloading orders";
             Main.PredGetDataProducts(settings);
+            if (!checkData(settings))
+            {
+                ShowMessage("Not enough data", "Error");
+                return;
+            }
             _viewModel.Status = "Getting Categories";
             Main.PredGetProductCategories();
             _viewModel.Status = "Getting Products";
@@ -75,6 +80,7 @@ namespace WooCommerce_Tool.Views
             Main.FindBestForecastingMethodProduct();
             Main.LinerRegresionWithNeuralNetworkProduct();
         }
+        // show message method
         public void ShowMessage(string text, string type)
         {
             MessageBoxResult result = MessageBox.Show(text,
@@ -86,12 +92,14 @@ namespace WooCommerce_Tool.Views
                 Application.Current.Shutdown();
             }
         }
+        // check if all forms ar filled
         public bool CheckFill()
         {
             if (comboBoxStartDate.SelectedIndex == 0 || comboBoxEndDate.SelectedIndex == 0 || comboBoxCategory.SelectedIndex == 0)
                 return false;
             return true;
         }
+        //clean up graph for new data
         public void CleanUp()
         {
             _viewModel.BarLabels = null;
@@ -100,28 +108,32 @@ namespace WooCommerce_Tool.Views
             _viewModel.MonthProbability.Clear();
             _viewModel.TimeProbability.Clear();
         }
+        // fill category with new data
         public void FillCattegeoryComboBox(List<string> cat)
         {
             ObservableCollection<string> ListOfCategories = new ObservableCollection<string>(cat);
             Application.Current.Dispatcher.Invoke((Action)delegate
             {
-                foreach(var cat in ListOfCategories)
+                foreach (var cat in ListOfCategories)
                     _viewModel.CategoryComboData.Add(cat);
             });
 
         }
+        // fill graph with selected data from db
         private void comboBoxDBNames_DropDownClosed(object sender, EventArgs e)
         {
-            if (comboBoxDBNames.SelectedIndex ==0)
+            if (comboBoxDBNames.SelectedIndex == 0)
                 return;
-            Clear();
+            //clear graph
+            CleanUp();
+            // get data by name from db
             string Name = _viewModel.Name;
             ToolProduct product = Main.ReturnProductByName(Name);
             //
-            comboBoxStartDate.SelectedValue = product.StartDate;   
+            comboBoxStartDate.SelectedValue = product.StartDate;
             comboBoxEndDate.SelectedValue = product.EndDate;
             comboBoxCategory.SelectedValue = product.Category;
-            //
+            // send data to ViewModel
             IEnumerable<ProductMontlyData> data = JsonSerializer.Deserialize<IEnumerable<ProductMontlyData>>(product.TotalProducts);
             Messenger.Default.Send<IEnumerable<ProductMontlyData>>(data);
             //
@@ -141,18 +153,7 @@ namespace WooCommerce_Tool.Views
             Messenger.Default.Send<List<MLPredictionDataProducts>>(data5);
             //
         }
-        private void Clear()
-        {
-            comboBoxStartDate.SelectedIndex = 0;
-            comboBoxEndDate.SelectedIndex = 0;
-            comboBoxCategory.SelectedIndex = 0;
-            Messenger.Default.Send<IEnumerable<ProductMontlyData>>(null);
-            Messenger.Default.Send<NNProductData>(null);
-            Messenger.Default.Send<List<ProductPopularData>>(null);
-            Messenger.Default.Send<List<ProductCategoriesData>>(null);
-            Messenger.Default.Send<ProductMontlyForecasting>(null);
-            Messenger.Default.Send<List<MLPredictionDataProducts>>(null);
-        }
+        // refresh category combobox names from db
         public void RefreshNameList()
         {
             _viewModel.NamesComboData.Clear();
@@ -161,6 +162,19 @@ namespace WooCommerce_Tool.Views
             ObservableCollection<string> listOfName = new ObservableCollection<string>(Main.ReturnSavedPredictionsNamesOnlyProducts());
             foreach (string t in listOfName)
                 _viewModel.NamesComboData.Add(t);
+        }
+        // check data if predictions are possible
+        public bool checkData(ProductPredictionSettings settings)
+        {
+            var StartDate = DateTime.Parse(settings.StartDate);
+            var EndDate = DateTime.Parse(settings.EndDate);
+            int months = ((EndDate.Year - StartDate.Year) * 12) + EndDate.Month - StartDate.Month;
+            int dataCount = Main.ProductPrediction.SortedOrdersData.Count();
+            if (months + 1 == dataCount)
+            {
+                return true;
+            }
+            return false;
         }
 
 

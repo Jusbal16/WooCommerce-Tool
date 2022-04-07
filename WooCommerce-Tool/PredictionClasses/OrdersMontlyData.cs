@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace WooCommerce_Tool
 {
+    // order prediction data structure for ML regresion
     public class OrdersMontlyData
     {
         public float Year { get; set; }

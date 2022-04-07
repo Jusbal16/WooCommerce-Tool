@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace WooCommerce_Tool
 {
+    // Month time (time of the month) probability data structure
     public class OrdersMonthTimeProbability
     {
         public string MonthPeriod { get; set; }

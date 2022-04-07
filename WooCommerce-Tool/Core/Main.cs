@@ -33,8 +33,8 @@ namespace WooCommerce_Tool
             OrderGenerator = new OrderGenerator(ProductsService, CustomersService, OrderService);
             // prediction
             predictionClass = new Prediction();
-            OrderPrediction = new OrderPrediction(ProductsService, CustomersService, OrderService);
-            ProductPrediction = new ProductPrediction(ProductsService, CustomersService, OrderService);
+            OrderPrediction = new OrderPrediction(OrderService);
+            ProductPrediction = new ProductPrediction(ProductsService, OrderService);
             // 
             StorePredictions = new StorePredictions(id);
         }

@@ -16,6 +16,7 @@ namespace WooCommerce_Tool.Core
             ShopID = shopID;
             _dbContext = new tool_dbContext();
         }
+        // add order or product to db
         public void AddToDB(ToolOrder order, ToolProduct product)
         {
             if (order != null)
@@ -33,7 +34,7 @@ namespace WooCommerce_Tool.Core
                 _dbContext.SaveChanges();
             }
         }
-
+        // return id of order
         public int getPrimaryKeyOrder()
         {
             var LastRow = _dbContext.Set<ToolOrder>().OrderBy(x => x.Id).LastOrDefault();
@@ -41,6 +42,7 @@ namespace WooCommerce_Tool.Core
                 return 1;
             return (int)LastRow.Id + 1;
         }
+        // return id of product
         public int getPrimaryKeyProduct()
         {
             var LastRow = _dbContext.Set<ToolProduct>().OrderBy(x => x.Id).LastOrDefault();
@@ -48,6 +50,7 @@ namespace WooCommerce_Tool.Core
                 return 1;
             return (int)LastRow.Id + 1;
         }
+        // return all saved predictions names
         public List<string> ReturnSavedPredictionsNames()
         {
             List<string> List = new List<string>();
@@ -55,14 +58,17 @@ namespace WooCommerce_Tool.Core
             List.AddRange(_dbContext.Set<ToolOrder>().Select(x => x.Name).ToList());
             return List.Distinct().ToList();
         }
+        // return order saved predictions names
         public List<string> ReturnSavedPredictionsNamesOnlyOrders()
         {
             return _dbContext.Set<ToolOrder>().Select(x => x.Name).ToList();
         }
+        // return product saved predictions names
         public List<string> ReturnSavedPredictionsNamesOnlyProducts()
         {
             return _dbContext.Set<ToolProduct>().Select(x => x.Name).ToList();
         }
+        // delete saved prediction by name
         public void Delete(string name)
         {
             var order = _dbContext.ToolOrders.Where(x => x.Name == name).FirstOrDefault<ToolOrder>();
@@ -78,10 +84,12 @@ namespace WooCommerce_Tool.Core
                 _dbContext.SaveChanges();
             }
         }
+        // return order objecct by name from db
         public ToolOrder ReturnOrderByName(string name)
         {
             return _dbContext.ToolOrders.Where(x => x.Name == name).FirstOrDefault<ToolOrder>();
         }
+        // return product objecct by name from db
         public ToolProduct ReturnProductByName(string name)
         {
             return _dbContext.ToolProducts.Where(x => x.Name == name).FirstOrDefault<ToolProduct>();
