@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WooCommerce_Tool.Views"
         mc:Ignorable="d"
-         Title="Shoes Emperor" Height="400" Width="400" Name="FirstWindow" Icon="/Assets/logo.png">
+         Title="WooCommerce_Tool" Height="400" Width="400" Name="FirstWindow" Icon="/Assets/logo.png">
 
     <Window.Resources>
         <ResourceDictionary >
@@ -49,7 +49,6 @@
                 <ColumnDefinition Width="100"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <!--<TextBox x:Name="Key" Style="{StaticResource Textbox}" Width="250" Grid.ColumnSpan="5" Text="{Binding Key, UpdateSourceTrigger=PropertyChanged}" Grid.Column="1" Margin="10,0,0,0" HorizontalAlignment="Left" />-->
             <PasswordBox x:Name="Key" Style="{StaticResource PasswordBox}" PasswordChanged="Key_PasswordChanged" Width="250" Grid.ColumnSpan="5" Grid.Column="1" Margin="10,0,0,0" HorizontalAlignment="Left" />
             <TextBlock IsHitTestVisible="False" Text="API key" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,0,0" Foreground="White" Grid.Column="0" />
         </Grid>
@@ -59,7 +58,6 @@
                 <ColumnDefinition Width="100"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <!--<TextBox x:Name="Secret" Style="{StaticResource Textbox}" Width="250" Grid.ColumnSpan="5" Text="{Binding Secret, UpdateSourceTrigger=PropertyChanged}" />-->
             <PasswordBox x:Name="Secret" Style="{StaticResource PasswordBox}" PasswordChanged="Secret_PasswordChanged"  Width="250" Grid.ColumnSpan="5" HorizontalAlignment="Left" Grid.Column="1" Margin="10,0,0,0"/>
             <TextBlock IsHitTestVisible="False" Text="API secret key" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,0,0" Foreground="White" Grid.Column="0" />
         </Grid>

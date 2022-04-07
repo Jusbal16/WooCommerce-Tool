@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Order_Generation.PredictionTimeSeries
 {
+    // product prediction data structure for ML regresion
     public class ProductMontlyData
     {
         public float Year { get; set; }

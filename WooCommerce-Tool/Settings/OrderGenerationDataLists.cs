@@ -22,6 +22,7 @@ namespace WooCommerce_Tool.Settings
             Settings = settings;
             Constants = constants;
         }
+        // for new genertion delete datalists
         public void GenerateDataLists()
         {
             DateList.Clear();
@@ -29,6 +30,8 @@ namespace WooCommerce_Tool.Settings
             GenerateDateList();
             GenerateTimeList();
         }
+        // generate time list, for order prediction using constans
+        // depending on dalist order will be variously distributed
         private void GenerateTimeList()
         {
             string time = Settings.Time;
@@ -37,25 +40,32 @@ namespace WooCommerce_Tool.Settings
             int n = 0;
             int ordersSK;
             int selectedIndex = -1;
-            if(orders > Constants.TimeDivisionConstants.Count)
+            // if generating order count is smaller than constans than dont split data
+            if (orders > Constants.TimeDivisionConstants.Count)
                 while (orders > 0)
                 {
+                    // for last element
                     if (Constants.TimeDivisionConstants.Count > i)
+                    {
                         ordersSK = Convert.ToInt32(orders * Constants.TimeDivisionConstants.ElementAt(i));
+                    }
                     else
                     {
+                        // skip selected element, for example if selected element is "7 morning"
                         if (selectedIndex == n)
                             n++;
                         AddDataToTimeList(orders, n);
                         break;
                     }
+                    // for first element
                     if (selectedIndex == -1)
                     {
                         selectedIndex = Constants.TimeConstants.IndexOf(time);
                         AddDataToTimeList(ordersSK, selectedIndex);
                     }
-                    else 
+                    else
                     {
+                        // skip selected element
                         if (selectedIndex == n)
                             n++;
                         AddDataToTimeList(ordersSK, n);
@@ -71,12 +81,14 @@ namespace WooCommerce_Tool.Settings
             }
 
         }
+        // generate time for orders by given time index from constants
         private void AddDataToTimeList(int orderCount, int index)
         {
             string time = "";
             DateTime dateTime;
             for (int i = 0; i < orderCount; i++)
             {
+                // random bool 50 means 50% chance/probability of getting true or false, +- 1hour
                 if (RandomBool(50))
                 {
                     time = AddTimeToValidFormat(Constants.TimeValueConstants.ElementAt(index).ToString(), rnd.Next(0, 60).ToString(), rnd.Next(0, 60).ToString());
@@ -109,18 +121,22 @@ namespace WooCommerce_Tool.Settings
             int n = 0;
             int ordersSK;
             int selectedIndex = -1;
+            // if generating order count is smaller than constans than dont split data
             if (orders > Constants.DateDivisionConstants.Count)
                 while (orders > 0)
                 {
+                    // for last element
                     if (Constants.DateDivisionConstants.Count > i)
                         ordersSK = Convert.ToInt32(orders * Constants.DateDivisionConstants.ElementAt(i));
                     else
                     {
+                        // skip selected element, for example if selected element is "beggining of the month"
                         if (selectedIndex == n)
                             n++;
                         AddDataToDateList(orders, n);
                         break;
                     }
+                    // for first element
                     if (selectedIndex == -1)
                     {
                         selectedIndex = Constants.DateConstants.IndexOf(date);
@@ -128,6 +144,7 @@ namespace WooCommerce_Tool.Settings
                     }
                     else
                     {
+                        // skip selected element,
                         if (selectedIndex == n)
                             n++;
                         AddDataToDateList(ordersSK, n);
@@ -142,14 +159,17 @@ namespace WooCommerce_Tool.Settings
                 AddDataToDateList(orders, selectedIndex);
             }
         }
+        // generate date for orders by given time index from constants
         private void AddDataToDateList(int orderCount, int index)
         {
             string date = "";
             var cultureInfo = new CultureInfo("de-DE");
             for (int i = 0; i < orderCount; i++)
             {
+                //get valid datetime
                 date = GetRandomMonthWithYear() + "/" + Constants.DateValueConstants.ElementAt(index).ToString();
                 var dateTime = DateTime.Parse(date, cultureInfo, DateTimeStyles.NoCurrentDateDefault);
+                // random bool 50 means 50% chance/probability of getting true or false, +- 1hour
                 if (RandomBool(50))
                 {
                     dateTime = dateTime.AddDays(rnd.Next(0, Constants.MaxDateError + 1));
@@ -161,6 +181,7 @@ namespace WooCommerce_Tool.Settings
                 DateList.Add(dateTime);
             }
         }
+        // random month with year
         private string GetRandomMonthWithYear()
         {
             int MonthsCount = Settings.MonthsCount;
@@ -168,19 +189,11 @@ namespace WooCommerce_Tool.Settings
             d = d.AddMonths(rnd.Next(1, MonthsCount + 1) * -1);
             return d.ToString("yyy") + "/" + d.ToString("MM");
         }
+        // returns radnom bool by probability true or false. 0 <= probability <= 100
         private bool RandomBool(int porbability)
         {
             int prob = rnd.Next(100);
             return prob <= porbability;
-        }
-        private void PrintList()
-        {
-            int n = 1;
-            foreach(var l in TimeList)
-            {
-                Console.WriteLine(n.ToString() + " " + l.ToString());
-                n++;
-            }
         }
     }
 }

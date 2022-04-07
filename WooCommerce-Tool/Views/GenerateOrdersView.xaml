@@ -42,7 +42,7 @@
 
 
     </UserControl.Resources>
-    <!-- juoda  #020C17    sviesi #0F1A2C-->
+    <!-- black  #020C17    green/blue #0F1A2C-->
     <Grid Background="#020C17" Height="570" Width="720" >
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="20"/>
@@ -56,7 +56,7 @@
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="1" Grid.Column="1"  >
-            <!--vidinis gridas -->
+            <!--inside grid -->
             <Grid.RowDefinitions>
                 <RowDefinition Height="40" />
                 <RowDefinition Height="30" />
@@ -67,7 +67,7 @@
                 <RowDefinition Height="100"/>
                 <RowDefinition Height="90"/>
             </Grid.RowDefinitions>
-            <!--grido kampai suapvalinti -->
+            <!--grid corners -->
             <Border CornerRadius="30,30,0,0" Grid.Row="0"  BorderThickness="3" Padding="0" BorderBrush="#0F1A2C">
                 <Border.Background>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
@@ -103,7 +103,7 @@
                         <Label Style="{StaticResource LabelSmall}" x:Name="Label2" Content="Settings " FontFamily="Montsera"/>
                 </TextBlock>
             </Grid>
-            <!--2 textbox textbox -->
+            <!--2 combobox -->
             <Grid Grid.Row="2" Background="#0F1A2C">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="50"/>
@@ -118,17 +118,10 @@
                     <ComboBox x:Name="comboBoxTime"  Width="200"  Background="Transparent" Style="{DynamicResource ComboBoxStyle1}" ItemsSource ="{Binding TimeComboData}" Text="{Binding Time, UpdateSourceTrigger=PropertyChanged}"/>
                 </Grid>
             </Grid>
-            <!--webhook label -->
+            <!--color fill -->
             <Grid Grid.Row="3" Background="#0F1A2C" >
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="50"/>
-                    <ColumnDefinition Width="200"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left">
-                        <!--<Label Style="{StaticResource LabelSmall}" x:Name="Label3" Content="Webhook "/>-->
-                </TextBlock>
             </Grid>
-            <!--webhook textbox -->
+            <!--textbox and combobox -->
             <Grid Grid.Row="4" Background="#0F1A2C">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="50"/>
@@ -144,17 +137,10 @@
                     <ComboBox x:Name="comboBoxMonthSpan"  Width="200"  Background="Transparent" Style="{DynamicResource ComboBoxStyle1}" SelectedValuePath="Key" DisplayMemberPath="Value" ItemsSource ="{Binding MonthSpanComboData}" SelectedValue="{Binding MonthsCount, UpdateSourceTrigger=PropertyChanged}"/>
                 </Grid>
             </Grid>
-            <!--Task managament  -->
+            <!--color fill  -->
             <Grid Grid.Row="5" Background="#0F1A2C" >
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="50"/>
-                    <ColumnDefinition Width="200"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left">
-                        <!--<Label Style="{StaticResource LabelSmall}" x:Name="Label4" Content="Task Managament "/> -->
-                </TextBlock>
             </Grid>
-            <!--2 checkbox  -->
+            <!-- checkbox  -->
             <Grid Grid.Row="6"  Background="#0F1A2C">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
@@ -166,9 +152,7 @@
                 </Grid.ColumnDefinitions>
                 <Grid Grid.Column="1" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Left">
                     <CheckBox x:Name="DeleteOrders" Content="Delete all generated orders" Style="{StaticResource checkbox}"/>
-                    <!--<TextBox x:Name="Pname" Style="{StaticResource Textbox}" Width="200"  /> -->
-                    <!--<TextBlock IsHitTestVisible="False" Text="Proxylist name" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="White" Style="{StaticResource Pname}"/> -->
-                </Grid>
+               </Grid>
 
             </Grid>
             <!--button  -->
@@ -189,11 +173,7 @@
                 </Grid>
             </Grid>
 
-
-
-
         </Grid>
-
 
     </Grid>
 

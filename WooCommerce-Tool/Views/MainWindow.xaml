@@ -7,7 +7,7 @@
         xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         mc:Ignorable="d"
          SizeToContent="Manual"
-        Title="Shoes Emperor" Height="600" Width="970" Name="FirstWindow" Icon="/Assets/logo.png">
+        Title="WooCommerce_Tool" Height="600" Width="970" Name="FirstWindow" Icon="/Assets/logo.png">
 
     <Window.Resources>
         <ResourceDictionary >
@@ -29,7 +29,7 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-
+            <!--menu-->
             <Grid HorizontalAlignment="Stretch" Grid.Row="1" >
                 <Grid.RowDefinitions>
                     <RowDefinition Height="70"/>
@@ -40,14 +40,11 @@
                         <ColumnDefinition Width="97*"/>
                         <ColumnDefinition Width="28*"/>
                     </Grid.ColumnDefinitions>
-
                     <Image Source="/Assets/logo.png" Grid.ColumnSpan="2"  RenderOptions.BitmapScalingMode="Fant"/>
-
                 </Grid>
                 <ScrollViewer HorizontalAlignment="Stretch" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Grid.Row="1">
                     <StackPanel>
                         <Grid>
-
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="70" />
                                 <RowDefinition Height="70" />
@@ -57,16 +54,15 @@
                                 <RowDefinition Height="70" />
                                 <RowDefinition Height="70" />
                             </Grid.RowDefinitions>
-                            <Button Style="{StaticResource MenuButtons}" Name="Dashboard" Grid.Row="0" Click="btnShow_Click_1" Content="Home"/>
-                            <Button Style="{StaticResource MenuButtons}" Name="Taskmanagement" Grid.Row="1" Click="btnShow_Click_2" Content="Product Prediction"/>
+                            <Button Style="{StaticResource MenuButtons}" Name="Home" Grid.Row="0" Click="btnShow_Click_1" Content="Home"/>
+                            <Button Style="{StaticResource MenuButtons}" Name="ProductPrediction" Grid.Row="1" Click="btnShow_Click_2" Content="Product Prediction"/>
                             <Button Style="{StaticResource MenuButtons}" Name="OrderPrediction" Grid.Row="2" Click="btnShow_Click_3" Content="Orders Prediction" />
-                            <Button Style="{StaticResource MenuButtons}" Name="Profiles" Grid.Row="3" Click="btnShow_Click_4" Content="Store Predictions" />
+                            <Button Style="{StaticResource MenuButtons}" Name="StorePredictions" Grid.Row="3" Click="btnShow_Click_4" Content="Store Predictions" />
                             <Button Style="{StaticResource MenuButtons}" Name="GenerateOrders" Grid.Row="4" Click="btnShow_Click_5" Content="Generate Orders" />
-                            <Button Style="{StaticResource MenuButtons}" Name="Settings" Grid.Row="5" Click="btnShow_Click_6" Content="5" />
+                            <Button Style="{StaticResource MenuButtons}" Name="Logout" Grid.Row="5" Click="btnShow_Click_6" Content="Logout" />
                             <Grid Grid.Row="6" VerticalAlignment="Bottom" HorizontalAlignment="Center" >
                                 <TextBlock Name="Status" IsHitTestVisible="False" Text="{Binding Path=Status, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="White"/>
                             </Grid>
-                            <!--{Binding Path=Status, UpdateSourceTrigger=PropertyChanged}-->
                         </Grid>
                     </StackPanel>
                 </ScrollViewer>

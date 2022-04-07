@@ -41,7 +41,7 @@ namespace WooCommerce_Tool.ViewsModels
             Messenger.Default.Register<ProductMontlyForecasting>(this, (action) => ReceiveForecastingP(action));
             Messenger.Default.Register<List<MLPredictionDataProducts>>(this, (action) => ReceiveMLForecastingP(action));
             Messenger.Default.Register<NNProductData>(this, (action) => ReceiveNNForecastingP(action));
-            //
+            // setting data
             DeletionComboData = new ObservableCollection<string>();
             TypeComboData = new List<string>();
             DeletionComboData.Add("Select data to delete");
@@ -74,6 +74,7 @@ namespace WooCommerce_Tool.ViewsModels
         {
             ProductData.NnProducts = JsonSerializer.Serialize(msg);
         }
+        // return Order object for db insertion
         public ToolOrder ReturnOrderObject(OrderPredictionSettings settings)
         {
             OrderPredictionSettings OrderSettings = settings;
@@ -84,6 +85,7 @@ namespace WooCommerce_Tool.ViewsModels
             OrderData.TimeOfTheMonth = OrderSettings.Month;
             return OrderData;
         }
+        // return product object for db insertion
         public ToolProduct ReturnProductObject(ProductPredictionSettings settings)
         {
             ProductPredictionSettings ProductSettings = settings;
@@ -117,6 +119,7 @@ namespace WooCommerce_Tool.ViewsModels
         {
             OrderData.NnOrder = JsonSerializer.Serialize(msg);
         }
+        // Deletion anme item source binding combobox
         public ObservableCollection<string> DeletionComboData
         {
             get { return _DeletionComboData; }
@@ -125,11 +128,13 @@ namespace WooCommerce_Tool.ViewsModels
                 OnPropertyChanged("DeletionComboData");
             }
         }
+        // Type item source binding combobox
         public List<string> TypeComboData
         {
             get { return _TypeComboData; }
             set { _TypeComboData = value; }
         }
+        // Status binding from ui
         public string Status
         {
             get { return status; }
@@ -139,6 +144,7 @@ namespace WooCommerce_Tool.ViewsModels
                 OnPropertyChanged("Status");
             }
         }
+        // Type binding from ui
         public string Type
         {
             get { return Settings.Type; }
@@ -151,6 +157,7 @@ namespace WooCommerce_Tool.ViewsModels
                 }
             }
         }
+        // name binding from ui
         public string Name
         {
             get { return Settings.Name; }
@@ -163,6 +170,7 @@ namespace WooCommerce_Tool.ViewsModels
                 }
             }
         }
+        // deletion name binding from ui
         public string DeletionName
         {
             get { return Settings.DeletionName; }

@@ -15,10 +15,3 @@ namespace WooCommerce_Tool.Settings
         public bool Deletion { get; set; }
     }
 }
-//nustatymai
-// data - (darbo dienos, savaitgaliai, menesio pradzia, vidurys, vidurys, tarp pabaigos pabaiga)
-// laikas - (rytas,priespieciai, pietus,popiete, vakaras, vidurnaktis, naktis)
-// kiekis prekiu (mediana ar vidurkis) - List arba min max
-// kaina (mediana ar vidurkis) - List arba min max
-
-// uzsakymu kiekis

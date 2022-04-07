@@ -18,32 +18,28 @@ namespace WooCommerce_Tool
 {
     public class OrderPrediction : Prediction
     {
-        private Products Products { get; set; }
-        private Customers Customers { get; set; }
         private Orders Orders { get; set; }
         private List<Order> OrdersData { get; set; }
         IDataView OrdersDataFull { get; set; }
         IDataView OrdersDataTrain { get; set; }
         IDataView OrdersDatatest { get; set; }
-        IEnumerable<OrdersMontlyData> SortedOrdersData { get; set; }
-        private PredictionConstants Constants {get; set;}
+        public IEnumerable<OrdersMontlyData> SortedOrdersData { get; set; }
+        private PredictionConstants Constants { get; set; }
         private MLContext mlContext { get; set; }
         public OrderPredictionSettings Settings { get; set; }
         private OrderGenerationSettingsConstants GenerationConstants { get; set; }
-        public OrderPrediction(Products products, Customers customers, Orders orders)
+        public OrderPrediction(Orders orders)
         {
-            Products = products;
-            Customers = customers;
             Orders = orders;
             Constants = new PredictionConstants();
             mlContext = new MLContext();
         }
+        // get data for predictons
+        // by start, end dates and by other filter selected in ui
         public void GetData(OrderPredictionSettings settings)
         {
             GenerationConstants = new OrderGenerationSettingsConstants();
             Settings = settings;
-            /*            var task = Orders.GetAllOrders();
-                        task.Wait();*/
             OrdersData = Orders.OrdersData;
             SortedOrdersData = RewriteDataForecasting(OrdersData).SkipLast(1);
             //date
@@ -51,19 +47,21 @@ namespace WooCommerce_Tool
             int EndIndex = 0;
             int i = 0;
             string date;
+            // reduce data by date
             foreach (var order in SortedOrdersData)
             {
                 date = ReturnDate(order);
-                if (date == Settings.StartDate)
+                if (CheckDate(date, Settings.StartDate))
                     startIndex = i;
-                if (date == Settings.EndDate)
+                if (CheckDate(date, Settings.EndDate))
                     EndIndex = i;
                 i++;
             }
             SortedOrdersData = SortedOrdersData.Skip(startIndex);
             if (EndIndex != 0)
-                SortedOrdersData = SortedOrdersData.Take(EndIndex - startIndex+1);
+                SortedOrdersData = SortedOrdersData.Take(EndIndex - startIndex + 1);
             //
+            // send data to ui
             Messenger.Default.Send<IEnumerable<OrdersMontlyData>>(SortedOrdersData);
             int count = SortedOrdersData.Count();
             int trainDataSize = (count * 80) / 100;
@@ -74,23 +72,28 @@ namespace WooCommerce_Tool
             OrdersDataTrain = mlContext.Data.LoadFromEnumerable(traindata);
             OrdersDatatest = mlContext.Data.LoadFromEnumerable(testdata);
         }
+        // get popular timeOfTheMonth
         public void OrdersMonthTimeProbability()
         {
             List<OrdersMonthTimeProbability> orders = (from p in OrdersData
                                                        group p by new { MonthPeriod = GetMonthPeriod(p.customer_note) } into d
                                                        select new OrdersMonthTimeProbability { MonthPeriod = d.Key.MonthPeriod, OrdersCount = d.Count() })
                           .OrderBy(g => g.MonthPeriod).ToList();
+            // send data to ui
             Messenger.Default.Send<List<OrdersMonthTimeProbability>>(orders);
 
         }
+        // get popular timeOfTheDay
         public void OrdersTimeProbability()
         {
             List<OrdersTimeProbability> orders = (from p in OrdersData
                                                   group p by new { Time = TimeInterval(p.customer_note) } into d
                                                   select new OrdersTimeProbability { Time = d.Key.Time, OrdersCount = d.Count() })
                           .OrderBy(g => g.Time).ToList();
+            // send data to ui
             Messenger.Default.Send<List<OrdersTimeProbability>>(orders);
         }
+        // Liner regresion with NN
         public void LinerRegresionWithNeuralNetwork()
         {
             float max = SortedOrdersData.Max(x => x.OrdersCount);
@@ -123,11 +126,13 @@ namespace WooCommerce_Tool
                 nnData.OrderCount.Add(ReNormalizeData((float)forecast[0], min, max));
                 for (int j = 0; j < predictor.Length - 1; j++)
                     predictor[j] = predictor[j + 1];
-                predictor[predictor.Length -1]= forecast[0];
+                predictor[predictor.Length - 1] = forecast[0];
             }
+            // send data to ui
             Messenger.Default.Send<NNOrderData>(nnData);
         }
-        public double[][] DataToDoubleData(IEnumerable<OrdersMontlyData> ordersData, float min, float max)
+        // convert data to array for NN
+        private double[][] DataToDoubleData(IEnumerable<OrdersMontlyData> ordersData, float min, float max)
         {
             int lenght = ordersData.Count();
             double[][] data = new double[lenght - 4][];
@@ -135,22 +140,24 @@ namespace WooCommerce_Tool
             {
                 data[i] = new double[5];
                 data[i][0] = DataNormalization(ordersData.ElementAt(i).OrdersCount, min, max);
-                data[i][1] = DataNormalization(ordersData.ElementAt(i+1).OrdersCount, min, max);
-                data[i][2] = DataNormalization(ordersData.ElementAt(i+2).OrdersCount, min, max);
-                data[i][3] = DataNormalization(ordersData.ElementAt(i+3).OrdersCount, min, max);
-                data[i][4] = DataNormalization(ordersData.ElementAt(i+4).OrdersCount, min, max);
+                data[i][1] = DataNormalization(ordersData.ElementAt(i + 1).OrdersCount, min, max);
+                data[i][2] = DataNormalization(ordersData.ElementAt(i + 2).OrdersCount, min, max);
+                data[i][3] = DataNormalization(ordersData.ElementAt(i + 3).OrdersCount, min, max);
+                data[i][4] = DataNormalization(ordersData.ElementAt(i + 4).OrdersCount, min, max);
             }
             return data;
         }
+        // time series forecasting
         public void OrdersForecasting()
         {
             int size = SortedOrdersData.Count();
+            // if data is to small, time series is not possible
             int WindowSize = 0;
             if (size >= 12)
                 WindowSize = 4;
             else
                 return;
-
+            //create pipeline
             var forecastingPipeline = mlContext.Forecasting.ForecastBySsa(
                 outputColumnName: "ForecastedOrders",
                 inputColumnName: "OrdersCount",
@@ -161,27 +168,29 @@ namespace WooCommerce_Tool
                 confidenceLevel: 0.95f,
                 confidenceLowerBoundColumn: "LowerBoundOrders",
                 confidenceUpperBoundColumn: "UpperBoundOrders");
-            //
+            //// train model
             SsaForecastingTransformer forecaster = forecastingPipeline.Fit(OrdersDataTrain);
-            //
-            //Evaluate(OrdersDatatest, forecaster, mlContext);
-            //
+            //create engine
             var forecastEngine = forecaster.CreateTimeSeriesEngine<OrdersMontlyData, OrdersMontlyForecasting>(mlContext);
-            //
+            // predict
             Forecast(OrdersDatatest, 3, forecastEngine, mlContext);
         }
-        void Forecast(IDataView testData, int horizon, TimeSeriesPredictionEngine<OrdersMontlyData, OrdersMontlyForecasting> forecaster, MLContext mlContext)
+        // time series forecasting
+        private void Forecast(IDataView testData, int horizon, TimeSeriesPredictionEngine<OrdersMontlyData, OrdersMontlyForecasting> forecaster, MLContext mlContext)
         {
             OrdersMontlyForecasting forecast = forecaster.Predict();
-
+            // send data to ui
             Messenger.Default.Send<OrdersMontlyForecasting>(forecast);
         }
+        //ML prediction
         public void FindBestModelForForecasting()
         {
+            //create pipeline
             var pipe = mlContext.Transforms.CopyColumns(outputColumnName: "Label", inputColumnName: "OrdersCount")
                             .Append(mlContext.Transforms.Concatenate("Features", "Year", "Month"));
             string BestModel = null;
             double BestModelError = 1000;
+            // go trought different models for best model
             foreach (var method in Constants.ForecastingMethods)
             {
                 IDataView Prediction = null;
@@ -213,11 +222,14 @@ namespace WooCommerce_Tool
                         Prediction = modelGam.Transform(OrdersDatatest);
                         break;
                 }
+                // calculate each model error, return best (with smallest error)
                 CalculateError(ref BestModel, ref BestModelError, Prediction, method);
             }
+            // predict with best model
             ForecastML(BestModel);
         }
-        public void ForecastML(string method)
+        // forecasting with best fitting model
+        private void ForecastML(string method)
         {
             var pipe = mlContext.Transforms.CopyColumns(outputColumnName: "Label", inputColumnName: "OrdersCount")
                 .Append(mlContext.Transforms.Concatenate("Features", "Year", "Month"));
@@ -250,20 +262,23 @@ namespace WooCommerce_Tool
                     PredictionFunction = mlContext.Model.CreatePredictionEngine<OrdersMontlyData, MLPredictionDataOrders>(modelGam);
                     break;
             }
-
-            List< MLPredictionDataOrders > Predictions = new List< MLPredictionDataOrders >();
+            // predict with test data
+            List<MLPredictionDataOrders> Predictions = new List<MLPredictionDataOrders>();
             var testData = new OrdersMontlyData();
             for (int i = 0; i < 6; i++)
             {
-                testData.Year = float.Parse(returnYearFromLastData(i));
-                testData.Month = float.Parse(returnMonthFromLastData(i));
+                var datetime = GetDateTime();
+                testData.Year = float.Parse(returnYearFromLastData(i, datetime));
+                testData.Month = float.Parse(returnMonthFromLastData(i, datetime));
                 var prediction = PredictionFunction.Predict(testData);
                 prediction.MethodName = method;
                 Predictions.Add(prediction);
             }
+            // send data to ui
             Messenger.Default.Send<List<MLPredictionDataOrders>>(Predictions);
         }
-        public void CalculateError(ref string model, ref double error, IDataView prediction, string modelName)
+        // calculate model error with know results
+        private void CalculateError(ref string model, ref double error, IDataView prediction, string modelName)
         {
             var metrics = mlContext.Regression.Evaluate(prediction, "Label", "Score");
             double ForecastingError = Math.Abs(metrics.RSquared) + Math.Abs(metrics.RootMeanSquaredError);
@@ -274,19 +289,8 @@ namespace WooCommerce_Tool
             }
 
         }
-        public string returnYearFromLastData(int i)
-        {
-            DateTime dateTime = GetDateTime();
-            dateTime = dateTime.AddMonths(i+1);
-            return dateTime.ToString("yyyy");
-        }
-        public string returnMonthFromLastData(int i)
-        {
-            DateTime dateTime = GetDateTime();
-            dateTime = dateTime.AddMonths(i + 1);
-            return dateTime.ToString("MM");
-        }
-        DateTime GetDateTime()
+        // return forecasted date time
+        private DateTime GetDateTime()
         {
             int count = SortedOrdersData.Count();
             string year = SortedOrdersData.ElementAt(count - 3).Year.ToString();
@@ -294,7 +298,7 @@ namespace WooCommerce_Tool
             DateTime dateTime = DateTime.Parse(year + "/" + Month);
             return dateTime;
         }
-        public IEnumerable<OrdersMontlyData> RewriteDataForecasting(List<Order> data)
+        private IEnumerable<OrdersMontlyData> RewriteDataForecasting(List<Order> data)
         {
             //group  by month
             if (Settings.Month != "All")
@@ -310,7 +314,8 @@ namespace WooCommerce_Tool
                           .ThenBy(g => g.Month).ToList();
             return orders;
         }
-        public bool TimeOfTheMonth(string date)
+        // return TimeOfTheMonth from product data for LINQ
+        private bool TimeOfTheMonth(string date)
         {
             DateTimeOffset test = DateTimeOffset.Parse(date.Split('-')[0]);
             int day = int.Parse(test.ToString("dd"));
@@ -322,22 +327,25 @@ namespace WooCommerce_Tool
                 return true;
             return false;
         }
-        public bool TimeOfTheDay(string date)
+        // return TimeOfTheDay from product data for LINQ
+        private bool TimeOfTheDay(string date)
         {
             int hh = TimeInterval(date);
             int index = GenerationConstants.TimeConstants.FindIndex(x => x.Contains(Settings.Time));
             int time = GenerationConstants.TimeValueConstants.ElementAt(index);
             if (hh >= (time - 1) && hh < (time + 1))
                 return true;
- 
+
             return false;
         }
-        public int TimeInterval(string date)
+        // return HH from date
+        private int TimeInterval(string date)
         {
             DateTimeOffset test = DateTimeOffset.Parse(date.Split('-')[0]);
             return int.Parse(test.ToString("HH"));
         }
-        public string GetMonthPeriod(string date)
+        // return  month period string
+        private string GetMonthPeriod(string date)
         {
             DateTimeOffset test = DateTimeOffset.Parse(date.Split('-')[0]);
             int day = int.Parse(test.ToString("dd"));
@@ -347,19 +355,11 @@ namespace WooCommerce_Tool
                 return "Midlle of the month";
             return "End of the month";
         }
-        public string ReturnDate(OrdersMontlyData data)
+        // return object date as one string
+        private string ReturnDate(OrdersMontlyData data)
         {
             return data.Year.ToString() + "/" + data.Month.ToString();
-        
-        }
-        public static int IntLength(int i)
-        {
-            if (i < 0)
-                throw new ArgumentOutOfRangeException();
-            if (i == 0)
-                return 1;
-            return (int)Math.Floor(Math.Log10(i)) + 1;
-        }
 
+        }
     }
 }

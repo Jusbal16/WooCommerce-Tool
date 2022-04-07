@@ -42,7 +42,7 @@
 
 
     </UserControl.Resources>
-    <!-- juoda  #020C17    sviesi #0F1A2C-->
+    <!-- black  #020C17    green/blue #0F1A2C-->
     <Grid Background="#020C17" Height="570" Width="720" >
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="20"/>
@@ -56,7 +56,7 @@
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="1" Grid.Column="1"  >
-            <!--vidinis gridas -->
+            <!--inside grid -->
             <Grid.RowDefinitions>
                 <RowDefinition Height="40" />
                 <RowDefinition Height="30" />
@@ -68,7 +68,7 @@
                 <RowDefinition Height="40"/>
                 <RowDefinition Height="50"/>
             </Grid.RowDefinitions>
-            <!--grido kampai suapvalinti -->
+            <!--grid corners -->
             <Border CornerRadius="30,30,0,0" Grid.Row="0"  BorderThickness="3" Padding="0" BorderBrush="#0F1A2C">
                 <Border.Background>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
@@ -104,7 +104,7 @@
                         <Label Style="{StaticResource LabelSmall}" x:Name="Label2" Content="Save predictions" FontFamily="Montsera"/>
                 </TextBlock>
             </Grid>
-            <!--2 textbox textbox -->
+            <!--prediction name textbox and combobox of type -->
             <Grid Grid.Row="2" Background="#0F1A2C">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="50"/>
@@ -120,17 +120,14 @@
                     <ComboBox x:Name="comboBoxType"  Width="200"  Background="Transparent" Style="{DynamicResource ComboBoxStyle1}" ItemsSource ="{Binding TypeComboData}" Text="{Binding Type, UpdateSourceTrigger=PropertyChanged}"/>
                 </Grid>
             </Grid>
-            <!--webhook label -->
+            <!--color fill -->
             <Grid Grid.Row="3" Background="#0F1A2C" >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="50"/>
                     <ColumnDefinition Width="200"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left">
-                        <!--<Label Style="{StaticResource LabelSmall}" x:Name="Label3" Content="Webhook "/>-->
-                </TextBlock>
             </Grid>
-            <!--webhook textbox -->
+            <!--save button -->
             <Grid Grid.Row="4" Background="#0F1A2C">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="50"/>
@@ -142,7 +139,7 @@
                     <Button Content="Save" Style="{StaticResource ButtonG}" Click="Button_Click_1" />
                 </StackPanel>
             </Grid>
-            <!--Task managament  -->
+            <!--delete label  -->
             <Grid Grid.Row="5" Background="#0F1A2C" >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="50"/>
@@ -153,7 +150,7 @@
                         <Label Style="{StaticResource LabelSmall}" x:Name="Label3" Content="Delete predictions" FontFamily="Montsera" Foreground="#F22B88"/>
                 </TextBlock>
             </Grid>
-            <!--2 checkbox  -->
+            <!-- checkbox  -->
             <Grid Grid.Row="6"  Background="#0F1A2C">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
@@ -168,7 +165,7 @@
                 </Grid>
 
             </Grid>
-            <!--button  -->
+            <!--delete button  -->
             <Grid Grid.Row="7"  Background="#0F1A2C">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="50"/>
@@ -184,21 +181,11 @@
 
                 </Grid>
             </Grid>
+            <!--color fill  -->
             <Grid Grid.Row="8"  >
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="50"/>
-                    <ColumnDefinition Width="100"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-
             </Grid>
 
-
-
-
         </Grid>
-
 
     </Grid>
 

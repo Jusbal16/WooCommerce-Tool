@@ -27,6 +27,7 @@ namespace WooCommerce_Tool
         public OrderPredictionView orderPredictionView { get; set; }
         public ProductPredictionView productPredictionView { get; set; }
         public StorePredictions storePredictionView { get; set; }
+        public HomeView homeView { get; set; }
         private MainWindowViewModel _viewModel { get; set; }
         public MainWindow(int id, string url, string key, string secret)
         {
@@ -38,6 +39,8 @@ namespace WooCommerce_Tool
             orderPredictionView = new OrderPredictionView(Main);
             productPredictionView = new ProductPredictionView(Main);
             storePredictionView = new StorePredictions(Main);
+            homeView = new HomeView();
+            SwitchScreen(homeView);
             Task.Run(() => GetAllData());
             // reiktu viska uzkrauti
 
@@ -46,14 +49,11 @@ namespace WooCommerce_Tool
         }
         private void btnShow_Click_1(object sender, RoutedEventArgs e)
         {
-            //Dashboard obj = new Dashboard();
-            //SwitchScreen(obj);
+            SwitchScreen(homeView);
         }
 
         private void btnShow_Click_2(object sender, RoutedEventArgs e)
         {
-            //Task_Management obj = new Task_Management();
-            //SwitchScreen(obj);
             productPredictionView.RefreshNameList();
             SwitchScreen(productPredictionView);
         }
@@ -76,8 +76,9 @@ namespace WooCommerce_Tool
         }
         private void btnShow_Click_6(object sender, RoutedEventArgs e)
         {
-            //Settings obj = new Settings();
-            //SwitchScreen(obj);
+            Login login = new Login();
+            Close();
+            login.Show();
         }
         public void SwitchScreen(object sender)
         {

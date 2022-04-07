@@ -17,54 +17,6 @@ namespace WooCommerce_Tool.ViewsModels
         private List<string> _MonthComboData;
         private List<string> _TimeComboData;
         private string status;
-        public string Date
-        {
-            get { return Settings.Date; }
-            set
-            {
-                if (Settings.Date != value)
-                {
-                    Settings.Date = value;
-                    OnPropertyChanged("Date");
-                }
-            }
-        }
-        public string Time
-        {
-            get { return Settings.Time; }
-            set
-            {
-                if (Settings.Time != value)
-                {
-                    Settings.Time = value;
-                    OnPropertyChanged("Time");
-                }
-            }
-        }
-        public int OrderCount
-        {
-            get { return Settings.OrderCount; }
-            set
-            {
-                if (Settings.OrderCount != value)
-                {
-                    Settings.OrderCount = value;
-                    OnPropertyChanged("OrderCount");
-                }
-            }
-        }
-        public int MonthsCount
-        {
-            get { return Settings.MonthsCount; }
-            set
-            {
-                if (Settings.MonthsCount != value)
-                {
-                    Settings.MonthsCount = value;
-                    OnPropertyChanged("MonthsCount");
-                }
-            }
-        }
         public OrderGenerationViewModel(OrderGenerator orderGenerator)
         {
             this.Settings = new OrderGenerationSettings();
@@ -88,10 +40,63 @@ namespace WooCommerce_Tool.ViewsModels
                 _TimeComboData.Add(time);
             orderGenerator.ValueChanged += orderGenerator_ValueChanged;
         }
+        // Date binding from ui
+        public string Date
+        {
+            get { return Settings.Date; }
+            set
+            {
+                if (Settings.Date != value)
+                {
+                    Settings.Date = value;
+                    OnPropertyChanged("Date");
+                }
+            }
+        }
+        // Time binding from ui
+        public string Time
+        {
+            get { return Settings.Time; }
+            set
+            {
+                if (Settings.Time != value)
+                {
+                    Settings.Time = value;
+                    OnPropertyChanged("Time");
+                }
+            }
+        }
+        // OrderCount binding from ui
+        public int OrderCount
+        {
+            get { return Settings.OrderCount; }
+            set
+            {
+                if (Settings.OrderCount != value)
+                {
+                    Settings.OrderCount = value;
+                    OnPropertyChanged("OrderCount");
+                }
+            }
+        }
+        // MonthsCount binding from ui
+        public int MonthsCount
+        {
+            get { return Settings.MonthsCount; }
+            set
+            {
+                if (Settings.MonthsCount != value)
+                {
+                    Settings.MonthsCount = value;
+                    OnPropertyChanged("MonthsCount");
+                }
+            }
+        }
         private void orderGenerator_ValueChanged(object sender, ValueChangedEventArgs e)
         {
             this.Status = e.NewValue;
         }
+        // Status binding from ui
         public string Status
         {
             get { return status; }
@@ -101,16 +106,19 @@ namespace WooCommerce_Tool.ViewsModels
                 OnPropertyChanged("Status");
             }
         }
+        // MonthSpan item source binding combobox
         public ObservableDictionary<int, string> MonthSpanComboData
         {
             get { return _MonthSpanComboData; }
             set { _MonthSpanComboData = value; }
         }
+        // Month item source binding combobox
         public List<string> MonthComboData
         {
             get { return _MonthComboData; }
             set { _MonthComboData = value; }
         }
+        // Time item source binding combobox
         public List<string> TimeComboData
         {
             get { return _TimeComboData; }

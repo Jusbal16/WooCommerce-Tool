@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace WooCommerce_Tool.PredictionClasses
 {
+    // popular product probability data structure
     public class ProductPopularData
     {
         public string ProductName   { get; set; }

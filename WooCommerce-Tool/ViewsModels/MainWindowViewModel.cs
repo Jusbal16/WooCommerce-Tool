@@ -10,6 +10,11 @@ namespace WooCommerce_Tool.ViewsModels
     internal class MainWindowViewModel : NotifyPropertyBase
     {
         private string status;
+        public MainWindowViewModel()
+        {
+
+        }
+        // Status binding from ui
         public string Status
         {
             get { return status; }
@@ -19,9 +24,6 @@ namespace WooCommerce_Tool.ViewsModels
                 OnPropertyChanged("Status");
             }
         }
-        public MainWindowViewModel()
-        {
 
-        }
     }
 }

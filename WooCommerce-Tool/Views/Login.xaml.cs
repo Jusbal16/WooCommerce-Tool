@@ -34,7 +34,7 @@ namespace WooCommerce_Tool.Views
             DataContext = _viewModel;
             InitializeComponent();
             // if setting is set check
-            //CheckDB();
+            CheckDB();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -69,8 +69,9 @@ namespace WooCommerce_Tool.Views
             {
                 ShowMessage("Not all login data is filled", "Error");
             }
-            
+
         }
+        // check db if shop exist becasue remember me was selected last session
         private void CheckDB()
         {
             try
@@ -86,12 +87,14 @@ namespace WooCommerce_Tool.Views
             }
 
         }
+        // check if all forms ar filled
         public bool CheckFill()
         {
             if (String.IsNullOrEmpty(URL.Text) || String.IsNullOrEmpty(Key.Password) || String.IsNullOrEmpty(Secret.Password))
                 return false;
             return true;
         }
+        // show message method
         public void ShowMessage(string text, string type)
         {
             MessageBoxResult result = MessageBox.Show(text,
@@ -103,6 +106,7 @@ namespace WooCommerce_Tool.Views
                 Application.Current.Shutdown();
             }
         }
+        // check if given url,key,secret key is correct by trying to acces shop
         public bool CheckShop(string url, string key, string secret)
         {
             try 
@@ -116,6 +120,7 @@ namespace WooCommerce_Tool.Views
             }
             return true;
         }
+        // check db if shop exist, and return id
         public int CheckIfLoginExist(string url)
         {
             var login = _dbContext.ToolLogins.Where(x => x.Url == url).FirstOrDefault<ToolLogin>();
@@ -125,16 +130,18 @@ namespace WooCommerce_Tool.Views
             }
             return (int)login.Id;
         }
+        // Add to DB
         public void AddToDB(int id, string url, string key, string secret)
         {
             ToolLogin login = new ToolLogin();
             login.Id = id;
             login.Url = url;
-            login.ApiSecret = secret;
-            login.ApiKey = key;
+            login.ApiSecret = Base64Encode(secret);
+            login.ApiKey = Base64Encode(key);
             _dbContext.ToolLogins.Add(login);
             _dbContext.SaveChanges();
         }
+        // set remember me
         public bool setSetting(string pstrKey, string pstrValue)
         {
             Configuration objConfigFile =
@@ -158,26 +165,38 @@ namespace WooCommerce_Tool.Views
             ConfigurationManager.RefreshSection("appSettings");
             return true;
         }
+        // return object from db by id
         public ToolLogin ReturnLoginByID(int key)
         {
             return _dbContext.ToolLogins.Where(x => x.Id == key).FirstOrDefault<ToolLogin>();
         }
+        // fill forms if ebject exist in db
         public void SetUI(ToolLogin login)
         {
             URL.Text = login.Url;
-            Key.Password = login.ApiKey;
-            Secret.Password = login.ApiSecret;
+            Key.Password = Base64Decode(login.ApiKey);
+            Secret.Password = Base64Decode(login.ApiSecret);
             RememberMe.IsChecked = true;
         }
-
+        // password box binding
         private void Key_PasswordChanged(object sender, RoutedEventArgs e)
         {
             _viewModel.Key = Key.Password;
         }
-
+        // password box binding
         private void Secret_PasswordChanged(object sender, RoutedEventArgs e)
         {
             _viewModel.Secret = Secret.Password;
+        }
+        public static string Base64Encode(string plainText)
+        {
+            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
+            return System.Convert.ToBase64String(plainTextBytes);
+        }
+        public static string Base64Decode(string base64EncodedData)
+        {
+            var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);
+            return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
         }
     }
 }
