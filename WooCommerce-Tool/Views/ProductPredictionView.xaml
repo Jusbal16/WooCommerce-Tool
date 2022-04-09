@@ -96,13 +96,13 @@
                     <ColumnDefinition Width="50"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="300"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left">
                         <Label Style="{StaticResource LabelSmall}" x:Name="Label2" Content="Results" FontFamily="Montsera"/>
                 </TextBlock>
                 <TextBlock Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Left">
-                        <ComboBox x:Name="comboBoxDBNames"  Width="120"  Background="Transparent" DropDownClosed="comboBoxDBNames_DropDownClosed" Style="{DynamicResource ComboBoxStyle1}" ItemsSource ="{Binding NamesComboData}" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
+                        <ComboBox x:Name="comboBoxDBNames"  Width="200"  Background="Transparent" DropDownClosed="comboBoxDBNames_DropDownClosed" Style="{DynamicResource ComboBoxStyle1}" ItemsSource ="{Binding NamesComboData}" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
                 </TextBlock>
             </Grid>
             <!--Chart -->
@@ -113,9 +113,9 @@
                 </Grid.ColumnDefinitions>
                 <TabControl Grid.Column="1" Background="Transparent" Width="600" Style="{StaticResource Tabs}">
                     <TabItem Header="Prediction" >
-                        <lvc:CartesianChart Grid.Column="1" Series="{Binding OrdersCount, UpdateSourceTrigger=PropertyChanged}" >
+                        <lvc:CartesianChart Grid.Column="1" Series="{Binding OrdersCount, UpdateSourceTrigger=PropertyChanged}" x:Name="PredictionChart" LegendLocation="Right">
                             <lvc:CartesianChart.AxisX>
-                                <lvc:Axis Title="Month" Labels="{Binding BarLabels, UpdateSourceTrigger=PropertyChanged}" ShowLabels="True" MinValue="0" >
+                                <lvc:Axis Title="Month" Labels="{Binding BarLabels, UpdateSourceTrigger=PropertyChanged}" ShowLabels="True" MinValue="0" LabelsRotation="60" >
                                     <lvc:Axis.Separator>
                                         <lvc:Separator Step="1"  />
                                     </lvc:Axis.Separator>

@@ -13,6 +13,7 @@ using Order_Generation.PredictionTimeSeries;
 using WooCommerce_Tool.PredictionClasses;
 using WooCommerce_Tool.Settings;
 using System.Collections.ObjectModel;
+using System.Windows.Media;
 
 namespace WooCommerce_Tool.ViewsModels
 {
@@ -32,12 +33,14 @@ namespace WooCommerce_Tool.ViewsModels
         private ObservableCollection<string> _NamesComboData;
         private ObservableCollection<string> _CategoryComboData;
         private ProductPredictionSettings Settings { get; set; }
+        private PredictionConstants Constants { get; set; }
         public ProductPredictionViewModel()
         {
             OrdersCount = new SeriesCollection();
             MonthProbability = new SeriesCollection();
             TimeProbability = new SeriesCollection();
             Settings = new ProductPredictionSettings();
+            Constants = new PredictionConstants();
             Messenger.Default.Register<List<ProductPopularData>>(this, (action) => ReceivePopularProducts(action));
             Messenger.Default.Register<List<ProductCategoriesData>>(this, (action) => ReceiveCategories(action));
             Messenger.Default.Register<IEnumerable<ProductMontlyData>>(this, (action) => ReceiveOrders(action));
@@ -137,7 +140,7 @@ namespace WooCommerce_Tool.ViewsModels
             }
             AddMonths(BarLabels[BarLabels.Length - 4]);
             Application.Current.Dispatcher.Invoke((Action)delegate {
-                OrdersCount.Add(new LineSeries { Title = "Orders Count", Values = Values });
+                OrdersCount.Add(new LineSeries { Title = "Orders Count", Values = Values, Stroke = Constants.OrderCountBrush, Fill = Constants.OrderCountBrushFill });
             });
 
         }
@@ -173,7 +176,7 @@ namespace WooCommerce_Tool.ViewsModels
                 ForecastedValues.Add(Math.Round(msg.ForecastedMoney[i]));
             }
             Application.Current.Dispatcher.Invoke((Action)delegate {
-                OrdersCount.Add(new LineSeries { Title = "Forecasted Values", Values = ForecastedValues });
+                OrdersCount.Add(new LineSeries { Title = "Forecasted Values", Values = ForecastedValues, Stroke = Constants.TimeSeriesBrush, Fill = Constants.TimeSeriesBrushFill });
             });
 
         }
@@ -198,7 +201,7 @@ namespace WooCommerce_Tool.ViewsModels
                 ForecastedMLValues.Add(Math.Round(msg.ElementAt(i).MoneySpend));
             }
             Application.Current.Dispatcher.Invoke((Action)delegate {
-                OrdersCount.Add(new LineSeries { Title = methodName, Values = ForecastedMLValues });
+                OrdersCount.Add(new LineSeries { Title = methodName, Values = ForecastedMLValues, Stroke = Constants.RegresionBrush, Fill = Constants.RegresionBrushFill });
             });
 
         }
@@ -223,7 +226,7 @@ namespace WooCommerce_Tool.ViewsModels
             }
             Application.Current.Dispatcher.Invoke((Action)delegate
             {
-                OrdersCount.Add(new LineSeries { Title = "Forecasted NN Values", Values = ForecastedNNValues });
+                OrdersCount.Add(new LineSeries { Title = "Forecasted NN Values", Values = ForecastedNNValues, Stroke = Constants.NNBrush, Fill = Constants.NNBrushFill });
             });
         }
         // BarLabels chart binding from ui
