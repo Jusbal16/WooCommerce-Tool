@@ -42,6 +42,7 @@ namespace WooCommerce_Tool
             int ordersPerRequest = DataLists.Constants.OrderGenerationPerRequest; ;
             List<Order> orders = new List<Order>();
             OrderBatch batchOrders = new OrderBatch();
+            // send status tu ui
             ChangeUIText(orderCount.ToString() + " of " + DataLists.Settings.OrderCount.ToString() + " orders added");
             for (int i = 0; i < DataLists.Settings.OrderCount; i++)
             {
@@ -70,7 +71,6 @@ namespace WooCommerce_Tool
                     orders.Clear();
                     ChangeUIText(orderCount.ToString() + " of " + DataLists.Settings.OrderCount.ToString() + " orders added");
                 }
-
             }
             if (orders.Count() != 0)
             {
@@ -97,7 +97,6 @@ namespace WooCommerce_Tool
             DataLists = new OrderGenerationDataLists(Settings, Constants);
             DataLists.GenerateDataLists();
         }
-
     }
 }
 

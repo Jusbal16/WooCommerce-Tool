@@ -42,9 +42,11 @@ namespace WooCommerce_Tool.Views
             comboBoxEndDate.SelectedIndex = 0;
             comboBoxCategory.SelectedIndex = 0;
             RefreshNameList();
+            PredictionChart.Visibility = Visibility.Hidden;
         }
         private void Button_Click_Prediction(object sender, RoutedEventArgs e)
         {
+            PredictionChart.Visibility = Visibility.Visible;
             CleanUp();
             if (Main.OrderService.OrdersFlag && Main.ProductsService.ProductFlag)
                 if (CheckFill()) 
@@ -124,6 +126,7 @@ namespace WooCommerce_Tool.Views
         {
             if (comboBoxDBNames.SelectedIndex == 0)
                 return;
+            PredictionChart.Visibility = Visibility.Visible;
             //clear graph
             CleanUp();
             // get data by name from db

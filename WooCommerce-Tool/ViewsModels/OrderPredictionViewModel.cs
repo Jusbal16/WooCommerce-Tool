@@ -32,6 +32,7 @@ namespace WooCommerce_Tool.ViewsModels
         private List<string> _TimeComboData;
         private ObservableCollection<string> _NamesComboData;
         private OrderPredictionSettings Settings { get; set; }
+        private PredictionConstants Constants { get; set; }
         private OrderGenerationSettingsConstants SettingsConstants { get; set; }
         public OrderPredictionViewModel()
         {
@@ -39,6 +40,7 @@ namespace WooCommerce_Tool.ViewsModels
             MonthProbability = new SeriesCollection();
             TimeProbability = new SeriesCollection();
             Settings = new OrderPredictionSettings();
+            Constants = new PredictionConstants();  
             SettingsConstants = new OrderGenerationSettingsConstants();
             Messenger.Default.Register<List<OrdersMonthTimeProbability>>(this, (action) => ReceiveMonthTime(action));
             Messenger.Default.Register<List<OrdersTimeProbability>>(this, (action) => ReceiveTime(action));
@@ -139,7 +141,7 @@ namespace WooCommerce_Tool.ViewsModels
             AddMonths(BarLabels[BarLabels.Length - 4]);
             Application.Current.Dispatcher.Invoke((Action)delegate
             {
-                OrdersCount.Add(new LineSeries { Title = "Orders Count", Values = Values});
+                OrdersCount.Add(new LineSeries { Title = "Orders Count", Values = Values, Stroke = Constants.OrderCountBrush, Fill = Constants.OrderCountBrushFill });
             });
 
         }
@@ -176,7 +178,7 @@ namespace WooCommerce_Tool.ViewsModels
             }
             Application.Current.Dispatcher.Invoke((Action)delegate
             {
-                OrdersCount.Add(new LineSeries { Title = "Forecasted Values", Values = ForecastedValues });
+                OrdersCount.Add(new LineSeries { Title = "Forecasted Values", Values = ForecastedValues, Stroke = Constants.TimeSeriesBrush, Fill = Constants.TimeSeriesBrushFill });
             });
 
         }
@@ -201,7 +203,7 @@ namespace WooCommerce_Tool.ViewsModels
             }
             Application.Current.Dispatcher.Invoke((Action)delegate
             {
-                OrdersCount.Add(new LineSeries { Title = "Forecasted NN Values", Values = ForecastedNNValues});
+                OrdersCount.Add(new LineSeries { Title = "Forecasted NN Values", Values = ForecastedNNValues, Stroke = Constants.NNBrush, Fill = Constants.NNBrushFill });
             });
         }
         // receive ML (regresion) prediction data and fill it to charts
@@ -226,7 +228,7 @@ namespace WooCommerce_Tool.ViewsModels
             }
             Application.Current.Dispatcher.Invoke((Action)delegate
             {
-                OrdersCount.Add(new LineSeries { Title = methodName, Values = ForecastedMLValues });
+                OrdersCount.Add(new LineSeries { Title = methodName, Values = ForecastedMLValues, Stroke = Constants.RegresionBrush, Fill = Constants.RegresionBrushFill });
             });
 
         }

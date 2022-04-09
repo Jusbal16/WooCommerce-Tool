@@ -44,9 +44,11 @@ namespace WooCommerce_Tool.Views
             comboBoxMonth.SelectedIndex = 0;
             comboBoxTime.SelectedIndex = 0;
             RefreshNameList();
+            PredictionChart.Visibility = Visibility.Hidden;
         }
         private void Button_Click_Prediction(object sender, RoutedEventArgs e)
         {
+            PredictionChart.Visibility = Visibility.Visible;
             CleanUp();
             if (Main.OrderService.OrdersFlag)
                 if (CheckFill())
@@ -127,6 +129,7 @@ namespace WooCommerce_Tool.Views
         {
             if (comboBoxDBNames.SelectedIndex == 0)
                 return;
+            PredictionChart.Visibility = Visibility.Visible;
             //clear graph
             CleanUp();
             string Name = _viewModel.Name;
