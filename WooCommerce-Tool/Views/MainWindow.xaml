@@ -7,7 +7,7 @@
         xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         mc:Ignorable="d"
          SizeToContent="Manual"
-        Title="WooCommerce_Tool" Height="600" Width="970" Name="FirstWindow" Icon="/Assets/logo.png">
+        Title="WooCommerce_Tool" Height="700" Width="1200" Name="FirstWindow" Icon="/Assets/logo.png">
 
     <Window.Resources>
         <ResourceDictionary >
@@ -36,11 +36,7 @@
                     <RowDefinition Height="326*"/>
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="97*"/>
-                        <ColumnDefinition Width="28*"/>
-                    </Grid.ColumnDefinitions>
-                    <Image Source="/Assets/logo.png" Grid.ColumnSpan="2"  RenderOptions.BitmapScalingMode="Fant"/>
+                    <Image Source="/Assets/logo.png" Grid.ColumnSpan="2"  RenderOptions.BitmapScalingMode="Fant" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 </Grid>
                 <ScrollViewer HorizontalAlignment="Stretch" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Grid.Row="1">
                     <StackPanel>
@@ -74,7 +70,7 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="50"/>
                 </Grid.RowDefinitions>
-                <StackPanel x:Name="StackPanelMain" Grid.Row="1" Width="720" Height="570" />
+                <StackPanel x:Name="StackPanelMain" Grid.Row="1" Width="900" Height="600" />
 
             </Grid>
 
