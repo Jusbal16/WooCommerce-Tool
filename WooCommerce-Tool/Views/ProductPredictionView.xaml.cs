@@ -47,6 +47,8 @@ namespace WooCommerce_Tool.Views
         private void Button_Click_Prediction(object sender, RoutedEventArgs e)
         {
             PredictionChart.Visibility = Visibility.Visible;
+            Label3.Visibility = Visibility.Visible;
+            Label4.Visibility = Visibility.Visible;
             CleanUp();
             if (Main.OrderService.OrdersFlag && Main.ProductsService.ProductFlag)
                 if (CheckFill()) 
@@ -127,6 +129,8 @@ namespace WooCommerce_Tool.Views
             if (comboBoxDBNames.SelectedIndex == 0)
                 return;
             PredictionChart.Visibility = Visibility.Visible;
+            Label3.Visibility = Visibility.Visible;
+            Label4.Visibility = Visibility.Visible;
             //clear graph
             CleanUp();
             // get data by name from db
@@ -177,6 +181,8 @@ namespace WooCommerce_Tool.Views
             {
                 return true;
             }
+            if (dataCount > 8)
+                return true;
             return false;
         }
 

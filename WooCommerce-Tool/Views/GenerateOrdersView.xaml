@@ -114,7 +114,7 @@
                 <Grid Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left">
                     <ComboBox x:Name="comboBoxDate"  Width="200"  Background="Transparent" Style="{DynamicResource ComboBoxStyle1}" ItemsSource ="{Binding MonthComboData}" Text="{Binding Date, UpdateSourceTrigger=PropertyChanged}" />
                 </Grid>
-                <Grid Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Left">
+                <Grid Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right">
                     <ComboBox x:Name="comboBoxTime"  Width="200"  Background="Transparent" Style="{DynamicResource ComboBoxStyle1}" ItemsSource ="{Binding TimeComboData}" Text="{Binding Time, UpdateSourceTrigger=PropertyChanged}"/>
                 </Grid>
             </Grid>
@@ -133,8 +133,8 @@
                     <TextBox x:Name="OrderCount" Style="{StaticResource Textbox}" Width="200" Grid.ColumnSpan="5" Text="{Binding OrderCount, UpdateSourceTrigger=PropertyChanged}" />
                     <TextBlock IsHitTestVisible="False" Text="Order Count" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="White" Style="{StaticResource OrderCount}"/>
                 </Grid>
-                <Grid Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Left">
-                    <ComboBox x:Name="comboBoxMonthSpan"  Width="200"  Background="Transparent" Style="{DynamicResource ComboBoxStyle1}" SelectedValuePath="Key" DisplayMemberPath="Value" ItemsSource ="{Binding MonthSpanComboData}" SelectedValue="{Binding MonthsCount, UpdateSourceTrigger=PropertyChanged}"/>
+                <Grid Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right">
+                    <ComboBox x:Name="comboBoxMonthSpan"  Width="200"  Background="Transparent" Style="{DynamicResource ComboBoxStyle1}" Margin="0,4,0,0" SelectedValuePath="Key" DisplayMemberPath="Value" ItemsSource ="{Binding MonthSpanComboData}" SelectedValue="{Binding MonthsCount, UpdateSourceTrigger=PropertyChanged}"/>
                 </Grid>
             </Grid>
             <!--color fill  -->

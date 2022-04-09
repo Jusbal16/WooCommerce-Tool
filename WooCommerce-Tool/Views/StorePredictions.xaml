@@ -116,8 +116,8 @@
                     <TextBox x:Name="Name" Style="{StaticResource Textbox}" Width="200" Grid.ColumnSpan="5" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
                     <TextBlock IsHitTestVisible="False" Text="Prediction name" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="White" Style="{StaticResource Name}"/>
                 </Grid>
-                <Grid Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Left">
-                    <ComboBox x:Name="comboBoxType"  Width="200"  Background="Transparent" Style="{DynamicResource ComboBoxStyle1}" ItemsSource ="{Binding TypeComboData}" Text="{Binding Type, UpdateSourceTrigger=PropertyChanged}"/>
+                <Grid Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right">
+                    <ComboBox x:Name="comboBoxType"  Width="200"  Background="Transparent" Style="{DynamicResource ComboBoxStyle1}" Margin="0,4,0,0" ItemsSource ="{Binding TypeComboData}" Text="{Binding Type, UpdateSourceTrigger=PropertyChanged}"/>
                 </Grid>
             </Grid>
             <!--color fill -->
@@ -131,11 +131,11 @@
             <Grid Grid.Row="4" Background="#0F1A2C">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="50"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="100"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Left" >
+                <StackPanel Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Center" >
                     <Button Content="Save" Style="{StaticResource ButtonG}" Click="Button_Click_1" />
                 </StackPanel>
             </Grid>
@@ -173,7 +173,7 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Left" >
+                <StackPanel Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Center" >
                     <Button Content="Delete" Style="{StaticResource ButtonR}" Click="Button_Click_2" />
                 </StackPanel>
                 <Grid Grid.Column="3" VerticalAlignment="Top" HorizontalAlignment="Center" >

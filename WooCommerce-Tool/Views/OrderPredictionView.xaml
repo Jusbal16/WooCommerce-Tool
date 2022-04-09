@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:WooCommerce_Tool.Views"
              xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf" xmlns:viewsmodels="clr-namespace:WooCommerce_Tool.ViewsModels" xmlns:toolkit="http://schemas.microsoft.com/netfx/2009/xaml/presentation" d:DataContext="{d:DesignInstance viewsmodels:OrderPredictionViewModel}"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="550" d:DesignWidth="900">
     <UserControl.Resources>
 
         <!--Watermark -->
@@ -40,10 +40,17 @@
                 </DataTrigger>
             </Style.Triggers>
         </Style>
+        <!--Tool top for charts -->
+        <Style TargetType="lvc:DefaultTooltip">
+            <Setter Property="Background" Value="#0F1A2C" />
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="BorderBrush" Value="#49E8C9"/>
+            <Setter Property="BulletSize" Value="20" />
+        </Style>
 
 
     </UserControl.Resources>
-    <Grid Background="#020C17" Height="570" Width="720" >
+    <Grid Background="#020C17" Height="700" Width="900" >
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="20"/>
             <ColumnDefinition Width="*" />
@@ -60,8 +67,8 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="40" />
                 <RowDefinition Height="30" />
-                <RowDefinition Height="230"/>
-                <RowDefinition Height="40"/>
+                <RowDefinition Height="300"/>
+                <RowDefinition Height="70"/>
                 <RowDefinition Height="70"/>
             </Grid.RowDefinitions>
             <!--grid corners -->
@@ -109,9 +116,9 @@
             <Grid Grid.Row="2" Background="#0F1A2C" >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="50"/>
-                    <ColumnDefinition Width="600"/>
+                    <ColumnDefinition Width="800"/>
                 </Grid.ColumnDefinitions>
-                <TabControl Grid.Column="1" Background="Transparent" Width="600" Style="{StaticResource Tabs}">
+                <TabControl Grid.Column="1" Background="Transparent" Width="800" Style="{StaticResource Tabs}">
                     <TabItem Header="Prediction" >
                         <lvc:CartesianChart Grid.Column="1" Series="{Binding OrdersCount, UpdateSourceTrigger=PropertyChanged}" x:Name="PredictionChart" LegendLocation="Right" >
                             <lvc:CartesianChart.AxisX>
@@ -130,25 +137,36 @@
                     </TabItem>
                     <TabItem Header="Probability">
                         <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="30"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-                            <lvc:PieChart LegendLocation="Right" Series="{Binding MonthProbability, UpdateSourceTrigger=PropertyChanged}" Hoverable="True" InnerRadius="20" Margin="50" Grid.Column="0">
+                            <TextBlock Grid.Column="0" Grid.Row="0" VerticalAlignment="Bottom" HorizontalAlignment="Center">
+                                <Label Style="{StaticResource LabelSmall}" x:Name="Label3" Content="Time Of the Month" FontFamily="Montsera" Visibility="Hidden"/>
+                            </TextBlock>
+                            <lvc:PieChart LegendLocation="Right" Series="{Binding MonthProbability, UpdateSourceTrigger=PropertyChanged}" Hoverable="True" InnerRadius="20" Margin="50" Grid.Column="0" Grid.Row="1" >
                                 <lvc:PieChart.ChartLegend>
-                                    <lvc:DefaultLegend BulletSize="15" TextBlock.FontSize="8"></lvc:DefaultLegend>
+                                    <lvc:DefaultLegend BulletSize="20" TextBlock.FontSize="12"></lvc:DefaultLegend>
                                 </lvc:PieChart.ChartLegend>
                                 <lvc:PieChart.DataTooltip>
                                     <lvc:DefaultTooltip BulletSize="20"></lvc:DefaultTooltip>
                                 </lvc:PieChart.DataTooltip>
                             </lvc:PieChart>
-                            <lvc:PieChart LegendLocation="Right" Series="{Binding TimeProbability, UpdateSourceTrigger=PropertyChanged}" Hoverable="True" InnerRadius="20" Margin="50" Grid.Column="1">
+                            <TextBlock Grid.Column="1" Grid.Row="0" VerticalAlignment="Bottom" HorizontalAlignment="Center">
+                                <Label Style="{StaticResource LabelSmall}" x:Name="Label4" Content="Time Of the Day" FontFamily="Montsera" Visibility="Hidden"/>
+                            </TextBlock>
+                            <lvc:PieChart LegendLocation="Right" Series="{Binding TimeProbability, UpdateSourceTrigger=PropertyChanged}" Hoverable="True" InnerRadius="20" Margin="50" Grid.Column="1" Grid.Row="1" >
                                 <lvc:PieChart.ChartLegend>
-                                    <lvc:DefaultLegend BulletSize="15" TextBlock.FontSize="8"></lvc:DefaultLegend>
+                                    <lvc:DefaultLegend BulletSize="20" TextBlock.FontSize="12"></lvc:DefaultLegend>
                                 </lvc:PieChart.ChartLegend>
                                 <lvc:PieChart.DataTooltip>
-                                    <lvc:DefaultTooltip BulletSize="20"></lvc:DefaultTooltip>
+                                    <lvc:DefaultTooltip BulletSize="20" ></lvc:DefaultTooltip>
                                 </lvc:PieChart.DataTooltip>
+                                
                             </lvc:PieChart>
                         </Grid>
                     </TabItem>

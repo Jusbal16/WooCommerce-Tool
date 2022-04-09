@@ -47,8 +47,4 @@
     <Resource Include="Assets\stop.png" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="test\" />
-  </ItemGroup>
-
 </Project>
