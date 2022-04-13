@@ -138,7 +138,7 @@ namespace WooCommerce_Tool.ViewsModels
                 //BarLabels.Append(m.Year+"/"+m.Month);
 
             }
-            AddMonths(BarLabels[BarLabels.Length - 4]);
+            AddMonths(BarLabels[BarLabels.Length - Constants.ForecastingPeriod -1]);
             Application.Current.Dispatcher.Invoke((Action)delegate {
                 OrdersCount.Add(new LineSeries { Title = "Orders Count", Values = Values, Stroke = Constants.OrderCountBrush, Fill = Constants.OrderCountBrushFill });
             });
@@ -147,9 +147,9 @@ namespace WooCommerce_Tool.ViewsModels
         // add months to barlabes for graph
         public void AddMonths(string date)
         {
-            int count = BarLabels.Length - 3;
+            int count = BarLabels.Length - Constants.ForecastingPeriod;
             DateTime dateTime = DateTime.Parse(date);
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < Constants.ForecastingPeriod; i++)
             {
                 dateTime = dateTime.AddMonths(1);
                 BarLabels[count] = dateTime.ToString("yyyy") + "/" + dateTime.ToString("MM");
@@ -164,14 +164,14 @@ namespace WooCommerce_Tool.ViewsModels
                 OrdersCount.Clear();
                 return;
             }
-            int horizon = 3;
+            int horizon = Constants.ForecastingPeriod;
             int index = 0;
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < horizon; i++)
             {
                 index = ForecastedValues.Count() - horizon + i;
                 ForecastedValues[index] = Math.Round(msg.ForecastedMoney[i]);
             }
-            for (int i = 3; i < msg.ForecastedMoney.Length; i++)
+            for (int i = horizon; i < msg.ForecastedMoney.Length; i++)
             {
                 ForecastedValues.Add(Math.Round(msg.ForecastedMoney[i]));
             }
@@ -188,15 +188,15 @@ namespace WooCommerce_Tool.ViewsModels
                 OrdersCount.Clear();
                 return;
             }
-            int horizon = 3;
+            int horizon = Constants.ForecastingPeriod;
             int index = 0;
             string methodName = msg.ElementAt(0).MethodName;
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < horizon; i++)
             {
                 index = ForecastedMLValues.Count() - horizon + i;
                 ForecastedMLValues[index] = Math.Round(msg.ElementAt(i).MoneySpend);
             }
-            for (int i = 3; i < msg.Count(); i++)
+            for (int i = horizon; i < msg.Count(); i++)
             {
                 ForecastedMLValues.Add(Math.Round(msg.ElementAt(i).MoneySpend));
             }
@@ -213,14 +213,14 @@ namespace WooCommerce_Tool.ViewsModels
                 OrdersCount.Clear();
                 return;
             }
-            int horizon = 3;
+            int horizon = Constants.ForecastingPeriod;
             int index = 0;
             for (int i = 0; i < horizon; i++)
             {
                 index = ForecastedNNValues.Count() - horizon + i;
                 ForecastedNNValues[index] = Math.Round(msg.MoneySpend.ElementAt(i));
             }
-            for (int i = 3; i < msg.MoneySpend.Count(); i++)
+            for (int i = horizon; i < msg.MoneySpend.Count(); i++)
             {
                 ForecastedNNValues.Add(Math.Round(msg.MoneySpend.ElementAt(i)));
             }

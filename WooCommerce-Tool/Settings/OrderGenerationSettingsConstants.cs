@@ -18,14 +18,10 @@ namespace WooCommerce_Tool.Settings
         public  List<int> DateValueConstants => new List<int>() { 3, 15, 28 };
         public int MonthSpan => 24; //max 100
         public int MaxDateError => 2;
-
-        public int ExtremumVariantCount => 100;
-
-        public  int MinPriceRange => 10;
-        public  int MaxPriceRange => 1000;
         public  int MinOrderCountRange => 1;
         public int MaxOrderCountRange => 10000;
         public int OrderGenerationPerRequest => 100; //max 100
+        public int ForecastingPeriod => 3;
 
 
     }

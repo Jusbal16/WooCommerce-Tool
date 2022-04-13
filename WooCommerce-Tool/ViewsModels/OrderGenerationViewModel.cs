@@ -26,7 +26,7 @@ namespace WooCommerce_Tool.ViewsModels
             for (int i = 1; i <= Constants.MonthSpan; i += 2)
             {
                 _MonthSpanComboData.Add(i, i.ToString() + " Month");
-                if (i >= 3)
+                if (i >= Constants.ForecastingPeriod)
                     i++;
 
             }

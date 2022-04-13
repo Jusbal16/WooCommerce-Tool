@@ -18,6 +18,7 @@ namespace WooCommerce_Tool.ViewsModels
     public class OrderPredictionViewModel : NotifyPropertyBase
     {
         private Func<double, string> _BarFormatter;
+        private Func<double, string> _ToolTipFormatter;
         private string[] _BarLabels;
         private SeriesCollection _OrderCount;
         private SeriesCollection _MonthProbability;
@@ -148,9 +149,9 @@ namespace WooCommerce_Tool.ViewsModels
         // add months to barlabes for graph
         public void AddMonths(string date)
         {
-            int count = BarLabels.Length - 3;
+            int count = BarLabels.Length - Constants.ForecastingPeriod;
             DateTime dateTime = DateTime.Parse(date);
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < Constants.ForecastingPeriod; i++)
             {
                 dateTime = dateTime.AddMonths(1);
                 BarLabels[count] = dateTime.ToString("yyyy") + "/" + dateTime.ToString("MM");
@@ -165,9 +166,9 @@ namespace WooCommerce_Tool.ViewsModels
                 OrdersCount.Clear();
                 return;
             }
-            int horizon = 3;
+            int horizon = Constants.ForecastingPeriod;
             int index = 0;
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < horizon; i++)
             {
                 index = ForecastedValues.Count() - horizon + i;
                 ForecastedValues[index] = Math.Round(msg.ForecastedOrders[i]);
@@ -190,14 +191,14 @@ namespace WooCommerce_Tool.ViewsModels
                 OrdersCount.Clear();
                 return;
             }
-            int horizon = 3;
+            int horizon = Constants.ForecastingPeriod;
             int index = 0;
             for (int i = 0;i < horizon; i++)
             {
                 index = ForecastedNNValues.Count() - horizon + i;
                 ForecastedNNValues[index] = Math.Round(msg.OrderCount.ElementAt(i));
             }
-            for (int i = 3; i < msg.OrderCount.Count(); i++)
+            for (int i = horizon; i < msg.OrderCount.Count(); i++)
             {
                 ForecastedNNValues.Add(Math.Round(msg.OrderCount.ElementAt(i)));
             }
@@ -214,15 +215,15 @@ namespace WooCommerce_Tool.ViewsModels
                 OrdersCount.Clear();
                 return;
             }
-            int horizon = 3;
+            int horizon = Constants.ForecastingPeriod;
             int index = 0;
             string methodName = msg.ElementAt(0).MethodName;
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < horizon; i++)
             {
                 index = ForecastedMLValues.Count() - horizon + i;
                 ForecastedMLValues[index] = Math.Round(msg.ElementAt(i).OrderCount);
             }
-            for (int i = 3; i < msg.Count(); i++)
+            for (int i = horizon; i < msg.Count(); i++)
             {
                 ForecastedMLValues.Add(Math.Round(msg.ElementAt(i).OrderCount));
             }
@@ -246,7 +247,13 @@ namespace WooCommerce_Tool.ViewsModels
         public Func<double, string> BarFormatter
         {
             get { return _BarFormatter; }
-            set { _BarFormatter = value; }
+            set { _BarFormatter = value => value.ToString("N"); }
+        }
+        // BarFormatter chart binding from ui
+        public Func<double, string> ToolTipFormatter
+        {
+            get { return _ToolTipFormatter; }
+            set { _ToolTipFormatter = value => value.ToString("N"); }
         }
         // OrdersCount chart binding from ui
         public SeriesCollection OrdersCount
