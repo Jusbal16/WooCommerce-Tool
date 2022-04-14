@@ -12,6 +12,7 @@ namespace WooCommerce_Tool.Settings
         public List<string> ForecastingMethods => new List<string>() { "FastTree", "FastForest", "FastTreeTweedie", "LbfgsPoissonRegression", "Gam" };
         public int DataNormalizationMin => 0;
         public int DataNormalizationMax => 10;
+        public int ForecastingPeriod => 3;
 
         // visualation
         public string Blue => "#FF2195F2";

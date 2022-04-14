@@ -131,6 +131,9 @@
                             <lvc:CartesianChart.AxisY>
                                 <lvc:Axis Title="Orders" LabelFormatter="{Binding BarFormatter, UpdateSourceTrigger=PropertyChanged}" MinValue="0" ></lvc:Axis>
                             </lvc:CartesianChart.AxisY>
+                            <lvc:CartesianChart.ToolTip>
+                                <lvc:DefaultTooltip ContentStringFormat="{Binding ToolTipFormatter, UpdateSourceTrigger=PropertyChanged}"/>
+                            </lvc:CartesianChart.ToolTip>
 
 
                         </lvc:CartesianChart>

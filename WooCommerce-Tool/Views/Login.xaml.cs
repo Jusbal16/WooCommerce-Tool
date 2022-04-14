@@ -16,6 +16,7 @@ using WooCommerce_Tool.DB_Models;
 using WooCommerce_Tool.ViewsModels;
 using WooCommerceNET;
 using WooCommerceNET.WooCommerce.v3;
+using System.Security.Cryptography;
 
 namespace WooCommerce_Tool.Views
 {
@@ -53,9 +54,17 @@ namespace WooCommerce_Tool.Views
                         AddToDB(id, url, key, secret);
                     }
                     if ((bool)RememberMe.IsChecked)
+                    {
                         setSetting("User", id.ToString());
+                        setSetting("Key", key);
+                        setSetting("Secret", secret);
+                    }
                     else
+                    {
                         setSetting("User", null);
+                        setSetting("Key", null);
+                        setSetting("Secret", null);
+                    }
                     mainWindow = new MainWindow(id, url, key, secret);
                     mainWindow.Show();
                     Close();
@@ -77,7 +86,9 @@ namespace WooCommerce_Tool.Views
             try
             {
                 int id = int.Parse(ConfigurationManager.AppSettings["User"]);
-                ToolLogin login = ReturnLoginByID(id);
+                string key = ConfigurationManager.AppSettings["Key"];
+                string secret = ConfigurationManager.AppSettings["Secret"];
+                ToolLogin login = ReturnLoginByID(id, key, secret);
                 SetUI(login);
 
             }
@@ -136,8 +147,8 @@ namespace WooCommerce_Tool.Views
             ToolLogin login = new ToolLogin();
             login.Id = id;
             login.Url = url;
-            login.ApiSecret = Base64Encode(secret);
-            login.ApiKey = Base64Encode(key);
+            login.ApiSecret = ComputeSha256Hash(secret);
+            login.ApiKey = ComputeSha256Hash(key);
             _dbContext.ToolLogins.Add(login);
             _dbContext.SaveChanges();
         }
@@ -166,17 +177,34 @@ namespace WooCommerce_Tool.Views
             return true;
         }
         // return object from db by id
-        public ToolLogin ReturnLoginByID(int key)
+        public ToolLogin ReturnLoginByID(int id, string key, string secret)
         {
-            return _dbContext.ToolLogins.Where(x => x.Id == key).FirstOrDefault<ToolLogin>();
+            return _dbContext.ToolLogins.Where(x => x.Id == id && x.ApiKey == ComputeSha256Hash(key) && x.ApiSecret == ComputeSha256Hash(secret)).FirstOrDefault<ToolLogin>();
         }
         // fill forms if ebject exist in db
         public void SetUI(ToolLogin login)
         {
             URL.Text = login.Url;
-            Key.Password = Base64Decode(login.ApiKey);
-            Secret.Password = Base64Decode(login.ApiSecret);
+            Key.Password = ConfigurationManager.AppSettings["Key"];
+            Secret.Password = ConfigurationManager.AppSettings["Secret"];
             RememberMe.IsChecked = true;
+        }
+        static string ComputeSha256Hash(string rawData)
+        {
+            // Create a SHA256   
+            using (SHA256 sha256Hash = SHA256.Create())
+            {
+                // ComputeHash - returns byte array  
+                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData));
+
+                // Convert byte array to a string   
+                StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < bytes.Length; i++)
+                {
+                    builder.Append(bytes[i].ToString("x2"));
+                }
+                return builder.ToString();
+            }
         }
         // password box binding
         private void Key_PasswordChanged(object sender, RoutedEventArgs e)
@@ -188,15 +216,6 @@ namespace WooCommerce_Tool.Views
         {
             _viewModel.Secret = Secret.Password;
         }
-        public static string Base64Encode(string plainText)
-        {
-            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);
-            return System.Convert.ToBase64String(plainTextBytes);
-        }
-        public static string Base64Decode(string base64EncodedData)
-        {
-            var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);
-            return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
-        }
+
     }
 }

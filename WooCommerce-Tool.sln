@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31919.166
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WooCommerce-Tool", "WooCommerce-Tool\WooCommerce-Tool.csproj", "{3A32D853-9857-4727-8D5F-92C6DA9EC572}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WooCommerce-Tool", "WooCommerce-Tool\WooCommerce-Tool.csproj", "{3A32D853-9857-4727-8D5F-92C6DA9EC572}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

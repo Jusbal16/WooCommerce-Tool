@@ -18,7 +18,7 @@ namespace WooCommerce_Tool
 {
     public class OrderPrediction : Prediction
     {
-        private Orders Orders { get; set; }
+        private Orders OrderService { get; set; }
         private List<Order> OrdersData { get; set; }
         IDataView OrdersDataFull { get; set; }
         IDataView OrdersDataTrain { get; set; }
@@ -30,7 +30,7 @@ namespace WooCommerce_Tool
         private OrderGenerationSettingsConstants GenerationConstants { get; set; }
         public OrderPrediction(Orders orders)
         {
-            Orders = orders;
+            OrderService = orders;
             Constants = new PredictionConstants();
             mlContext = new MLContext();
         }
@@ -40,7 +40,7 @@ namespace WooCommerce_Tool
         {
             GenerationConstants = new OrderGenerationSettingsConstants();
             Settings = settings;
-            OrdersData = Orders.OrdersData;
+            OrdersData = OrderService.OrdersData;
             SortedOrdersData = RewriteDataForecasting(OrdersData).SkipLast(1);
             //date
             int startIndex = 0;
@@ -120,7 +120,7 @@ namespace WooCommerce_Tool
             predictor[3] = data[data.Length - 4][4];
             NNOrderData nnData = new NNOrderData();
             nnData.OrderCount = new List<double>();
-            for (int i = 0; i < 6; i++)
+            for (int i = 0; i < (Constants.ForecastingPeriod * 2); i++)
             {
                 double[] forecast = nn.ComputeOutputs(predictor);
                 nnData.OrderCount.Add(ReNormalizeData((float)forecast[0], min, max));
@@ -136,7 +136,7 @@ namespace WooCommerce_Tool
         {
             int lenght = ordersData.Count();
             double[][] data = new double[lenght - 4][];
-            for (int i = 0; i < lenght - 4; i++)
+            for (int i = 0; i < lenght - Constants.ForecastingPeriod - 1; i++)
             {
                 data[i] = new double[5];
                 data[i][0] = DataNormalization(ordersData.ElementAt(i).OrdersCount, min, max);
@@ -173,7 +173,7 @@ namespace WooCommerce_Tool
             //create engine
             var forecastEngine = forecaster.CreateTimeSeriesEngine<OrdersMontlyData, OrdersMontlyForecasting>(mlContext);
             // predict
-            Forecast(OrdersDatatest, 3, forecastEngine, mlContext);
+            Forecast(OrdersDatatest, Constants.ForecastingPeriod, forecastEngine, mlContext);
         }
         // time series forecasting
         private void Forecast(IDataView testData, int horizon, TimeSeriesPredictionEngine<OrdersMontlyData, OrdersMontlyForecasting> forecaster, MLContext mlContext)
@@ -265,7 +265,7 @@ namespace WooCommerce_Tool
             // predict with test data
             List<MLPredictionDataOrders> Predictions = new List<MLPredictionDataOrders>();
             var testData = new OrdersMontlyData();
-            for (int i = 0; i < 6; i++)
+            for (int i = 0; i < (Constants.ForecastingPeriod * 2); i++)
             {
                 var datetime = GetDateTime();
                 testData.Year = float.Parse(returnYearFromLastData(i, datetime));
@@ -307,6 +307,7 @@ namespace WooCommerce_Tool
             if (Settings.Time != "All")
                 data = data.Where(x => TimeOfTheDay(x.customer_note)).ToList();
             // group by month
+            //
             List<OrdersMontlyData> orders = (from p in data
                                              group p by new { month = Month(p.customer_note), year = year(p.customer_note) } into d
                                              select new OrdersMontlyData { Year = float.Parse(d.Key.year), Month = float.Parse(d.Key.month), OrdersCount = d.Count() })
