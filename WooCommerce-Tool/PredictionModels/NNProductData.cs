@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WooCommerce_Tool.PredictionClasses
+namespace WooCommerce_Tool.PredictionModels
 {
     // product neural network prediction data structure
     public class NNProductData

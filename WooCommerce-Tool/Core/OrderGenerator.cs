@@ -25,10 +25,10 @@ namespace WooCommerce_Tool
         private Orders Orders { get; set; }
         private OrderGenerationDataLists DataLists { get; set; }
         public OrderGenerationSettings Settings { get; set; }
-        public OrderGenerationSettingsConstants Constants { get; set; }
+        public OrderGenerationConstants Constants { get; set; }
         public OrderGenerator(Products products, Customers customers, Orders orders)
         {
-            Constants = new OrderGenerationSettingsConstants();
+            Constants = new OrderGenerationConstants();
             Products = products;
             Customers = customers;
             Orders = orders;

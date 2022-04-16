@@ -1,14 +1,14 @@
 ﻿using GalaSoft.MvvmLight.Messaging;
 using Microsoft.ML;
 using Microsoft.ML.Transforms.TimeSeries;
-using Order_Generation.PredictionTimeSeries;
+using Order_Generation.PredictionModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WooCommerce_Tool.Core;
-using WooCommerce_Tool.PredictionClasses;
+using WooCommerce_Tool.PredictionModels;
 using WooCommerce_Tool.Settings;
 using WooCommerceNET.WooCommerce.v3;
 
@@ -175,11 +175,11 @@ namespace WooCommerce_Tool
             // create engine
             var forecastEngine = forecaster.CreateTimeSeriesEngine<ProductMontlyData, ProductMontlyForecasting>(mlContext);
             // predict
-            Forecast(OrdersDatatest, Constants.ForecastingPeriod, forecastEngine, mlContext);
+            Forecast(OrdersDatatest, Constants.ForecastingPeriod, forecastEngine);
 
         }
         // time series forecasting
-        private void Forecast(IDataView testData, int horizon, TimeSeriesPredictionEngine<ProductMontlyData, ProductMontlyForecasting> forecaster, MLContext mlContext)
+        private void Forecast(IDataView testData, int horizon, TimeSeriesPredictionEngine<ProductMontlyData, ProductMontlyForecasting> forecaster)
         {
             ProductMontlyForecasting forecast = forecaster.Predict();
             // send data to ui

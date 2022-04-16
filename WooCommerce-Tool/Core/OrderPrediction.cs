@@ -11,7 +11,7 @@ using Microsoft.ML.Transforms.TimeSeries;
 using WooCommerceNET.WooCommerce.v3;
 using GalaSoft.MvvmLight.Messaging;
 using WooCommerce_Tool.Settings;
-using WooCommerce_Tool.PredictionClasses;
+using WooCommerce_Tool.PredictionModels;
 using WooCommerce_Tool.Core;
 
 namespace WooCommerce_Tool
@@ -27,7 +27,7 @@ namespace WooCommerce_Tool
         private PredictionConstants Constants { get; set; }
         private MLContext mlContext { get; set; }
         public OrderPredictionSettings Settings { get; set; }
-        private OrderGenerationSettingsConstants GenerationConstants { get; set; }
+        private OrderGenerationConstants GenerationConstants { get; set; }
         public OrderPrediction(Orders orders)
         {
             OrderService = orders;
@@ -38,7 +38,7 @@ namespace WooCommerce_Tool
         // by start, end dates and by other filter selected in ui
         public void GetData(OrderPredictionSettings settings)
         {
-            GenerationConstants = new OrderGenerationSettingsConstants();
+            GenerationConstants = new OrderGenerationConstants();
             Settings = settings;
             OrdersData = OrderService.OrdersData;
             SortedOrdersData = RewriteDataForecasting(OrdersData).SkipLast(1);
@@ -173,10 +173,10 @@ namespace WooCommerce_Tool
             //create engine
             var forecastEngine = forecaster.CreateTimeSeriesEngine<OrdersMontlyData, OrdersMontlyForecasting>(mlContext);
             // predict
-            Forecast(OrdersDatatest, Constants.ForecastingPeriod, forecastEngine, mlContext);
+            Forecast(OrdersDatatest, Constants.ForecastingPeriod, forecastEngine);
         }
         // time series forecasting
-        private void Forecast(IDataView testData, int horizon, TimeSeriesPredictionEngine<OrdersMontlyData, OrdersMontlyForecasting> forecaster, MLContext mlContext)
+        private void Forecast(IDataView testData, int horizon, TimeSeriesPredictionEngine<OrdersMontlyData, OrdersMontlyForecasting> forecaster)
         {
             OrdersMontlyForecasting forecast = forecaster.Predict();
             // send data to ui

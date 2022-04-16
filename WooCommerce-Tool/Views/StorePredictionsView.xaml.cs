@@ -22,11 +22,11 @@ namespace WooCommerce_Tool.Views
     /// <summary>
     /// Interaction logic for StorePredictions.xaml
     /// </summary>
-    public partial class StorePredictions : UserControl
+    public partial class StorePredictionsView : UserControl
     {
         public Main main { get; set; }
         private StorePredictionsViewModel _viewModel;
-        public StorePredictions(Main main)
+        public StorePredictionsView(Main main)
         {
             this.main = main;
             _viewModel = new StorePredictionsViewModel();

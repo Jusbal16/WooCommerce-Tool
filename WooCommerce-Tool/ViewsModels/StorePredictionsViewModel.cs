@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WooCommerce_Tool.PredictionClasses;
+using WooCommerce_Tool.PredictionModels;
 using System.Text.Json;
 using WooCommerce_Tool.DB_Models;
 using WooCommerce_Tool.Settings;
 using WooCommerce_Tool.Helpers;
-using Order_Generation.PredictionTimeSeries;
+using Order_Generation.PredictionModels;
 using System.Collections.ObjectModel;
 
 namespace WooCommerce_Tool.ViewsModels

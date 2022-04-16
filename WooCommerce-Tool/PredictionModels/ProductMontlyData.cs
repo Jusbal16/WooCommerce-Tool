@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Order_Generation.PredictionTimeSeries
+namespace Order_Generation.PredictionModels
 {
     // product prediction data structure for ML regresion
     public class ProductMontlyData

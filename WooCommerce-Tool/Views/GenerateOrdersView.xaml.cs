@@ -28,7 +28,7 @@ namespace WooCommerce_Tool
         
 
         private OrderGenerationViewModel _viewModel;
-        private OrderGenerationSettingsConstants Constants { get; set; }
+        private OrderGenerationConstants Constants { get; set; }
         private OrderGenerationSettings Settings { get; set; }
         private Main Main { get; set; }
         public GenerateOrdersView(Main main)
@@ -37,7 +37,7 @@ namespace WooCommerce_Tool
             Main = main;
             _viewModel = new OrderGenerationViewModel(Main.OrderGenerator);
             DataContext = _viewModel;
-            Constants = new OrderGenerationSettingsConstants();
+            Constants = new OrderGenerationConstants();
             InitializeComponent();
             // fill date
             comboBoxDate.SelectedIndex = 0;

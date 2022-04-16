@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Order_Generation.PredictionTimeSeries
+namespace Order_Generation.PredictionModels
 {
     // product timeseries prediction data structure
     internal class ProductMontlyForecasting

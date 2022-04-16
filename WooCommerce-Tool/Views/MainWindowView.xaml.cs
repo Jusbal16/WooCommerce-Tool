@@ -20,16 +20,16 @@ namespace WooCommerce_Tool
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindowView : Window
     {
         public Main Main { get; set; }
         public GenerateOrdersView generateOrdersView { get; set; }
         public OrderPredictionView orderPredictionView { get; set; }
         public ProductPredictionView productPredictionView { get; set; }
-        public StorePredictions storePredictionView { get; set; }
+        public StorePredictionsView storePredictionView { get; set; }
         public HomeView homeView { get; set; }
         private MainWindowViewModel _viewModel { get; set; }
-        public MainWindow(int id, string url, string key, string secret)
+        public MainWindowView(int id, string url, string key, string secret)
         {
             _viewModel = new MainWindowViewModel();
             DataContext = _viewModel;
@@ -38,7 +38,7 @@ namespace WooCommerce_Tool
             generateOrdersView = new GenerateOrdersView(Main);
             orderPredictionView = new OrderPredictionView(Main);
             productPredictionView = new ProductPredictionView(Main);
-            storePredictionView = new StorePredictions(Main);
+            storePredictionView = new StorePredictionsView(Main);
             homeView = new HomeView();
             SwitchScreen(homeView);
             Task.Run(() => GetAllData());

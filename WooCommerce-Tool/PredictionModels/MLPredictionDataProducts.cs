@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WooCommerce_Tool.PredictionClasses
+namespace WooCommerce_Tool.PredictionModels
 {
     // product ML regresion prediction data structure
     public class MLPredictionDataProducts

@@ -26,7 +26,7 @@ namespace WooCommerce_Tool.Views
     public partial class Login : Window
     {
         private LoginViewModel _viewModel;
-        private MainWindow mainWindow;
+        private MainWindowView mainWindow;
         private tool_dbContext _dbContext;
         public Login()
         {
@@ -65,7 +65,7 @@ namespace WooCommerce_Tool.Views
                         setSetting("Key", null);
                         setSetting("Secret", null);
                     }
-                    mainWindow = new MainWindow(id, url, key, secret);
+                    mainWindow = new MainWindowView(id, url, key, secret);
                     mainWindow.Show();
                     Close();
                 }

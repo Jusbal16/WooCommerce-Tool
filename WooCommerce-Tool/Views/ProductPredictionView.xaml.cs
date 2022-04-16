@@ -1,5 +1,5 @@
 ﻿using GalaSoft.MvvmLight.Messaging;
-using Order_Generation.PredictionTimeSeries;
+using Order_Generation.PredictionModels;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,7 +17,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using WooCommerce_Tool.DB_Models;
-using WooCommerce_Tool.PredictionClasses;
+using WooCommerce_Tool.PredictionModels;
 using WooCommerce_Tool.Settings;
 using WooCommerce_Tool.ViewsModels;
 

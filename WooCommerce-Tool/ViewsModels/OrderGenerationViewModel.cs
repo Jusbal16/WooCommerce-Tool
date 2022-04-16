@@ -12,7 +12,7 @@ namespace WooCommerce_Tool.ViewsModels
     class OrderGenerationViewModel : NotifyPropertyBase
     {
         private OrderGenerationSettings Settings;
-        private OrderGenerationSettingsConstants Constants;
+        private OrderGenerationConstants Constants;
         private ObservableDictionary<int, string> _MonthSpanComboData;
         private List<string> _MonthComboData;
         private List<string> _TimeComboData;
@@ -20,7 +20,7 @@ namespace WooCommerce_Tool.ViewsModels
         public OrderGenerationViewModel(OrderGenerator orderGenerator)
         {
             this.Settings = new OrderGenerationSettings();
-            this.Constants = new OrderGenerationSettingsConstants();
+            this.Constants = new OrderGenerationConstants();
             _MonthSpanComboData = new ObservableDictionary<int, string>();
             _MonthSpanComboData.Add(0, "Select Month Span");
             for (int i = 1; i <= Constants.MonthSpan; i += 2)

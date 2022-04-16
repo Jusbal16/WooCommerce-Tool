@@ -18,7 +18,7 @@ using GalaSoft.MvvmLight.Messaging;
 using LiveCharts;
 using LiveCharts.Wpf;
 using WooCommerce_Tool.DB_Models;
-using WooCommerce_Tool.PredictionClasses;
+using WooCommerce_Tool.PredictionModels;
 using WooCommerce_Tool.Settings;
 using WooCommerce_Tool.ViewsModels;
 

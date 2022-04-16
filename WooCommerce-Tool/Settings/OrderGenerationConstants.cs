@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WooCommerce_Tool.Settings
 {
-    public class OrderGenerationSettingsConstants
+    public class OrderGenerationConstants
     {
         public  List<double> TimeDivisionConstants => new List<double>() { 0.4, 0.4, 0.4, 0.4, 0.6, 0.7};
         public  List<string> TimeConstants => new List<string>() { "Morning 7:00", "Brunch 10:00", "Lunch 13:00", "Afternoon 15:00", "Evening 18:00","Midnight 00:00", "Night 4:00" };

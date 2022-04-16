@@ -16,8 +16,8 @@ namespace WooCommerce_Tool.Settings
         public List<DateTime> TimeList = new List<DateTime>();
         public List<int> ProductCount = new List<int>();
         public OrderGenerationSettings Settings { get; set; }
-        public OrderGenerationSettingsConstants Constants { get; set; }
-        public OrderGenerationDataLists(OrderGenerationSettings settings, OrderGenerationSettingsConstants constants)
+        public OrderGenerationConstants Constants { get; set; }
+        public OrderGenerationDataLists(OrderGenerationSettings settings, OrderGenerationConstants constants)
         {
             Settings = settings;
             Constants = constants;

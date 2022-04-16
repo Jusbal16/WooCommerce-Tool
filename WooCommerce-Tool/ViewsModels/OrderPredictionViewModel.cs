@@ -9,7 +9,7 @@ using LiveCharts.Wpf;
 using LiveCharts.Defaults;
 using GalaSoft.MvvmLight.Messaging;
 using System.Windows;
-using WooCommerce_Tool.PredictionClasses;
+using WooCommerce_Tool.PredictionModels;
 using WooCommerce_Tool.Settings;
 using System.Collections.ObjectModel;
 
@@ -34,7 +34,7 @@ namespace WooCommerce_Tool.ViewsModels
         private ObservableCollection<string> _NamesComboData;
         private OrderPredictionSettings Settings { get; set; }
         private PredictionConstants Constants { get; set; }
-        private OrderGenerationSettingsConstants SettingsConstants { get; set; }
+        private OrderGenerationConstants SettingsConstants { get; set; }
         public OrderPredictionViewModel()
         {
             OrdersCount = new SeriesCollection();
@@ -42,7 +42,7 @@ namespace WooCommerce_Tool.ViewsModels
             TimeProbability = new SeriesCollection();
             Settings = new OrderPredictionSettings();
             Constants = new PredictionConstants();  
-            SettingsConstants = new OrderGenerationSettingsConstants();
+            SettingsConstants = new OrderGenerationConstants();
             Messenger.Default.Register<List<OrdersMonthTimeProbability>>(this, (action) => ReceiveMonthTime(action));
             Messenger.Default.Register<List<OrdersTimeProbability>>(this, (action) => ReceiveTime(action));
             Messenger.Default.Register<IEnumerable<OrdersMontlyData>>(this, (action) => ReceiveOrders(action));
