@@ -50,12 +50,12 @@
                                 <RowDefinition Height="70" />
                                 <RowDefinition Height="70" />
                             </Grid.RowDefinitions>
-                            <Button Style="{StaticResource MenuButtons}" Name="Home" Grid.Row="0" Click="btnShow_Click_1" Content="Home"/>
-                            <Button Style="{StaticResource MenuButtons}" Name="ProductPrediction" Grid.Row="1" Click="btnShow_Click_2" Content="Product Prediction"/>
-                            <Button Style="{StaticResource MenuButtons}" Name="OrderPrediction" Grid.Row="2" Click="btnShow_Click_3" Content="Orders Prediction" />
-                            <Button Style="{StaticResource MenuButtons}" Name="StorePredictions" Grid.Row="3" Click="btnShow_Click_4" Content="Store Predictions" />
-                            <Button Style="{StaticResource MenuButtons}" Name="GenerateOrders" Grid.Row="4" Click="btnShow_Click_5" Content="Generate Orders" />
-                            <Button Style="{StaticResource MenuButtons}" Name="Logout" Grid.Row="5" Click="btnShow_Click_6" Content="Logout" />
+                            <Button Style="{StaticResource MenuButtons}" Name="Home" Grid.Row="0" Click="btnShow_Click_HomeView" Content="Home"/>
+                            <Button Style="{StaticResource MenuButtons}" Name="ProductPrediction" Grid.Row="1" Click="btnShow_Click_ProductPredictionView" Content="Product Prediction"/>
+                            <Button Style="{StaticResource MenuButtons}" Name="OrderPrediction" Grid.Row="2" Click="btnShow_Click_OrderPredictionView" Content="Orders Prediction" />
+                            <Button Style="{StaticResource MenuButtons}" Name="StorePredictions" Grid.Row="3" Click="btnShow_Click_StorePredictionView" Content="Store Predictions" />
+                            <Button Style="{StaticResource MenuButtons}" Name="GenerateOrders" Grid.Row="4" Click="btnShow_Click_GenerateOrdersView" Content="Generate Orders" />
+                            <Button Style="{StaticResource MenuButtons}" Name="Logout" Grid.Row="5" Click="btnShow_Click_Logout" Content="Logout" />
                             <Grid Grid.Row="6" VerticalAlignment="Bottom" HorizontalAlignment="Center" >
                                 <TextBlock Name="Status" IsHitTestVisible="False" Text="{Binding Path=Status, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10,0,0,0" Foreground="White"/>
                             </Grid>

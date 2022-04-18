@@ -36,7 +36,7 @@ namespace WooCommerce_Tool.Views
             RefreshNameList();
         }
         // insert selected data to db
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        private void Button_Click_Save(object sender, RoutedEventArgs e)
         {
             if (CheckFill())
             {
@@ -55,7 +55,7 @@ namespace WooCommerce_Tool.Views
             }
         }
         // delete selected data from db
-        private void Button_Click_2(object sender, RoutedEventArgs e)
+        private void Button_Click_Delete(object sender, RoutedEventArgs e)
         {
             if (DeletePrediction.SelectedIndex != 0)
             {

@@ -68,7 +68,7 @@
         <!--Button-->
         <Grid Grid.Row="7" Grid.Column="0"  >
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" >
-                <Button Content="Login" Style="{StaticResource ButtonG}" Click="Button_Click"  />
+                <Button Content="Login" Style="{StaticResource ButtonG}" Click="Button_Click_Login"  />
             </StackPanel>
         </Grid>
     </Grid>

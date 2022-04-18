@@ -47,34 +47,34 @@ namespace WooCommerce_Tool
             //Dashboard obj = new Dashboard();
             //SwitchScreen(obj);
         }
-        private void btnShow_Click_1(object sender, RoutedEventArgs e)
+        private void btnShow_Click_HomeView(object sender, RoutedEventArgs e)
         {
             SwitchScreen(homeView);
         }
 
-        private void btnShow_Click_2(object sender, RoutedEventArgs e)
+        private void btnShow_Click_ProductPredictionView(object sender, RoutedEventArgs e)
         {
             productPredictionView.RefreshNameList();
             SwitchScreen(productPredictionView);
         }
-        private void btnShow_Click_3(object sender, RoutedEventArgs e)
+        private void btnShow_Click_OrderPredictionView(object sender, RoutedEventArgs e)
         {
             //Create_Task obj = new Create_Task(-1);
             //SwitchScreen(obj);
             orderPredictionView.RefreshNameList();
             SwitchScreen(orderPredictionView);
         }
-        private void btnShow_Click_4(object sender, RoutedEventArgs e)
+        private void btnShow_Click_StorePredictionView(object sender, RoutedEventArgs e)
         {
             SwitchScreen(storePredictionView);
         }
-        private void btnShow_Click_5(object sender, RoutedEventArgs e)
+        private void btnShow_Click_GenerateOrdersView(object sender, RoutedEventArgs e)
         {
 
             SwitchScreen(generateOrdersView);
 
         }
-        private void btnShow_Click_6(object sender, RoutedEventArgs e)
+        private void btnShow_Click_Logout(object sender, RoutedEventArgs e)
         {
             Login login = new Login();
             Close();

@@ -45,7 +45,7 @@ namespace WooCommerce_Tool
             comboBoxMonthSpan.SelectedIndex = 0;
         }
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        private void Button_Click_Generate(object sender, RoutedEventArgs e)
         {
             int minOrders = Constants.MinOrderCountRange;
             int maxOrders = Constants.MaxOrderCountRange;
