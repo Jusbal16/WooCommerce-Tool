@@ -10,6 +10,8 @@ using WooCommerce.NET.WordPress.v2;
 using WooCommerce_Tool.ViewsModels;
 using WooCommerce_Tool.Core;
 using WooCommerce_Tool.DB_Models;
+using LiveCharts;
+using System.Windows.Documents;
 
 namespace WooCommerce_Tool
 {
@@ -161,6 +163,61 @@ namespace WooCommerce_Tool
         public ToolProduct ReturnProductByName(string name)
         {
             return StorePredictions.ReturnProductByName(name);
+        }
+        public string ReturnForecastedResultText(int sum)
+        {
+            if (sum > 1)
+                return "Rise";
+            if (sum >= -1 && sum <= 1)
+                return "stay normal";
+            return "decrease";
+        }
+        public int CalculateSlope(ChartValues<double> values)
+        {
+            if (values.Count == 0)
+                return 0;
+            int index = 1;
+            var yAxisValues = new List<int>();
+            var xAxisValues = new List<int>();
+            foreach (var v in values)
+            {
+                if (!double.IsNaN(v))
+                {
+                    xAxisValues.Add(index);
+                    yAxisValues.Add(((int)v));
+                    index++;
+                }
+
+            }
+            int n = yAxisValues.Count;
+            if (n == 0)
+                return 0;
+            int yAxisValuesSum = yAxisValues.Sum();
+            int xAxisValuesSum = xAxisValues.Sum();
+            int xxSum = 0;
+            int xySum = 0;
+            for (int i = 0; i < n; i++)
+            {
+                xySum += (xAxisValues[i] * yAxisValues[i]);
+                xxSum += (xAxisValues[i] * xAxisValues[i]);
+            }
+            return ((n * xySum) - (xAxisValuesSum * yAxisValuesSum)) / ((n * xxSum) - (xAxisValuesSum * xAxisValuesSum));
+        }
+        public void AddTextToTextBlock(string text, System.Windows.Controls.TextBlock textBlock)
+        {
+            textBlock.Text = "";
+            string s = text; // Sample text
+            var parts = s.Split(new[] { "<b>", "</b>" }, StringSplitOptions.None);
+            bool isbold = false; // Start in normal mode
+            foreach (var part in parts)
+            {
+                if (isbold)
+                    textBlock.Inlines.Add(new Bold(new Run(part)));
+                else
+                    textBlock.Inlines.Add(new Run(part));
+
+                isbold = !isbold; // toggle between bold and not bold
+            }
         }
     }
 }

@@ -154,7 +154,7 @@
                             <TextBlock Grid.Column="0" Grid.Row="0" VerticalAlignment="Bottom" HorizontalAlignment="Center">
                                 <Label Style="{StaticResource LabelSmall}" x:Name="Label3" Content="Top 5 products" FontFamily="Montsera" Visibility="Hidden"/>
                             </TextBlock>
-                            <lvc:PieChart LegendLocation="Right" Series="{Binding MonthProbability, UpdateSourceTrigger=PropertyChanged}" Hoverable="True" InnerRadius="20" Margin="50" Grid.Column="0" Grid.Row="1" >
+                            <lvc:PieChart LegendLocation="Right" Series="{Binding ProductProbability, UpdateSourceTrigger=PropertyChanged}" Hoverable="True" InnerRadius="20" Margin="50" Grid.Column="0" Grid.Row="1" >
                                 <lvc:PieChart.ChartLegend>
                                     <lvc:DefaultLegend BulletSize="20" TextBlock.FontSize="12"></lvc:DefaultLegend>
                                 </lvc:PieChart.ChartLegend>
@@ -165,7 +165,7 @@
                             <TextBlock Grid.Column="1" Grid.Row="0" VerticalAlignment="Bottom" HorizontalAlignment="Center">
                                 <Label Style="{StaticResource LabelSmall}" x:Name="Label4" Content="Top 5 categories" FontFamily="Montsera" Visibility="Hidden"/>
                             </TextBlock>
-                            <lvc:PieChart LegendLocation="Right" Series="{Binding TimeProbability, UpdateSourceTrigger=PropertyChanged}" Hoverable="True" InnerRadius="20" Margin="50" Grid.Column="1" Grid.Row="1">
+                            <lvc:PieChart LegendLocation="Right" Series="{Binding CategoryProbability, UpdateSourceTrigger=PropertyChanged}" Hoverable="True" InnerRadius="20" Margin="50" Grid.Column="1" Grid.Row="1">
                                 <lvc:PieChart.ChartLegend>
                                     <lvc:DefaultLegend BulletSize="20" TextBlock.FontSize="12"></lvc:DefaultLegend>
                                 </lvc:PieChart.ChartLegend>
@@ -173,6 +173,16 @@
                                     <lvc:DefaultTooltip BulletSize="20"></lvc:DefaultTooltip>
                                 </lvc:PieChart.DataTooltip>
                             </lvc:PieChart>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="Results">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="10"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="10"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="Results" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" TextWrapping="WrapWithOverflow" FontWeight="Light"/>
                         </Grid>
                     </TabItem>
                 </TabControl>

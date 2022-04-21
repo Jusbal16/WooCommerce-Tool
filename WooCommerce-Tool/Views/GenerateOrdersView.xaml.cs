@@ -78,12 +78,13 @@ namespace WooCommerce_Tool
         // generate orders
         public void StartGeneration(OrderGenerationSettings settings)
         {
-            Main.GenerateDataList(settings);
+            
             if (settings.Deletion)
             {
                 _viewModel.Status = "Deleting orders started";
                 Main.DeleteAllOrders();
             }
+            Main.GenerateDataList(settings);
             _viewModel.Status = "Started generating orders";
             Main.GenerateOrders();
             _viewModel.Status = "Order generation ended successfully";

@@ -22,12 +22,13 @@ namespace WooCommerce_Tool.ViewsModels
         private Func<double, string> _BarFormatter;
         private string[] _BarLabels;
         private SeriesCollection _OrderCount;
-        private SeriesCollection _MonthProbability;
-        private SeriesCollection _TimeProbability;
+        private SeriesCollection _ProductProbability;
+        private SeriesCollection _CategoryProbability;
         private string status;
-        ChartValues<double> ForecastedValues;
-        ChartValues<double> ForecastedMLValues;
-        ChartValues<double> ForecastedNNValues;
+        public ChartValues<double> ForecastedValues;
+        public ChartValues<double> ForecastedMLValues;
+        public ChartValues<double> ForecastedNNValues;
+        public ChartValues<double> TotalOrders;
         private List<string> _StartDateComboData;
         private List<string> _EndDateComboData;
         private ObservableCollection<string> _NamesComboData;
@@ -37,8 +38,8 @@ namespace WooCommerce_Tool.ViewsModels
         public ProductPredictionViewModel()
         {
             OrdersCount = new SeriesCollection();
-            MonthProbability = new SeriesCollection();
-            TimeProbability = new SeriesCollection();
+            ProductProbability = new SeriesCollection();
+            CategoryProbability = new SeriesCollection();
             Settings = new ProductPredictionSettings();
             Constants = new PredictionConstants();
             Messenger.Default.Register<List<ProductPopularData>>(this, (action) => ReceivePopularProducts(action));
@@ -75,7 +76,7 @@ namespace WooCommerce_Tool.ViewsModels
         {
             if (msg == null)
             {
-                MonthProbability.Clear();
+                ProductProbability.Clear();
                 return;
             }
             List<ProductPopularData> list = new List<ProductPopularData>();
@@ -87,7 +88,7 @@ namespace WooCommerce_Tool.ViewsModels
             }
             Application.Current.Dispatcher.Invoke((Action)delegate {
                 foreach (var m in list)
-                    MonthProbability.Add(new PieSeries { Title = m.ProductName, Values = new ChartValues<ObservableValue> { new ObservableValue(m.Count) } });
+                    ProductProbability.Add(new PieSeries { Title = m.ProductName, Values = new ChartValues<ObservableValue> { new ObservableValue(m.Count) } });
             });
 
         }
@@ -96,7 +97,7 @@ namespace WooCommerce_Tool.ViewsModels
         {
             if (msg == null)
             {
-                TimeProbability.Clear();
+                CategoryProbability.Clear();
                 return;
             }
             List<ProductCategoriesData> list = new List<ProductCategoriesData>();
@@ -109,7 +110,7 @@ namespace WooCommerce_Tool.ViewsModels
 
             Application.Current.Dispatcher.Invoke((Action)delegate {
                 foreach (var m in list)
-                    TimeProbability.Add(new PieSeries { Title = m.CategoryName, Values = new ChartValues<ObservableValue> { new ObservableValue(m.Count) } });
+                    CategoryProbability.Add(new PieSeries { Title = m.CategoryName, Values = new ChartValues<ObservableValue> { new ObservableValue(m.Count) } });
             });
 
         }
@@ -121,7 +122,7 @@ namespace WooCommerce_Tool.ViewsModels
                 OrdersCount.Clear();
                 return;
             }
-            ChartValues<double> Values = new ChartValues<double>();
+            TotalOrders = new ChartValues<double>();
             ForecastedValues = new ChartValues<double>();
             ForecastedMLValues = new ChartValues<double>();
             ForecastedNNValues = new ChartValues<double>();
@@ -129,7 +130,7 @@ namespace WooCommerce_Tool.ViewsModels
             int i = 0;
             foreach (var m in msg)
             {
-                Values.Add(Math.Round(m.MoneySpend));
+                TotalOrders.Add(Math.Round(m.MoneySpend));
                 ForecastedValues.Add(double.NaN);
                 ForecastedMLValues.Add(double.NaN);
                 ForecastedNNValues.Add(double.NaN);
@@ -140,7 +141,7 @@ namespace WooCommerce_Tool.ViewsModels
             }
             AddMonths(BarLabels[BarLabels.Length - Constants.ForecastingPeriod -1]);
             Application.Current.Dispatcher.Invoke((Action)delegate {
-                OrdersCount.Add(new LineSeries { Title = "Orders Count", Values = Values, Stroke = Constants.OrderCountBrush, Fill = Constants.OrderCountBrushFill });
+                OrdersCount.Add(new LineSeries { Title = "Orders Count", Values = TotalOrders, Stroke = Constants.OrderCountBrush, Fill = Constants.OrderCountBrushFill });
             });
 
         }
@@ -258,22 +259,22 @@ namespace WooCommerce_Tool.ViewsModels
             }
         }
         // MonthProbability chart binding from ui
-        public SeriesCollection MonthProbability
+        public SeriesCollection ProductProbability
         {
-            get { return _MonthProbability; }
+            get { return _ProductProbability; }
             set
             {
-                _MonthProbability = value;
+                _ProductProbability = value;
                 OnPropertyChanged("MonthProbability");
             }
         }
         // TimeProbability chart binding from ui
-        public SeriesCollection TimeProbability
+        public SeriesCollection CategoryProbability
         {
-            get { return _TimeProbability; }
+            get { return _CategoryProbability; }
             set
             {
-                _TimeProbability = value;
+                _CategoryProbability = value;
                 OnPropertyChanged("TimeProbability");
             }
         }

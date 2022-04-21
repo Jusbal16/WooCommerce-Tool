@@ -24,9 +24,10 @@ namespace WooCommerce_Tool.ViewsModels
         private SeriesCollection _MonthProbability;
         private SeriesCollection _TimeProbability;
         private string status;
-        ChartValues<double> ForecastedValues;
-        ChartValues<double> ForecastedMLValues;
-        ChartValues<double> ForecastedNNValues;
+        public ChartValues<double> ForecastedValues;
+        public ChartValues<double> ForecastedMLValues;
+        public ChartValues<double> ForecastedNNValues;
+        public ChartValues<double> TotalOrders;
         private List<string> _StartDateComboData;
         private List<string> _EndDateComboData;
         private List<string> _MonthComboData;
@@ -124,15 +125,15 @@ namespace WooCommerce_Tool.ViewsModels
                 OrdersCount.Clear();
                 return;
             }
-            ChartValues<double> Values = new ChartValues<double>();
             ForecastedValues = new ChartValues<double>();
             ForecastedMLValues = new ChartValues<double>();
             ForecastedNNValues = new ChartValues<double>();
+            TotalOrders = new ChartValues<double>();
             BarLabels = new string[msg.Count() + 3];
             int i = 0;
             foreach (var m in msg)
             {
-                Values.Add(m.OrdersCount);
+                TotalOrders.Add(m.OrdersCount);
                 ForecastedValues.Add(double.NaN);
                 ForecastedMLValues.Add(double.NaN);
                 ForecastedNNValues.Add(double.NaN);
@@ -142,7 +143,7 @@ namespace WooCommerce_Tool.ViewsModels
             AddMonths(BarLabels[BarLabels.Length - 4]);
             Application.Current.Dispatcher.Invoke((Action)delegate
             {
-                OrdersCount.Add(new LineSeries { Title = "Orders Count", Values = Values, Stroke = Constants.OrderCountBrush, Fill = Constants.OrderCountBrushFill });
+                OrdersCount.Add(new LineSeries { Title = "Orders Count", Values = TotalOrders, Stroke = Constants.OrderCountBrush, Fill = Constants.OrderCountBrushFill });
             });
 
         }
@@ -231,6 +232,10 @@ namespace WooCommerce_Tool.ViewsModels
             {
                 OrdersCount.Add(new LineSeries { Title = methodName, Values = ForecastedMLValues, Stroke = Constants.RegresionBrush, Fill = Constants.RegresionBrushFill });
             });
+
+        }
+        private void CreateResultsText()
+        {
 
         }
         // BarLabels chart binding from ui

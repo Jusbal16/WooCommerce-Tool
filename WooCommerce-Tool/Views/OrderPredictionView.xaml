@@ -173,6 +173,16 @@
                             </lvc:PieChart>
                         </Grid>
                     </TabItem>
+                    <TabItem Header="Results">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="10"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="10"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="Results" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" TextWrapping="WrapWithOverflow" FontWeight="Light" />
+                        </Grid>
+                    </TabItem>
                 </TabControl>
             </Grid>
             <!--3 combobox-->

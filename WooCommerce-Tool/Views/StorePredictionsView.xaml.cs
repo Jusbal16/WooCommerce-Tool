@@ -87,6 +87,7 @@ namespace WooCommerce_Tool.Views
                 product = _viewModel.ReturnProductObject(main.ProductPrediction.Settings);
                 main.AddToDB(null, product);
             }
+
             RefreshNameList();
             _viewModel.Status = "Successfully added";
 

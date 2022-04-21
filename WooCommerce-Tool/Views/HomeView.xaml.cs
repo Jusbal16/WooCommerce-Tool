@@ -23,6 +23,11 @@ namespace WooCommerce_Tool.Views
         public HomeView()
         {
             InitializeComponent();
+            ShowText();
+        }
+        public void ShowText()
+        {
+
         }
     }
 }

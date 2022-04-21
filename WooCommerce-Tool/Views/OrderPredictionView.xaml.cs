@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -87,6 +88,7 @@ namespace WooCommerce_Tool.Views
             _viewModel.Status = "Finished";
             Main.FindBestForecastingMethod();
             Main.LinerRegresionWithNeuralNetwork();
+            CreateResultText();
         }
         // show message method
         public void ShowMessage(string text, string type)
@@ -161,6 +163,7 @@ namespace WooCommerce_Tool.Views
             //
             List<MLPredictionDataOrders> data5 = JsonSerializer.Deserialize<List<MLPredictionDataOrders>>(Order.RegresionOrder);
             Messenger.Default.Send<List<MLPredictionDataOrders>>(data5);
+            CreateResultText();
         }
         // check data if predictions are possible
         public bool checkData(OrderPredictionSettings settings)
@@ -177,5 +180,52 @@ namespace WooCommerce_Tool.Views
                 return true;
             return false;
         }
+        public void CreateResultText()
+        {
+            // calculate if graph is rising, or decreasing with trendline slope
+            int a = Main.CalculateSlope(_viewModel.ForecastedValues);
+            int b = Main.CalculateSlope(_viewModel.ForecastedMLValues);
+            int c = Main.CalculateSlope(_viewModel.ForecastedNNValues);
+            string OrderText = Main.ReturnForecastedResultText(a + b + c);
+            double percentage = CalculatePercentage(OrderText);
+            // create result text;
+            Application.Current.Dispatcher.Invoke((Action)delegate
+            {
+                string text = $"Order prediction results from <b>\"{_viewModel.StartDate}\"<b> to <b>\"{_viewModel.EndDate}\"<b>" +
+                     $" with time of the month <b>\"{_viewModel.Month}\"<b> and time of the day <b>\"{_viewModel.Time}\"<b>:\n\n";
+                if (OrderText == "stay normal")
+                    text += $"\t • In next 3 months orders will <b>{OrderText}<b>.\n";
+                else
+                    text += $"\t • In next 3 months orders will <b>{OrderText}<b> by <b>{percentage}%<b> from the last three months\n";
+                text += $"\t • Most popular time of the month for orders <b>\"{_viewModel.MonthProbability.ElementAt(0).Title}\"<b>.\n" +
+                     $"\t • Most popular time of the day for orders <b>\"{_viewModel.TimeProbability.ElementAt(0).Title}\"<b> and " +
+                     $"<b>\"{_viewModel.TimeProbability.ElementAt(1).Title}\"<b>.\n";
+                //_viewModel.ResultText = text;
+                Main.AddTextToTextBlock(text, Results);
+            });
+
+        }
+        // calculate percentage of fall or rise of order by average order from last three months
+        public double CalculatePercentage(string orderResult)
+        {
+            if (orderResult == "stay normal")
+                return 0;
+            double a = _viewModel.ForecastedValues[_viewModel.ForecastedValues.Count-1];
+            double b = _viewModel.ForecastedMLValues[_viewModel.ForecastedMLValues.Count - 1];
+            double c = _viewModel.ForecastedNNValues[_viewModel.ForecastedNNValues.Count - 1];
+            double averageForecast = (a + b + c) / 3;
+            double aa = _viewModel.TotalOrders[_viewModel.TotalOrders.Count - 1];
+            double bb = _viewModel.TotalOrders[_viewModel.TotalOrders.Count - 2];
+            double cc = _viewModel.TotalOrders[_viewModel.TotalOrders.Count - 3];
+            double averageTotal = (aa + bb + cc) / 3;
+            double percentage;
+            if (averageForecast > averageTotal)
+                percentage = averageTotal / averageForecast;
+            else
+                percentage = averageForecast / averageTotal;
+            percentage = (1 - percentage) * 100; 
+            return Math.Round(percentage,2);
+        }
+
     }
 }
