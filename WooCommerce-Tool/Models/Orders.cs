@@ -24,7 +24,9 @@ namespace WooCommerce_Tool
         public async Task DeleteAllOrders()
         {
             OrderBatch orderBatch = new OrderBatch();
-            List<int> ids = OrdersData.Select(x => (int)x.id).ToList();
+            //testing
+            List<ulong?> idstest = OrdersData.Select(x => x.id).ToList();
+            List<int> ids = OrdersData.Select(x => Convert.ToInt32(x.id)).ToList();
 
             for (int i = 0; i < ids.Count; i = i + 100)
             {
@@ -32,6 +34,7 @@ namespace WooCommerce_Tool
                 await wc.Order.DeleteRange(orderBatch);
             }
 
+            OrdersData = new List<Order>();
         }
         // get all order from api and store them
         public async Task GetAllOrders()

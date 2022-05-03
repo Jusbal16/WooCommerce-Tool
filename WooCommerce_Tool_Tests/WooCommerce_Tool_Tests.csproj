@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>
-    <RootNamespace>WooCommerce_ToolTests_tool</RootNamespace>
     <Nullable>enable</Nullable>
 
     <IsPackable>false</IsPackable>

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Order_Generation.PredictionModels
+namespace WooCommerce_Tool
 {
     // product prediction data structure for ML regresion
     public class ProductMontlyData

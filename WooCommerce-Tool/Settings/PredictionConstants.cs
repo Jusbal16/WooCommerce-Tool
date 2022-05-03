@@ -13,7 +13,6 @@ namespace WooCommerce_Tool.Settings
         public int DataNormalizationMin => 0;
         public int DataNormalizationMax => 10;
         public int ForecastingPeriod => 3;
-
         // visualation
         public string Blue => "#FF2195F2";
         public string Red => "#FFF34336";

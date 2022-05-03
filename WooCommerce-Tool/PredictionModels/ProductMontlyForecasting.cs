@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Order_Generation.PredictionModels
+namespace WooCommerce_Tool
 {
     // product timeseries prediction data structure
-    internal class ProductMontlyForecasting
+    public class ProductMontlyForecasting
     {
         public float[] ForecastedMoney { get; set; }
 

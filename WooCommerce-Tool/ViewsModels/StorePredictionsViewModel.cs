@@ -9,7 +9,6 @@ using System.Text.Json;
 using WooCommerce_Tool.DB_Models;
 using WooCommerce_Tool.Settings;
 using WooCommerce_Tool.Helpers;
-using Order_Generation.PredictionModels;
 using System.Collections.ObjectModel;
 
 namespace WooCommerce_Tool.ViewsModels

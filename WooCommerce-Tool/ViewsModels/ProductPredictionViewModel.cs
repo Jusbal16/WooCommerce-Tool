@@ -9,7 +9,6 @@ using LiveCharts.Wpf;
 using LiveCharts.Defaults;
 using GalaSoft.MvvmLight.Messaging;
 using System.Windows;
-using Order_Generation.PredictionModels;
 using WooCommerce_Tool.PredictionModels;
 using WooCommerce_Tool.Settings;
 using System.Collections.ObjectModel;

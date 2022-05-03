@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Sqlite;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace WooCommerce_Tool.DB_Models
@@ -24,8 +25,9 @@ namespace WooCommerce_Tool.DB_Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("server=DESKTOP-KV5D8QG\\SQLEXPRESS;database=tool_db;Integrated Security=True;");
+                //optionsBuilder.UseSqlServer("server=DESKTOP-KV5D8QG\\SQLEXPRESS;database=tool_db;Integrated Security=True;");
+                optionsBuilder.UseSqlite("Filename=..\\..\\..\\..\\WooCommerce-Tool.sqlite");
+               // optionsBuilder.UseSqlServer("data source =C:\\Users\\PC\\OneDrive - Kaunas University of Technology\\Darbalaukis\bakis_vaziuojam_publika\\WooCommerce-Tool\\Tool_db.db");
             }
         }
 

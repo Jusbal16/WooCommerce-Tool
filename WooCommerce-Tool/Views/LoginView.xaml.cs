@@ -17,6 +17,8 @@ using WooCommerce_Tool.ViewsModels;
 using WooCommerceNET;
 using WooCommerceNET.WooCommerce.v3;
 using System.Security.Cryptography;
+using System.Data.SQLite;
+
 
 namespace WooCommerce_Tool.Views
 {
@@ -28,8 +30,10 @@ namespace WooCommerce_Tool.Views
         private LoginViewModel _viewModel;
         private MainWindowView mainWindow;
         private tool_dbContext _dbContext;
+        private string URLConstant = "wp-json/wc/v3/";
         public Login()
         {
+            //SQLiteConnection.CreateFile("WooCommerce-Tool.sqlite");
             _dbContext = new tool_dbContext();
             _viewModel = new LoginViewModel();
             DataContext = _viewModel;

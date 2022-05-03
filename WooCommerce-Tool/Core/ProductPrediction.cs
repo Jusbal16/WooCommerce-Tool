@@ -1,7 +1,6 @@
 ﻿using GalaSoft.MvvmLight.Messaging;
 using Microsoft.ML;
 using Microsoft.ML.Transforms.TimeSeries;
-using Order_Generation.PredictionModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;

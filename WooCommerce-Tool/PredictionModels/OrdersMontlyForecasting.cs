@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace WooCommerce_Tool
 {
     // Order timeseries prediction data structure
-    internal class OrdersMontlyForecasting
+    public class OrdersMontlyForecasting
     {
         public float[] ForecastedOrders { get; set; }
 
