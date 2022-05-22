@@ -995,7 +995,7 @@
                                 BorderBrush="Transparent" 
                                 BorderThickness="1,1,1,1" 
                                 CornerRadius="2,12,0,0" >
-                            
+
                             <ContentPresenter x:Name="ContentSite"
                                     VerticalAlignment="Center"
                                     HorizontalAlignment="Center"
@@ -1025,19 +1025,4 @@
         <Setter Property="FontSize" Value="13"/>
         <Setter Property="FontFamily" Value="Microsoft Sans Serif" />
     </Style>
-
-   
-
-
-
-
-
-
-
-
-
-
-
-
-
 </ResourceDictionary>
